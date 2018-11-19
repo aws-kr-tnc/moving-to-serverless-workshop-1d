@@ -30,7 +30,6 @@ The following prerequistied are required for the workshop:
 
 * AWS Console Access
 * AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
-* An EC2 SSH Key-Pair (Optional)
 
 
 ## TASK 1. Create AWS Cloud9 environment and explore the environment.
@@ -39,11 +38,11 @@ In this section, you will create an AWS Cloud9 environment and explore the envir
 
 1. In the AWS Console, click **Services**, then click **Cloud9** to open the Cloud9 dashboard.
 
-2. You can choose **Singapore** region.
+2. You can choose **Oregon** region.
 
 3. Click **Create environment** at the top-right corner.
 
-4. For **Name**, type **workshop-\<INITIAL\>** (keep in mind this, it will be reused.)
+4. For **Name**, type **workshop-\<INITIAL\>** (or anything you want)
 
 5. Click **Next step.**
 
@@ -95,19 +94,19 @@ Check out the workshop repository from the Github.
 cd ~/environment
 ```
 ```console
-git clone https://github.com/liks79/aws-chalice-migration-workshop.git
+git clone https://github.com/tuningfork/moving-to-aws-serverless.git
 ```
 
 14. Install the requirements for the project by executing the command below in your AWS Cloud9 terminal.
 
 ```console
-sudo pip-3.6 install -r ~/environment/aws-chalice-migration-workshop/LAB01/CloudAlbum/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-aws-serverless-workshop/LAB01/CloudAlbum/requirements.txt
 ```
 
 15. Check the **config.py** Open this file in **Cloud9 terminal window** or **Cloud9 IDE editor**.
 
 ```console
-vi ~/environment/aws-chalice-migration-workshop/LAB01/CloudAlbum/cloudalbum/config.py
+vi ~/environment/moving-to-aws-serverless-workshop/LAB01/CloudAlbum/cloudalbum/config.py
 ```
 
 
@@ -140,7 +139,7 @@ conf = {
     'LOGGING_LEVEL': os.getenv('LOGGING_LEVEL', 'debug'),
     'PER_PAGE': os.getenv('PER_PAGE', 6),
     'THUMBNAIL_WIDTH': os.getenv('THUMBNAIL_WIDTH', 300),
-    'THUMBNAIL_HEIGHT': os.getenv('THUMBNAIL_HEIGHT', 200),
+    'THUMBNAIL_HEIGHT': os.getenv('THUMBNAIL_HEIGHT', 300),
 }
 ```
 * The second parameter of **os.getenv** function is the default value to use when the **first parameter does not exist.**
@@ -161,7 +160,7 @@ conf = {
 
 18. Setup these variables **before run** this application.
 
-19. Select **aws-chalice-migration-workshop/LAB01/CloudAlbum/run.py** in the tree view.
+19. Select **moving-to-aws-serverless-workshop/LAB01/CloudAlbum/run.py** in the tree view.
 
 20. First, **open the run.py**(double click), and on the top menu bar, click **Run → Run With → Python 3**. Ensure that you are using the **Python 3 runner**, as shown in the screenshot below.
 <img src=images/lab01-03.png width=800>
@@ -182,12 +181,12 @@ Check your environment variables!
 24. First, In the **Name column**, type **DB_URL**. In the Value column, type the **SQLITE** file DB URL (*for the test purpose only*) like this. **DB table will be created automatically** via [SQLAlchemy](https://www.sqlalchemy.org/).
 
 ```python
-sqlite:////home/ec2-user/environment/aws-chalice-migration-workshop/LAB01/sqlite.db
+sqlite:////home/ec2-user/environment/moving-to-aws-serverless-workshop/LAB01/sqlite.db
 ```
 
 * **ALTERNATIVE WAY:** You can set the **DB_URL** value directly in `config.py`.
 ```python
-'DB_URL': os.getenv('DB_URL', 'sqlite:////home/ec2-user/environment/aws-chalice-migration-workshop/LAB01/sqlite.db'),
+'DB_URL': os.getenv('DB_URL', 'sqlite:////home/ec2-user/environment/moving-to-aws-serverless-workshop/LAB01/sqlite.db'),
 ```
 
 25. Second, in the **Name column**, type **GMAPS_KEY**. In the Value column, type the **Google MAP API KEY** (**Temporary API Key** will be provided to the workshop attendees by presenter).
@@ -221,79 +220,22 @@ To test the application, you can configure your envirionment. There are **two wa
 27. **For Cloud9 preview**
 * Cloud9 preview feature is easy to use.
 * Click the `Preview` menu and choose `Preview Runnig Application`.
-* That's all
+* That's all!
 <img src=./images/lab01-task2-cloud9-preview-1.png width=900>
 
 
 * For the convenience, you can run pop-up browser window.
 <img src=./images/lab01-task2-cloud9-preview-2.png width=900>
 
-## TASK 3 [OPTIONAL-TASK]: Connect to your application (SSH Tunneling)
-
- Alternative way, you can use to establish an **SSH tunnel** to your AWS Cloud9 instance.
-
-28. **[OPTIONAL-TASK]** : **SSH tunnelFor MAC/Linux users:**
-
-<img src=./images/lab01-task3-ssh-tunnel.png width=1000>
-
-* In your MAC/Linux terminal, type the command below to get the public portion from **your existing any key pair .pem** file. Make sure to replace YOUR_KEY with the name of the key pair .pem file
-
-```console
-ssh-keygen -f <YOUR_KEY.pem> -y
-```
-
-* The output looks like the example below. Copy the output of your command.
-```console
-ssh-rsa
-ASDASDASDASDAyc2EAAAADAQABAAABAQDWGRZsPraV6v4UqfZTFKAXK9bhjWVkONEKyAA1CeOkxSN+9WdY7gKgjbPOeUx3LFqRudBvSrP+eKTtthPrl Nx9UBvXniVK252i4h0xnIcrRO1PUpq0EzyqX+n3u2YwytT+on6x98PRjtD4oCKyfFviWBqnRHtWvRre8CWhULuJrmUeo2aPrVTPXo/TwJpZupXv63YyUMPC 2wyDMDsKNZhsqUedkJ8575PGXCg9gEkPg2ulR8NUrzDSfbXIrZLgCcIziwDQ0dA9B28OAQ9saPyXYzrZF1ZmCxKgzSHHiKdBAJ0E/X/s53N5Hg04SIWy4D4lMT 9g+AZG38YPNq68mo4b
-```
-
-* In your AWS Cloud9 instance, on the left pane, click the **Settings** icon. Click **Show Home in Favorites** and **Show Hidden Files** as shown in the screenshot below.
-<img src=./images/lab01-05.png width=500>
-
-* This should display the .ssh folder in the tree view.
-
-* Expand the .ssh folder and open the **authorized_keys** file.
-
-* Paste the public key you copied earlier in the authorized_keys file. **Important:** Make sure to paste the public key below the message in the authorized_keys file as shown below. **Do not delete or overwrite** the public key already present in the file. Deleting or overwriting the existing public key will make your Cloud9 instance unusable.
-
-```console
- #
- # Add any additional keys below this line
- #
-```
-* Save the **authorized_keys** file. By updating this file, you are telling your AWS Cloud9 instance to allow connections that authenticate with the matching private key.
-
-**NOTE:** You also can paste it using cli command like below. (Paste public key then press CTRL+D for EOF)
-
-```console
-cat >> ~/.ssh/authorized_keys
-ssh-rsa CXCAAB3Nzaxxyc2EAAAADAQABAAABAQDThHERqJJMcZqitA5DZ35j41UFE0zIO5XxVqElCHNHUXYnmffqFNyTFkfpkHAWsR5zGMnR5I46eZazu4sWNcg3LZx937/STOfN4TCzps/uuooHx/p3whGXIFqsz25Xq1RzI/LsFiSRm3+/I1E482pss3OgCXALR/rF9g7Mud1frt9POq82Zg0R1YHB5hCK6Ldx3U3AnFxdViKHVnDgVijAYO+ua1MFtaSn+FqYoXbMniFiQpOJz2ZTvM/ZhwvfAYJkJPYwQ+7T99pIEb0L/pLecaFkxUcbAiwzW6L79bKAQYwA7vEzI4ndqhyLKwIzadVJnog1hRs0ItiUqDOSLYLN sungshik@8c85904c36cf.ant.amazon.com
-
-```
-
-* Check public-ip of your Cloud9 EC2 instance.
-```console
-curl http://169.254.169.254/latest/meta-data/public-ipv4 
-```
-
-* Try to SSH tunneling like this
-
-* **NOTE:** Make sure **your Cloud9 instance Security group port 22** is opened for SSH tunneling.
-```console
-ssh -i <YOUR_KEY.pem> -L 8080:localhost:8080 ec2-user@<PUBLIC-IP OF YOUR CLOUD9 EC2 INSTANCE>
-```
-
-
-29. Connect your legacy application
+28. Connect your legacy application
 
 ## TASK 4. Take a look around
 Check the application.
 
-30. Connect to your application using **Cloud9 preview** or to http://localhost:8080 in your browser.
+29. Connect to your application using **Cloud9 preview**.
 <img src="./images/lab01-08.png" width=500>
 
-31. Take a look around and perform test.
+30. Take a look around and perform test.
 <img src="./images/lab01-02.png" width=800>
 
 * Sign in / up
@@ -312,27 +254,6 @@ Check the application.
 <img src=./images/stop-app.png width=700>
 
 # Congratulation! You completed LAB01.
-* Go to : [LAB 02 - Move to serverless](LAB02.md)
-
-
-## Optional Challenges
-* Deploy legacy application:
-   * Configure EC2, RDS, and ELB.
-      * DB_URL of MySQL for SQLAlchemy : 'mysql+pymysql://<user>:<password>@<host>:<port>/cloudalbum?charset=utf8'
-        <img src=./images/lab01-06.png width=500>    
-
-
-* Deploy legacy application:
-   * Configure ElasticBeanstalk
-   <img src=./images/lab01-07.png width=500>
-
-
-* Find problems:
-  * Perform the same functional tests that you performed in TASK 4.
-    * How about user login session?
-    * How about photo file storage?
-    * How about scalability?
-
 
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
