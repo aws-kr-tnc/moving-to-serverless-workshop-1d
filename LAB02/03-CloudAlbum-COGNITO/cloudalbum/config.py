@@ -33,7 +33,7 @@ conf = {
     'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
     'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
     'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
-    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL> or <http://localhost:8080>')
+    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
 }
 
 
