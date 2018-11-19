@@ -895,4 +895,4 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 
 ## Feedback 
 * Please leave your feed back.
-  * http://bit.ly/2018_feedback 
+  * http://bit.ly/serverless_tp_feedback 
