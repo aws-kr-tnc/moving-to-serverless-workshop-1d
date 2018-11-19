@@ -56,7 +56,6 @@ secret_key                <not set>             None    None
 
 * OK, done. Move to next step.
 
-
 #### [1-3] Create an Instance Profile with the AWS CLI ###
 
 ### Working on your LOCAL MACHINE terminal or your EC2
