@@ -38,7 +38,7 @@ In this section, you will create an AWS Cloud9 environment and explore the envir
 
 1. In the AWS Console, click **Services**, then click **Cloud9** to open the Cloud9 dashboard.
 
-2. You can choose **Oregon** region.
+2. You can choose **Singapore(ap-southeast-1)** region.
 
 3. Click **Create environment** at the top-right corner.
 
