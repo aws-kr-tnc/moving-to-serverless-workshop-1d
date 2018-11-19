@@ -94,7 +94,7 @@ Check out the workshop repository from the Github.
 cd ~/environment
 ```
 ```console
-git clone https://github.com/aws-kr-tnc/moving-to-serverless-techpump.git
+git clone https://github.com/aws-kr-tnc/moving-to-serverless-techpump.git --depth 1
 ```
 
 14. Install the requirements for the project by executing the command below in your AWS Cloud9 terminal.
@@ -138,7 +138,7 @@ conf = {
     'LOGGING_BACKUP_COUNT': os.getenv('LOGGING_BACKUP_COUNT', 1000),
     'LOGGING_LEVEL': os.getenv('LOGGING_LEVEL', 'debug'),
     'PER_PAGE': os.getenv('PER_PAGE', 6),
-    'THUMBNAIL_WIDTH': os.getenv('THUMBNAIL_WIDTH', 300),
+    'THUMBNAIL_WIDTH': os.getenv('THUMBNAIL_WIDTH', 200),
     'THUMBNAIL_HEIGHT': os.getenv('THUMBNAIL_HEIGHT', 300),
 }
 ```
@@ -160,7 +160,7 @@ conf = {
 
 18. Setup these variables **before run** this application.
 
-19. Select **moving-to-serverless-techpump /LAB01/CloudAlbum/run.py** in the tree view.
+19. Select **moving-to-serverless-techpump/LAB01/CloudAlbum/run.py** in the tree view.
 
 20. First, **open the run.py**(double click), and on the top menu bar, click **Run → Run With → Python 3**. Ensure that you are using the **Python 3 runner**, as shown in the screenshot below.
 <img src=images/lab01-03.png width=800>
@@ -181,7 +181,7 @@ Check your environment variables!
 24. First, In the **Name column**, type **DB_URL**. In the Value column, type the **SQLITE** file DB URL (*for the test purpose only*) like this. **DB table will be created automatically** via [SQLAlchemy](https://www.sqlalchemy.org/).
 
 ```python
-sqlite:////home/ec2-user/environment/moving-to-serverless-techpump /LAB01/sqlite.db
+sqlite:////home/ec2-user/environment/moving-to-serverless-techpump/LAB01/sqlite.db
 ```
 
 * **ALTERNATIVE WAY:** You can set the **DB_URL** value directly in `config.py`.
