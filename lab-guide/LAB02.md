@@ -104,20 +104,18 @@ chmod +x generate_instance_profile.sh
                 "s3:*",
                 "ec2:*",
                 "cloudwatch:*",
+                "logs:*",
                 "iam:*",
                 "ssm:*",
                 "lambda:*",
                 "cloud9:*",
                 "dynamodb:*",
+                "cognito-idp:*",
                 "xray:*"
             ],
-            "Resource": "*",
-                "Condition": {
-                    "DateLessThan": {"aws:CurrentTime": "2018-08-31T23:59:59Z"}
-                }
+            "Resource": "*"
         }
     ]
-
 }
 
 ```
@@ -494,7 +492,7 @@ conf = {
 <img src=./images/lab02-task1-run-console.png width=700>
 
 
-13. Connect to your application using **Cloud9 preview** or http://localhost:8080 in your browser. (After SSH tunnel established.)
+13. Connect to your application using **Cloud9 preview** in your browser. 
 <img src=images/lab01-08.png width=500>
 
 * You need to **Sign-up** first.
@@ -640,7 +638,7 @@ generate_presigned_url(ClientMethod, Params=None, ExpiresIn=3600, HttpMethod=Non
 * Ensure **Runner: Python 3**
 <img src=./images/lab02-task1-run-console.png width=800>
 
-22. Connect to your application using **Cloud9 preview** or http://localhost:8080 in your browser. (After SSH tunnel established.)
+22. Connect to your application using **Cloud9 preview** in your browser. 
 
 23. Perform application test.
 <img src=./images/lab01-02.png width=700>
@@ -743,10 +741,6 @@ https://<CLOUD9_RESOURCE_ID>.vfs.cloud9.ap-southeast-1.amazonaws.com
    
    <img src='images/lab02-task3-cloud9-preview.png' width='550'>
 
-   
- * For **SSH Tunneling** user:
-   * For **Callback URL(s)** type `https://localhost:8080/callback`
-   * For **Sign out URL(s)** type `https://localhost:8080`
 
 49. Under **OAuth 2.0**, for **Allowed OAuth Flows**, select **Authorization code grant** and for **Allowed OAuth Scopes**, select **openid**.
 <img src="images/lab03-task2-cognito-app-client.png" width="500">
@@ -801,7 +795,7 @@ options = {
     'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
     'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
     'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
-    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL> or <http://localhost:8080>')
+    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
 }
 ```
 * Check the values under `# COGNITO`.
@@ -812,7 +806,7 @@ options = {
 | COGNITO_CLIENT_ID | Copy and paste the App Client ID you noted earlier. |
 | COGNITO_CLIENT_SECRET | Copy and paste the App Client Secret you noted earlier. |
 |COGNITO_DOMAIN |Copy and paste the domain name you created earlier. It should look similar to the example below. Do not copy the entire URL starting with https://YOUR_DOMAIN_NAME.auth.ap-southeast-1.amazoncognito.com (for example(**without** `https://`): YOUR_DOMAIN_NAME.auth.ap-southeast-1.amazoncognito.com)|
-| BASE_URL | For **Cloud9 Preview** user set **YOUR_PREVIEW_URL** For **SSH Tunneling** user set **http://localhost:8080** Do not include a trailing / for the BASE_URL. |
+| BASE_URL | For **Cloud9 Preview** user set **YOUR_PREVIEW_URL** Do not include a trailing / for the BASE_URL. |
 
 
 59. Review following code to retrieve JSON Web Key (JWK) from cognito.
@@ -849,7 +843,7 @@ JWKS = requests.get(JWKS_URL).json()["keys"]
 ```
 
 
-61. **Open the run.py** and run the application. Connect to your application using **Cloud9 preview** or http://localhost:8080 in your browser. (After SSH tunnel established.)
+61. **Open the run.py** and run the application. Connect to your application using **Cloud9 preview**in your browser. 
 * You can find default Cognito Login Screen.
 <img src="images/lab02-task3-cognito-login.png" width="450">
 
@@ -997,12 +991,12 @@ options = {
     'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
     'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
     'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
-    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL> or <http://localhost:8080>')
+    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
 }
 ```
 72. **Open the run.py** and run the application. You can run the application to check all features are works well. Then you will see function tracing data collected on the X-Ray console.
 
-73. Connect to your application using **Cloud9 preview** or http://localhost:8080 in your browser. (After SSH tunnel established.)
+73. Connect to your application using **Cloud9 preview** in your browser. 
 * You can find default Cognito Login Screen.
 <img src=images/lab02-task3-cognito-login.png width=500>
 
