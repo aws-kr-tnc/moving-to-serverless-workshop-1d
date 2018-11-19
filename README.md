@@ -34,4 +34,4 @@ This workshop content will handle the server based Python Flask web application 
 
 ## Feedback (TBD)
 * Please leave your feed back.
-  * http://bit.ly/2018_ 
+  * http://bit.ly/serverless_tp_feedback 
