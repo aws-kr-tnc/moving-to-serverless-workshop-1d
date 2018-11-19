@@ -193,7 +193,7 @@ sqlite:////home/ec2-user/environment/moving-to-serverless-techpump/LAB01/sqlite.
 
 * **ALTERNATIVE WAY:** You can set the **GMAPS_KEY** value directly in `config.py`.
 ```python
-'GMAPS_KEY': os.getenv('GMAPS_KEY', 'REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR'),
+'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
 ```
 
 
