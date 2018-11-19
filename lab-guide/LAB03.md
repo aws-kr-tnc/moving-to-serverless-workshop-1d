@@ -27,7 +27,7 @@ The `Serverless` Framework (https://serverless.com) is an MIT open source framew
  * Perform following command:
 
 ```Console
-cd ~/environment/aws-chalice-migration-workshop/LAB03/
+cd ~/environment/moving-to-serverless-techpump/LAB03/
 ```
 
 ```console
@@ -72,16 +72,16 @@ virtualenv -p /usr/bin/python36 venv
 ```
 Running virtualenv with interpreter /usr/bin/python36
 Using base prefix '/usr'
-New python executable in /home/ec2-user/environment/aws-chalice-migration-workshop/LAB03/venv/bin/python36
-Also creating executable in /home/ec2-user/environment/aws-chalice-migration-workshop/LAB03/venv/bin/python
+New python executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python36
+Also creating executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
 Installing setuptools, pip, wheel...done.
 ```
 
 2. Now you can activate your **virtualenv** (`venv`).
 ```Console
-source ~/environment/aws-chalice-migration-workshop/LAB03/venv/bin/activate
+source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate
 echo "unalias python" >> ~/.bash_profile
-echo "source ~/environment/aws-chalice-migration-workshop/LAB03/venv/bin/activate" >> ~/.bash_profile
+echo "source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate" >> ~/.bash_profile
 ```
 <img src="./images/lab03-task1-venv.png" width="600">
 
@@ -91,7 +91,7 @@ which python
 ```
 * output :
 ```
-~/environment/aws-chalice-migration-workshop/LAB03/venv/bin/python
+~/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
 ```
 
 ```console
@@ -99,7 +99,7 @@ which pip
 ```
 * output:
 ```
-~/environment/aws-chalice-migration-workshop/LAB03/venv/bin/pip
+~/environment/moving-to-serverless-techpump/LAB03/venv/bin/pip
 ```
 
 3. Install AWS Chalice microframework (Of course, you must run following command after `venv` activation)
@@ -119,7 +119,7 @@ chalice 1.6.1, python 3.6.5, linux 4.14.47-56.37.amzn1.x86_64
 
 * **Now, we are using `venv`. So we can run `pip` not `pip-3.6`.**
 ```Console
-pip install -r ~/environment/aws-chalice-migration-workshop/LAB03/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
+pip install -r ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
 ```
 
 ## TASK 2 : Build a simple AWS Chalice serverless app.
@@ -128,10 +128,10 @@ This TASK will provide an introduction on how to use AWS Chalice and provide ins
 5. We installed AWS Chalice serverless framework previous step, it is time to create your first Chalice application. Run the `chalice new-project` command to create a project called `myapp`:
 
 ```console
-mkdir -p ~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice/
+mkdir -p ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
 ```
 ```console
-cd ~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice/
+cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
 ```
 ```console
 chalice new-project myapp
@@ -146,7 +146,7 @@ tree -a .
 ```
 * output: 
 ```
-<username>:~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice (master) $ tree -a .
+<username>:~/environment/moving-to-serverless-techpump/LAB03/01-Chalice (master) $ tree -a .
 .
 └── myapp
     ├── app.py
@@ -253,7 +253,7 @@ def user_add():
 * Review above code for new `app.py`. `Response` and `logging` are importted from top of the `app.py` file. Debug option is enabled for the application logging. `user_info` and `user_add` functions are added.
 
 * Replace `app.py` file with the contents of above source code.
-  * `app.py` file is located in `~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice/myapp/app.py`
+  * `app.py` file is located in `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp/app.py`
 
 9. Stop the previous `chalice local --port 8080` command with **CTRL+C** and run the new version of `myapp`.
 ```console
@@ -317,7 +317,7 @@ myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'us
 
 ```
 
-11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice/myapp`)
+11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp`)
 ```console
 chalice deploy
 ```
@@ -417,7 +417,7 @@ x-amzn-RequestId: 519a0bcd-9c8a-11e8-8997-5550927d6916
 
 ```
 
-* You can check the files of `deployed` and `deployments` directories. (~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice)
+* You can check the files of `deployed` and `deployments` directories. (~/environment/moving-to-serverless-techpump/LAB03/01-Chalice)
 ```
 tree -a .
 ```
@@ -449,7 +449,7 @@ tree -a .
 
 14. Delete deployed application
 ```console
-cd ~/environment/aws-chalice-migration-workshop/LAB03/01-Chalice/myapp
+cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp
 ```
 ```console
 chalice delete
@@ -495,10 +495,10 @@ Finally, all servers are gone!
 <img src=./images/lab03-task2-serverless-full.png width=700>
 
 
-15. Let's take a look around `~/environment/aws-chalice-migration-workshop/LAB03/02-CloudAlbum-Chalice/cloudalbum/` directory.
+15. Let's take a look around `~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/` directory.
 
 ```console
-cd ~/environment/aws-chalice-migration-workshop/LAB03/02-CloudAlbum-Chalice/cloudalbum/
+cd ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/
 ```
 ```console
 tree -L 2 -a .
@@ -738,7 +738,7 @@ def get_param(param_name):
 21. Copy static files to your S3 Bucket for **static file hosting** such as **CSS** and **JavaScript**.
  * Following **cloudalbum-\<INITIAL\>** value must replace **YOUR OWN VALUE.**
 ```console
-aws s3 sync ~/environment/aws-chalice-migration-workshop/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
+aws s3 sync ~/environment/moving-to-serverless-techpump/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
 ```
 
 22. Enable S3 bucket CORS configuration in your S3 Console. (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
@@ -759,7 +759,7 @@ aws s3 sync ~/environment/aws-chalice-migration-workshop/resources/static s3://c
 
 ```
 
-23. Review template files. Template files which stored `aws-chalice-migration-workshop/LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
+23. Review template files. Template files which stored `moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
 ```python
 S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGION'], conf['S3_PHOTO_BUCKET'])
 ```
