@@ -46,7 +46,7 @@ In this section, you will create an AWS Cloud9 environment and explore the envir
 
 5. Click **Next step.**
 
-6. On the **Configure settings** page, leave the default selection in the Environment settings section.(If you want, you can choose a **high-performance instance**.)
+6. On the **Configure settings** page, leave the default selection in the Environment settings section.(If you want, you can choose a **high-performance instance**. **However, you should consider your credits.**)
 
 7. Click Next step.
 
@@ -193,7 +193,7 @@ sqlite:////home/ec2-user/environment/moving-to-serverless-techpump/LAB01/sqlite.
 
 * **ALTERNATIVE WAY:** You can set the **GMAPS_KEY** value directly in `config.py`.
 ```python
-'GMAPS_KEY': os.getenv('GMAPS_KEY', 'REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR'),
+'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
 ```
 
 
