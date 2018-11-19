@@ -1,7 +1,7 @@
 # Moving to AWS Serverless application with AWS Chalice framework.
 <img src="lab-guide/images/Serverless-logo-github.png" width=640>
 
-## WELCOME! ##
+## Welcome to APN TechPump ##
 This workshop content will handle the server based Python Flask web application and show how to move to Serverless architecture application using AWS Chalice micro-framework. It deals with how to migrate from a server-based application into a serverless environment by practical application level. This workshop cover Cloud9, S3, API Gateway, Lambda, Cognito, DynamoDB, X-Ray, Parameter Store with AWS Chalice micro-framework. This workshop contains two short presentations and three hands-on labs. Application source code and hands-on lab guides are providing via Github repository.
 
 ### Presenters
@@ -10,7 +10,7 @@ This workshop content will handle the server based Python Flask web application 
 
 ### Lab Instructors
 Thanks to the following people for their assistance with this lab:
- * KyoungSu Lee (ProServ)
+ * Jihye Seo (Partner Solutions Architect )
  * Sungmin Hong (Technical Trainer)
 
 ## LAB GUIDE
