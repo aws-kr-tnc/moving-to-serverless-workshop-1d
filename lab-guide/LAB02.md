@@ -68,12 +68,12 @@ secret_key                <not set>             None    None
   * Download `generate_instance_profile.sh`.
 
 ```console
-wget https://raw.githubusercontent.com/tuningfork/moving-to-aws-serverless-workshop/master/resources/generate_instance_profile.sh
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/generate_instance_profile.sh
 ```
 * If you want, **review** the `generate_instance_profile.sh` file.
 ```console
-wget https://raw.githubusercontent.com/tuningfork/moving-to-aws-serverless-workshop/master/resources/workshop-cloud9-instance-profile-role-trust.json
-wget https://raw.githubusercontent.com/tuningfork/moving-to-aws-serverless-workshop/master/resources/workshop-cloud9-policy.json
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-instance-profile-role-trust.json
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-policy.json
 
 PARN=$(aws iam create-policy --policy-name workshop-cloud9-policy --policy-document file://workshop-cloud9-policy.json --query "Policy.Arn" --output text)
 aws iam create-role --role-name workshop-cloud9-instance-profile-role --assume-role-policy-document file://workshop-cloud9-instance-profile-role-trust.json
@@ -221,7 +221,7 @@ In this TASK, we will introduce DynamoDB for CloudAlbum application. We also int
 
 1. Install required Python packaged:
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-aws-serverless-workshop/LAB02/01-CloudAlbum-DDB/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/01-CloudAlbum-DDB/requirements.txt
 ```
 
 
@@ -771,7 +771,7 @@ https://<CLOUD9_RESOURCE_ID>.vfs.cloud9.ap-southeast-1.amazonaws.com
 
 57. Install required Python packages:
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-aws-serverless-workshop/LAB02/03-CloudAlbum-COGNITO/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/03-CloudAlbum-COGNITO/requirements.txt
 ```
 
 58. Review 'LAB02/03.CloudAlbum-COGNITO/cloudalbum/config.py'
@@ -892,7 +892,7 @@ AWS [X-Ray](https://aws.amazon.com/xray/) helps developers analyze and debug pro
 
 64. Install required Python packages for AWS X-Ray.
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-aws-serverless-workshop/LAB02/04-CloudAlbum-XRAY/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/04-CloudAlbum-XRAY/requirements.txt
 ```
 
 **Download and run the AWS X-Ray daemon on your AWS Cloud9 instance.**
