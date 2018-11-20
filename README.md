@@ -13,8 +13,8 @@ This workshop content will handle the server based Python Flask web application 
 
 ## LAB GUIDES
 * [LAB 01 - Take a look around](lab-guide/LAB01.md)
-	* [TASK 1. Create AWS Cloud9 environment and explore the environment.](lab-guide/LAB01.md#task-1-create-aws-cloud9-environment-and-explore-the-environment)
-	* [TASK 2. Look around legacy application and try run it.](lab-guide/LAB01.md#task-2-look-around-legacy-application-and-try-run-it)
+	* [TASK 1. Create AWS Cloud9 environment and explore the environment](lab-guide/LAB01.md#task-1-create-aws-cloud9-environment-and-explore-the-environment)
+	* [TASK 2. Look around legacy application and try run it](lab-guide/LAB01.md#task-2-look-around-legacy-application-and-try-run-it)
 	* [TASK 3. Connect to your application (Cloud9)](lab-guide/LAB01.md#task-3-optional-task-connect-to-your-application-ssh-tunneling)
 	* [TASK 4. Take a look around](lab-guide/LAB01.md#task-4-take-a-look-around)
 	* [TASK 5. Stop your application](lab-guide/LAB01.md#task-5-stop-your-application)
@@ -27,9 +27,9 @@ This workshop content will handle the server based Python Flask web application 
 	* [TASK 4. Go to X-ray](lab-guide/LAB02.md#task-2-go-to-s3)
 
 * [LAB 03 - Serverless with AWS Chalice](lab-guide/LAB03.md)
-	* [TASK 1. : Setup virtualenv](lab-guide/LAB03.md#task-1--seyup-virtualenv)
-	* [TASK 2. : Build a simple AWS Chalice serverless app](lab-guide/LAB03.md#task-2--build-a-simple-aws-chalice-serverless-app)
-	* [TASK 3. : CloudAlbum with AWS Chalice](lab-guide/LAB03.md#task-3--cloudalbum-with-aws-chalice)
+	* [TASK 1. Setup virtualenv](lab-guide/LAB03.md#task-1--seyup-virtualenv)
+	* [TASK 2. Build a simple AWS Chalice serverless app](lab-guide/LAB03.md#task-2--build-a-simple-aws-chalice-serverless-app)
+	* [TASK 3. CloudAlbum with AWS Chalice](lab-guide/LAB03.md#task-3--cloudalbum-with-aws-chalice)
 
 
 ## Feedback (TBD)
