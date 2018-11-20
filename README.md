@@ -4,14 +4,14 @@
 ## Welcome to APN TechPump ##
 This workshop content will handle the server based Python Flask web application and show how to move to Serverless architecture application using AWS Chalice micro-framework. It deals with how to migrate from a server-based application into a serverless environment by practical application level. This workshop cover Cloud9, S3, API Gateway, Lambda, Cognito, DynamoDB, X-Ray, Parameter Store with AWS Chalice micro-framework. This workshop contains two short presentations and three hands-on labs. Application source code and hands-on lab guides are providing via Github repository.
 
-### Presenters & Lab Instructor
+### Presenters & Lab Instructors
  * Jihye Seo (Partner Solutions Architect )
  * Sungshik Jou (Technical Trainer)
  * JinUk Lee (Technical Trainer)
- * Sungmin Hong (Technical Trainer)
+ * SungMin Hong (Technical Trainer)
 
 
-## LAB GUIDE
+## LAB GUIDES
 * [LAB 01 - Take a look around](lab-guide/LAB01.md)
 	* [TASK 1. Create AWS Cloud9 environment and explore the environment.](lab-guide/LAB01.md#task-1-create-aws-cloud9-environment-and-explore-the-environment)
 	* [TASK 2. Look around legacy application and try run it.](lab-guide/LAB01.md#task-2-look-around-legacy-application-and-try-run-it)
@@ -27,9 +27,9 @@ This workshop content will handle the server based Python Flask web application 
 	* [TASK 4. Go to X-ray](lab-guide/LAB02.md#task-2-go-to-s3)
 
 * [LAB 03 - Serverless with AWS Chalice](lab-guide/LAB03.md)
-	* [TASK 1 : Setup virtualenv.](lab-guide/LAB03.md#task-1--seyup-virtualenv)
-	* [TASK 2 : Build a simple AWS Chalice serverless app.](lab-guide/LAB03.md#task-2--build-a-simple-aws-chalice-serverless-app)
-	* [TASK 3 : CloudAlbum with AWS Chalice](lab-guide/LAB03.md#task-3--cloudalbum-with-aws-chalice)
+	* [TASK 1. : Setup virtualenv](lab-guide/LAB03.md#task-1--seyup-virtualenv)
+	* [TASK 2. : Build a simple AWS Chalice serverless app](lab-guide/LAB03.md#task-2--build-a-simple-aws-chalice-serverless-app)
+	* [TASK 3. : CloudAlbum with AWS Chalice](lab-guide/LAB03.md#task-3--cloudalbum-with-aws-chalice)
 
 
 ## Feedback (TBD)
