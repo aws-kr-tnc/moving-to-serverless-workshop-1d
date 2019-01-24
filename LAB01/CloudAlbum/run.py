@@ -1,9 +1,17 @@
-from flask import Flask
+from flask import Flask, session
+from flask_session import Session
 from cloudalbum import application as CloudAlbum
 from cloudalbum.config import conf
 from cloudalbum import util
+from redis import StrictRedis
 
 app = Flask(__name__)
+
+# Flask Session for Redis
+#app.config['SESSION_TYPE'] = 'redis'
+#app.config['SESSION_REDIS'] = StrictRedis(host='<ELASTICACHE_ENDPOINT>', port=<PORT>)
+#Session(app)
+
 
 if __name__ == '__main__':
     util.check_variables()

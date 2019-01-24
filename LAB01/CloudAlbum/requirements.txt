@@ -23,3 +23,4 @@ import_string
 pytz
 tzlocal
 timestring
+redis
