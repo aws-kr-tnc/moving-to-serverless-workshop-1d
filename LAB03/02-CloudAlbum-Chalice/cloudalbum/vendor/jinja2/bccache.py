@@ -276,7 +276,7 @@ class FileSystemBytecodeCache(BytecodeCache):
             f.close()
 
     def clear(self):
-        # imported lazily here because google app-engine doesn't support
+        # imported lazily here because google application-engine doesn't support
         # write access on the file system and the function does not exist
         # normally.
         from os import remove

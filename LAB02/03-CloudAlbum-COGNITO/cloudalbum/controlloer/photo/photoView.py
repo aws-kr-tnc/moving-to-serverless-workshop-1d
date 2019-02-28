@@ -111,7 +111,7 @@ def photo_delete(photo_id):
         photo = Photo.get(current_user.id, photo_id)
         photo.delete()
 
-        # util.delete(app, photo.filename, current_user)
+        # util.delete(application, photo.filename, current_user)
         util.delete_s3(app, photo.filename, current_user)
 
         flash('Successfully removed!')

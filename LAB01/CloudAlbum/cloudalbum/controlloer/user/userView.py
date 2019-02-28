@@ -69,24 +69,24 @@ def signin():
 #     form = UserForm(request.form)
 #
 #     if request.method == 'POST' and form.validate():
-#         app.logger.debug(form.data)
+#         application.logger.debug(form.data)
 #
 #         try:
 #             user_exist = db.session.query(User).filter_by(email=form.email.data).first()
 #             if not user_exist:
 #                 user = User(form.username.data, form.email.data, generate_password_hash(form.password.data))
-#                 app.logger.debug(user)
+#                 application.logger.debug(user)
 #                 db.session.add(user)
 #                 db.session.commit()
 #                 flash('You have been signed up successfully!')
 #                 return redirect(url_for('userView.signin', form=form))
 #             else:
 #                 flash('Your email is already registered. Please try again!')
-#                 app.logger.debug('Email is already registered : %s ', form.email.data)
+#                 application.logger.debug('Email is already registered : %s ', form.email.data)
 #                 return redirect(url_for('userView.signup', form=form))
 #
 #         except Exception as e:
-#             app.logger.error(e)
+#             application.logger.error(e)
 #             db.session.rollback()
 #             return errorHandler.server_error(e)
 #

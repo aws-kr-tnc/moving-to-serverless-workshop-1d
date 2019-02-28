@@ -25,7 +25,7 @@ import logging
 def init_app(app):
     """
     CloudAlbum application initializer
-    :param app: Flask.app
+    :param app: Flask.application
     :return: initialized application
     """
     csrf = CSRFProtect()

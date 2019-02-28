@@ -316,7 +316,7 @@ def callback():
 
 # https://chalice.readthedocs.io/en/latest/api.html
 #
-# @app.on_s3_event('mybucket', events=['s3:ObjectCreated:Put'],
+# @application.on_s3_event('mybucket', events=['s3:ObjectCreated:Put'],
 #                  prefix='images/', suffix='.jpg')
 # def resize_image(event):
 #     with tempfile.NamedTemporaryFile('w') as f:

@@ -61,7 +61,7 @@ def save(upload_file, filename, email, app):
     :param upload_file: file object
     :param filename: secure filename for upload
     :param email: user email address
-    :param app: Flask.app
+    :param app: Flask.application
     :return: file size (byte)
     """
     path = os.path.join(conf['UPLOAD_FOLDER'], email_normalize(email))
@@ -130,7 +130,7 @@ def save_s3(upload_file_stream, filename, email, app):
 def delete(app, filename, current_user):
     """
     Delete specific file (with thumbnail)
-    :param app: Flask.app
+    :param app: Flask.application
     :param photo: specific photo ORM object
     :param current_user: Flask_login.current_user
     :return: None
@@ -170,7 +170,7 @@ def make_thumbnails(path, filename, app):
     Generate thumbnail from original image file.
     :param path: target path
     :param filename: secure file name
-    :param app: Falsk.app
+    :param app: Falsk.application
     :return: None
     """
     thumb_path = os.path.join(path, 'thumbnails')

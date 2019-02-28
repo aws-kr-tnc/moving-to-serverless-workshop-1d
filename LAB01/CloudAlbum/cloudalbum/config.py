@@ -2,12 +2,15 @@ import os
 
 conf = {
     # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', None),
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', 'AIzaSyDT5w4wSh80C2iywYCLypY2GAIbqBEPGDg'),
+    #'DB_URL': os.getenv('DB_URL', None),
     'DB_URL': os.getenv('DB_URL', None),
 
     # Default config values
     'APP_HOST': os.getenv('APP_HOST', '0.0.0.0'),
     'APP_PORT': os.getenv('APP_PORT', 8080),
+
+    'ELCACHE_EP': os.getenv('ELCACHE_EP', ''),
 
     'FLASK_SECRET': os.getenv('FLASK_SECRET', os.urandom(24)),
     'SESSION_TIMEOUT': os.getenv('SESSION_TIMEOUT', 30),

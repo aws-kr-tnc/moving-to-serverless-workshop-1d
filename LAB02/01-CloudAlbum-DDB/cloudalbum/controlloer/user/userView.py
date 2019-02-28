@@ -88,7 +88,7 @@ def signup():
                 user.save()
                 ## -- end --
 
-                # app.logger.debug(user)
+                # application.logger.debug(user)
                 flash('You have been signed up successfully!')
                 return redirect(url_for('userView.signin', form=form))
 

@@ -10,13 +10,13 @@ itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 oauthlib==2.1.0
-Pillow==5.1.0
+Pillow
 PyMySQL==0.8.1
 requests>=2.20.0
 requests-oauthlib==1.0.0
 SQLAlchemy==1.2.8
 urllib3==1.23
-uWSGI==2.0.17
+#uWSGI==2.0.17
 Werkzeug==0.14.1
 WTForms==2.2.1
 import_string
@@ -24,3 +24,5 @@ pytz
 tzlocal
 timestring
 redis
+Flask-Session
+

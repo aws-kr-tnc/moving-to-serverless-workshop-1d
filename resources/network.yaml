@@ -1,0 +1,309 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Template to build the base VPC network for Moving to AWS Serverless workshop .
+  This template will be provisioning multi-az VPC resources.
+Parameters:
+  VPCCIDR:
+    Description: CIDR Block for VPC
+    Type: String
+    Default: 10.100.10.0/16
+  PUBSUBNET1:
+    Description: Public Subnet 1
+    Type: String
+    Default: 10.100.10.0/24
+  PRISUBNET1:
+    Description: Private Subnet 1
+    Type: String
+    Default: 10.100.20.0/24
+  PUBSUBNET2:
+    Description: Public Subnet 2
+    Type: String
+    Default: 10.100.30.0/24
+  PRISUBNET2:
+    Description: Private Subnet 2
+    Type: String
+    Default: 10.100.40.0/24
+  # KeyName:
+  #   Type: 'AWS::EC2::KeyPair::KeyName'
+  #   Description: Keyname for the keypair for EC2 instance
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+        - Key: VPC
+          Value: moving-to-serverless
+        - Key: Name
+          Value: moving-to-serverless
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    DependsOn: VPC
+    Properties:
+      Tags:
+        - Key: Name
+          Value: moving-to-serverless VPC IGW
+  AttachGateway:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    DependsOn:
+      - VPC
+      - InternetGateway
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  PublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPC
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PUBSUBNET1
+      MapPublicIpOnLaunch: 'true'
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Public Subnet - 1
+  PrivateSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPC
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PRISUBNET1
+      MapPublicIpOnLaunch: 'true'
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Private Subnet - 1
+  PublicSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPC
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PUBSUBNET2
+      MapPublicIpOnLaunch: 'true'
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Public Subnet - 2
+  PrivateSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPC
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PRISUBNET2
+      MapPublicIpOnLaunch: 'true'
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Private Subnet - 2
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn:
+      - VPC
+      - AttachGateway
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Public Routing Table
+  PublicRouteIGW:
+    Type: 'AWS::EC2::Route'
+    DependsOn:
+      - PublicRouteTable
+      - InternetGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway  
+  
+  NAT1:
+    DependsOn: PublicRouteIGW
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP1
+        - AllocationId
+      SubnetId:
+        Ref: PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: workshop-natgw
+  EIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NAT2:
+    DependsOn: PublicRouteIGW
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP2
+        - AllocationId
+      SubnetId:
+        Ref: PublicSubnet2
+      Tags:
+        - Key: Name
+          Value: workshop-natgw
+  EIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+
+  PrivateRouteTable1:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn:
+      - VPC
+      - NAT1
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Private Routing Table
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT1
+
+  PrivateRouteTable2:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn:
+      - VPC
+      - NAT2
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Private Routing Table
+
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NAT2
+
+  PublicRouteTableAssociation1:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    DependsOn:
+      - PublicSubnet1
+      - PublicRouteIGW
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+  PublicRouteTableAssociation2:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    DependsOn:
+      - PublicSubnet2
+      - PublicRouteIGW
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+
+  PrivateRouteTableAssociation1:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    DependsOn:
+      - PrivateSubnet1
+      - PublicRouteIGW
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+
+
+  PrivateRouteTableAssociation2:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    DependsOn:
+      - PrivateSubnet1
+      - PublicRouteIGW
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+
+
+  AppInstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DependsOn: AttachGateway
+    Properties:
+      GroupDescription: >-
+        Security Group for Moving to AWS Serverless workshop to enable SSH and
+        http access
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: moving-to-serverless-SG
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: '0'
+          ToPort: '65535'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: udp
+          FromPort: '0'
+          ToPort: '65535'
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8080'
+          ToPort: '8080'
+          CidrIp: 0.0.0.0/0
+
+
+Outputs:
+  # KeyPair:
+  #   Value: !Ref KeyName
+  #   Description: The Keypair for the hands-on lab.
+  Region:
+    Value: !Ref 'AWS::Region'
+    Description: Region used for the lab
+  VPCId:
+    Value: !Ref VPC
+    Description: VPC Resource ID
+    Export:
+      Name: !Sub '${AWS::StackName}-VPCID'
+  PubSub1:
+    Value: !Ref PublicSubnet1
+    Description: Public Subnet 1 Resource ID
+    Export:
+      Name: !Sub '${AWS::StackName}-PUBSUB-1'
+  PriSub1:
+    Value: !Ref PrivateSubnet1
+    Description: Private Subnet 1 Resource ID
+    Export:
+      Name: !Sub '${AWS::StackName}-PRISUB-1'
+  PubSub2:
+    Value: !Ref PublicSubnet2
+    Description: Public Subnet 2 Resource ID
+    Export:
+      Name: !Sub '${AWS::StackName}-PUBSUB-2'
+  PriSub2:
+    Value: !Ref PrivateSubnet2
+    Description: Private Subnet 2 Resource ID
+    Export:
+      Name: !Sub '${AWS::StackName}-PRISUB-2'

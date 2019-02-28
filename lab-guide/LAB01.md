@@ -26,7 +26,7 @@ It has following several features.
 
 
 ## Prerequisites
-The following prerequistied are required for the workshop:
+The following prerequisited are required for the workshop:
 
 * AWS Console Access
 * AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
