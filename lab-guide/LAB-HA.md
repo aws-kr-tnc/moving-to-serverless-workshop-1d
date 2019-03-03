@@ -11,7 +11,7 @@ In this hands-on lab, you'll deploy the CloudAlbum application with HA(high avai
 
 
 ## Prerequisites
-The following prerequisited are required for the workshop:
+The following prerequisited are required for this hands-on lab:
 
 * AWS Console Access
 * AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
@@ -19,9 +19,9 @@ The following prerequisited are required for the workshop:
 
 ## TASK 1. Create your multi-az VPC
 
-In this section, you will create an VPC with multi-az VPC for the high availability.
+In this section, you will create an VPC with multi-az for the high availability using CloudFormation.
 
-* 그림 삽입 필요: multi-az VPC, NatGW 2개.. 아키텍팅교제 그림 참고..
+<img src=./images/lab-ha-task1-cf-diagram.png width=700?>
 
 
 1. Make sure the current region is Singapore (ap-souteeast-1).
@@ -273,7 +273,7 @@ Now, let's deploy our application.
 * **EFS_ID** : `<EFD_ID>`
   * We already copied it to `notepad` in TASK 2.
   * For example : `fs-5d3e921c`
-* **ELCACHE_EP** : ``
+* **ELCACHE_EP** : `<ELCACHE_EP>`
   * We already copied it to `notepad` in TASK 3.
   * For example : `moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
 * **FLASK_SECRET** : `THIS_IS_THE_SECRET`
