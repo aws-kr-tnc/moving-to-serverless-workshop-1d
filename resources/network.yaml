@@ -240,39 +240,39 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
 
 
-  AppInstanceSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    DependsOn: AttachGateway
-    Properties:
-      GroupDescription: >-
-        Security Group for Moving to AWS Serverless workshop to enable SSH and
-        http access
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: moving-to-serverless-SG
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: udp
-          FromPort: '0'
-          ToPort: '65535'
-          CidrIp: 0.0.0.0/0
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '8080'
-          ToPort: '8080'
-          CidrIp: 0.0.0.0/0
+  # AppInstanceSecurityGroup:
+  #   Type: 'AWS::EC2::SecurityGroup'
+  #   DependsOn: AttachGateway
+  #   Properties:
+  #     GroupDescription: >-
+  #       Security Group for Moving to AWS Serverless workshop to enable SSH and
+  #       http access
+  #     VpcId: !Ref VPC
+  #     Tags:
+  #       - Key: Name
+  #         Value: moving-to-serverless-SG
+  #     SecurityGroupEgress:
+  #       - IpProtocol: tcp
+  #         FromPort: '0'
+  #         ToPort: '65535'
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: udp
+  #         FromPort: '0'
+  #         ToPort: '65535'
+  #         CidrIp: 0.0.0.0/0
+  #     SecurityGroupIngress:
+  #       - IpProtocol: tcp
+  #         FromPort: '22'
+  #         ToPort: '22'
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp
+  #         FromPort: '80'
+  #         ToPort: '80'
+  #         CidrIp: 0.0.0.0/0
+  #       - IpProtocol: tcp
+  #         FromPort: '8080'
+  #         ToPort: '8080'
+  #         CidrIp: 0.0.0.0/0
 
 
 Outputs:
