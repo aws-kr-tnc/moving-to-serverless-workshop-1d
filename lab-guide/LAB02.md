@@ -1,1036 +1,366 @@
-# LAB 02 - Move to serverless
-We will move the components of legacy application which has constraints of scalability and high availability to serverless environment one by one.
-
-## TASK 0. Permission grant for Cloud9
-
-AWS Cloud9 is configured with **AWS managed temporary credentials** as default. However we will **not use** AWS managed temporary credentials due to our application need various service such as DynamoDB, S3, Lambda and so on. We will use our own policy for this workshop.
-
-There are two ways. One is to use [1] **Using Instance Profile** with temporary credentials and this is recommended. The other way is **Store Permanent Access Credentials** in the credential file which related administrator privileadge already you used. (You can also use environment variables as a alternative way)
-
-* Related document : [Create and Use an Instance Profile to Manage Temporary Credentials](https://docs.aws.amazon.com/cloud9/latest/user-guide/credentials.html)
-
-* **Choose following one** :
-  * `[1] Using Instance Profile` or
-  * `[2] Store Permanent Access Credentials`
-
-* `[1] Using Instance Profile` is recommended. However If you want **quick start**, you can choose `[2] Store Permanent Access Credentials` with enough permission.
-
-### [1] Using Instance Profile
-
-### [1-1] Check the AWS credentials in Cloud9 instance.
-* Run following command, then you can see the AWS managed temporary credentials.
-``` console
-aws configure list
-```
-* output
-``` 
-lachesis:~/environment $ aws configure list
-      Name                    Value             Type    Location
-      ----                    -----             ----    --------
-   profile                <not set>             None    None
-access_key     ****************YV3J shared-credentials-file    
-secret_key     ****************F240 shared-credentials-file    
-    region           ap-southeast-1      config-file    ~/.aws/config
-```
-
-### [1-2] Disable AWS managed temporary credentials
-<img src=./images/lab02-task0-aws-setup.png width=500>
-
-* (1) Click the setup(gear) icon
-* (2) Select `AWS SETTINGS`.
-* (3) Disable `AWS managed temporary credentials`
-
-* Check the AWS credentials in Cloud9 instance.
-```console
-aws configure list
-```
-* output:
-```
-      Name                    Value             Type    Location
-      ----                    -----             ----    --------
-   profile                <not set>             None    None
-access_key                <not set>             None    None
-secret_key                <not set>             None    None
-    region                <not set>             None    None
-```
-
-* OK, done. Move to next step.
-
-#### [1-3] Create an Instance Profile with the AWS CLI ###
-
-### Working on your LOCAL MACHINE terminal or your EC2
-
-**NOTE:** Before you run below command, **make sure you have enough privileges.** (such as `AdministratorAccess` policy).
-
-* You may have `AdministratorAccess` privileged **AWS CLI environment** such as your LOCAL MACHINE or your EC2.
-
-  * Download `generate_instance_profile.sh`.
-
-```console
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/generate_instance_profile.sh
-```
-* If you want, **review** the `generate_instance_profile.sh` file.
-```console
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-instance-profile-role-trust.json
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-policy.json
-
-PARN=$(aws iam create-policy --policy-name workshop-cloud9-policy --policy-document file://workshop-cloud9-policy.json --query "Policy.Arn" --output text)
-aws iam create-role --role-name workshop-cloud9-instance-profile-role --assume-role-policy-document file://workshop-cloud9-instance-profile-role-trust.json
-aws iam attach-role-policy --role-name workshop-cloud9-instance-profile-role --policy-arn $PARN
-aws iam create-instance-profile --instance-profile-name workshop-cloud9-instance-profile
-aws iam add-role-to-instance-profile --role-name workshop-cloud9-instance-profile-role --instance-profile-name workshop-cloud9-instance-profile
-```
-
- * Add `execute` permission
-```console
-chmod +x generate_instance_profile.sh
-```
-
- * **Run** script with enough privileges, such as `AdministratorAccess` policy. (**Currently, you can not run this command in Cloud9 terminal.**):
-```console
-./generate_instance_profile.sh
-```
-
-* If you want, **review** the `workshop-cloud9-policy.json` policy.
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": [
-                "apigateway:*",
-                "s3:*",
-                "ec2:*",
-                "cloudwatch:*",
-                "logs:*",
-                "iam:*",
-                "ssm:*",
-                "lambda:*",
-                "cloud9:*",
-                "dynamodb:*",
-                "cognito-idp:*",
-                "xray:*"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-
-```
-
-
-#### [1-4] Attach an Instance Profile to Cloud9 Instance with the AWS CLI
+# LAB 02 - Build a High Availability Application Architecture.
 
-* Get instance-id of Cloud9 environment, For this we need **Cloud9 environment name**. We defined it LAB 01. (**workshop-\<INITIAL\>**). 
+In this hands-on lab, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
 
-* Attach an **Instance Profile** which made previous step to Cloud9 Instance.
+## In this lab cover.. 
+* Configure VPC for the HA environment. (CloudFormation template will be provided.)
+* Configure EFS for the scalable shared storage.
+* Configure Elasticache - Redis for the session store.
+* Configure ElasticBeanstalk
+  * with RDS, ALB and AutoScaling 
 
-* Replace **workshop-\<INITIAL\>** to real value.
-```console
-INSTANCE_ID=$(aws ec2 describe-instances --query "Reservations[*].Instances[*].InstanceId" --filter "Name=tag:Name, Values=aws-cloud9-workshop-<INITIAL>*" --region ap-southeast-1 --output=text)
-
-echo $INSTANCE_ID
-
-aws ec2 associate-iam-instance-profile --iam-instance-profile  Name=workshop-cloud9-instance-profile --region ap-southeast-1 --instance-id $INSTANCE_ID
-```
-* Run the following command to check the result: 
 
-```console
-aws ec2 describe-instances --query "Reservations[].Instances[].IamInstanceProfile" --instance-id $INSTANCE_ID --region ap-southeast-1
-```
-* output: 
-```
-[
-    {
-        "Arn": "arn:aws:iam::123456789012:instance-profile/workshop-cloud9-instance-profile",
-        "Id": "AIPAIFQCLU7KO6ML343DDD"
-    }
-]
-```
-* Now `workshop-cloud9-instance-profile` is attached our Cloud9 instance.
+## Prerequisites
+The following prerequisited are required for this hands-on lab:
 
-
-### Back to the your Cloud9 terminal.
-
- * Configure default region:
-```console
-aws configure set region ap-southeast-1
-```
- * Check the configured credentials
-```console
-aws configure list
-```
-* output:
-```
-      Name                    Value             Type    Location
-      ----                    -----             ----    --------
-   profile                <not set>             None    None
-access_key     ****************LZOJ         iam-role    
-secret_key     ****************hK+3         iam-role    
-    region           ap-southeast-1      config-file    ~/.aws/config
-```
-
-* You can see the `iam-role` type of access_key and secret_key. Well done.
-
-* Is it OK? 
-  * **Go to TASK 1**
-
-### [2] Store Permanent Access Credentials ###
-**NOTE:** This is **an ALTERNATIVE WAY** of `[1] Using Instance Profile`. If you complete `[1] Using Instance Profile`, You can pass below steps and **go to TASK 1.**
-
-* **NOTE:** Before you proceed, please complet following steps:
-  * [1-1] Check the AWS credentials in Cloud9 instance.
-  * [1-2] You must disable AWS managed temporary credentials
-
-
-* Configure your own credentials:
-```console
-aws configure set aws_access_key_id <YOUR OWN ACCESS KEY ID>
-aws configure set aws_secret_access_key <YOUR OWN ACCESS KEY ID>
-aws configure set region ap-southeast-1
-```
-
-* OK, all things are done. Go to TASK 1.
-
-* **ALTERNATIVE**: You can configure following variables before run application or CLI commands. `AdministratorAccess` privilege is recommended. (refer to above `workshop-cloud9-policy.json`.)
-`export AWS_ACCESS_KEY_ID=<YOUR OWN ACCESS KEY ID>` and `export AWS_SECRET_ACCESS_KEY=<YOUR OWN ACCESS KEY ID>`
-
-
-## TASK 1. Go to DynamoDB
-Amazon [DynamoDB](https://aws.amazon.com/dynamodb/) is a nonrelational database that delivers reliable performance at any scale. It's a fully managed, multi-region, multi-master database that provides consistent single-digit millisecond latency, and offers built-in security, backup and restore, and in-memory caching.
-
-In this TASK, we will introduce DynamoDB for CloudAlbum application. We also introduce pynamodb which is a Pythonic interface to Amazon’s DynamoDB. By using simple, yet powerful abstractions over the DynamoDB API. It is similar to SQLAlchemy.
-
-
-* Leagacy application uses RDBMS(MySQL), we will replace it to DynamoDB. DynamoDB is fully managed service.It means that automatically scales throughput up or down, and continuously backs up your data for protection.
-<img src=./images/lab02-task1-ddb.png width=600>
-
-* Legacy application uses **SQLAlchemy** for OR-Mapping. SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL.
-  * visit : https://www.sqlalchemy.org/
-
-* We will use **PynamoDB** instead of **SQLAlchemy** for OR-Mapping of DynamoDB. It is similar with SQLAlchemy. PynamoDB is a Pythonic interface to Amazon’s DynamoDB. By using simple, yet powerful abstractions over the DynamoDB API, PynamoDB allows you to start developing immediately.
-  * visit : https://github.com/pynamodb/PynamoDB
-
-* Legacy application has simple data model and we can design DynamoDB table easily.
-  <img src=./images/lab02-task1-modeling.png width=600>
-
-1. Install required Python packaged:
-```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/01-CloudAlbum-DDB/requirements.txt
-```
-
-
-2. Open the **models.py** which located in  '**LAB02/01-CloudAlbum-DDB**/cloudalbum/model/models.py'.
-
-3. Review the data model definition via **SQLAlchemy**. `User` tables and `Photo` tables are inherited from SQLAlchemy's **db.Model** and are represented in **Python classes**.
-```python
-from sqlalchemy import Float, DateTime, ForeignKey, Integer, String
-from flask_login import UserMixin
-from flask_sqlalchemy import SQLAlchemy
-from cloudalbum import login
-
-db = SQLAlchemy()
-
-
-class User(UserMixin, db.Model):
-    """
-    Database Model class for User table
-    """
-    __tablename__ = 'User'
-
-    id = db.Column(Integer, primary_key=True)
-    username = db.Column(String(50), unique=False)
-    email = db.Column(String(50), unique=True)
-    password = db.Column(String(100), unique=False)
-
-    photos = db.relationship('Photo',
-                             backref='user',
-                             cascade='all, delete, delete-orphan')
-
-    def __init__(self, name, email, password):
-        self.username = name
-        self.email = email
-        self.password = password
-
-    def __repr__(self):
-        return '<%r %r %r>' % (self.__tablename__, self.username, self.email)
-
-
-class Photo(db.Model):
-    """
-    Database Model class for Photo table
-    """
-    __tablename__ = 'Photo'
-
-    id = db.Column(Integer, primary_key=True)
-    user_id = db.Column(Integer, ForeignKey(User.id))
-    tags = db.Column(String(400), unique=False)
-    desc = db.Column(String(400), unique=False)
-    filename_orig = db.Column(String(400), unique=False)
-    filename = db.Column(String(400), unique=False)
-    filesize = db.Column(Integer, unique=False)
-    geotag_lat = db.Column(Float, unique=False)
-    geotag_lng = db.Column(Float, unique=False)
-    upload_date = db.Column(DateTime, unique=False)
-    taken_date = db.Column(DateTime, unique=False)
-    make = db.Column(String(400), unique=False)
-    model = db.Column(String(400), unique=False)
-    width = db.Column(String(400), unique=False)
-    height = db.Column(String(400), unique=False)
-    city = db.Column(String(400), unique=False)
-    nation = db.Column(String(400), unique=False)
-    address = db.Column(String(400), unique=False)
-
-    def __init__(self, user_id, tags, desc, filename_orig, filename, filesize, geotag_lat, geotag_lng, upload_date,
-                 taken_date, make, model, width, height, city, nation, address):
-        """Initialize"""
-
-        self.user_id = user_id
-        self.tags = tags
-        self.desc = desc
-        self.filename_orig = filename_orig
-        self.filename = filename
-        self.filesize = filesize
-        self.geotag_lat = geotag_lat
-        self.geotag_lng = geotag_lng
-        self.upload_date = upload_date
-        self.taken_date = taken_date
-        self.make = make
-        self.model = model
-        self.width = width
-        self.height = height
-        self.city = city
-        self.nation = nation
-        self.address = address
-
-    def __repr__(self):
-        """print information"""
-
-        return '<%r %r %r>' % (self.__tablename__, self.user_id, self.upload_date)
-```
-
-4. Open the **models_ddb.py** which located in  'LAB02/01-CloudAlbum-DDB/cloudalbum/model/models_ddb.py'.
-<img src=./images/lab02-task1-models_ddb.png width=300>
-
-
-
-5. Review the data model definition via **PynamoDB**. This will show how DynamoDB tables and GSI are defined in PynamoDB. They are all expressed in **Python Class.**
-
-```python
-from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute, NumberAttribute, UTCDateTimeAttribute
-from flask_login import UserMixin
-from pynamodb.indexes import GlobalSecondaryIndex, IncludeProjection
-from cloudalbum import login
-from cloudalbum import util
-from cloudalbum.config import conf
-
-
-class EmailIndex(GlobalSecondaryIndex):
-    """
-    This class represents a global secondary index
-    """
-
-    class Meta:
-        index_name = 'user-email-index'
-        read_capacity_units = 2
-        write_capacity_units = 1
-        projection = IncludeProjection(['password'])
-
-    # This attribute is the hash key for the index
-    # Note that this attribute must also exist
-    # in the model
-    email = UnicodeAttribute(hash_key=True)
-
-
-class User(Model, UserMixin):
-    """
-    User table for DynamoDB
-    """
-
-    class Meta:
-        table_name = 'User'
-        region = conf['AWS_REGION']
-
-    id = UnicodeAttribute(hash_key=True)
-    email_index = EmailIndex()
-    email = UnicodeAttribute(null=False)
-    username = UnicodeAttribute(null=False)
-    password = UnicodeAttribute(null=False)
-
-
-class Photo(Model):
-    """
-    User table for DynamoDB
-    """
-
-    class Meta:
-        table_name = 'Photo'
-        region = conf['AWS_REGION']
-
-    user_id = UnicodeAttribute(hash_key=True)
-    id = NumberAttribute(range_key=True)
-    tags = UnicodeAttribute(null=False)
-    desc = UnicodeAttribute(null=False)
-    filename_orig = UnicodeAttribute(null=False)
-    filename = UnicodeAttribute(null=False)
-    filesize = NumberAttribute(null=False)
-    geotag_lat = UnicodeAttribute(null=False)
-    geotag_lng = UnicodeAttribute(null=False)
-    upload_date = UTCDateTimeAttribute(default=util.the_time_now())
-    taken_date = UTCDateTimeAttribute(default=util.the_time_now())
-    make = UnicodeAttribute(null=True)
-    model = UnicodeAttribute(null=True)
-    width = UnicodeAttribute(null=False)
-    height = UnicodeAttribute(null=False)
-    city = UnicodeAttribute(null=True)
-    nation = UnicodeAttribute(null=False)
-    address = UnicodeAttribute(null=False)
-```
-
-6. Review the `__init__.py` in the model package. The DynamoDB **User** and **Photo** **tables will be created automatically** for the convenience. **Note** the `create_table` function.
-
-```python
-from cloudalbum.config import conf
-from cloudalbum.model.models_ddb import User
-from cloudalbum.model.models_ddb import Photo
-
-if not User.exists():
-    User.create_table(read_capacity_units=conf['DDB_RCU'], write_capacity_units=conf['DDB_WCU'], wait=True)
-    print('DynamoDB User table created!')
-
-if not Photo.exists():
-    Photo.create_table(read_capacity_units=conf['DDB_RCU'], write_capacity_units=conf['DDB_WCU'], wait=True)
-    print('DynamoDB Photo table created!')
-```
-
-7. Review the 'LAB02/01-CloudAlbum-DDB/cloudalbum/config.py' file. **New attributes** are added for DynamoDB.
-
- * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to real value which used previous hands-on lab.
-
-```python
-import os
-
-conf = {
-
-    # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
-
-    ( ... )
-
-    # DynamoDB
-    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
-    'DDB_RCU': os.getenv('DDB_RCU', 10),
-    'DDB_WCU': os.getenv('DDB_WCU', 10),
-
-}
-```
-* The second parameter of **os.getenv** function is the default value to use when the first parameter does not exist.
-
-8. Review following code for user signup.
-* Find **TODO #1** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
-```python
-    if not user_exist:
-        ## TODO #1 : Review following code to save user information
-        ## -- begin --
-        user = User(uuid.uuid4().hex)
-        user.email = form.email.data
-        user.password = generate_password_hash(form.password.data)
-        user.username = form.username.data
-        user.save()
-        ## -- end --
-```
-
-**NOTE**: The partition key value of User table used **uuid.uuid4().hex** for the appropriate key distribution.
-
-9. Review following code to update user profile to DynamoDB.
-* Find **TODO #2** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
-```python
-    ## TODO #2 : Review following code to update user profile to DynamoDB.
-    ## -- begin --
-    user = User.get(user_id)
-    user.update(actions=[
-        User.username.set(data['username']),
-        User.password.set(generate_password_hash(data['password']))
-    ])
-    ## --end --
-```
-* Above code shows the way of `update` DynamoDB table via PynamoDB query mapper.
-
-
-10. Review following code to search result via keyword in the DynamoDB.
-* find **TODO #3** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
-```python
-    ## TODO #3 : Review following code to search result via keyword in the DynamoDB.
-    ## -- begin --
-    keyword = request.form['search']
-    photo_pages = Photo.query(current_user.id,
-                                Photo.tags.contains(keyword) |
-                                Photo.desc.contains(keyword))
-    ## -- end --
-```
-* Above code shows how to use query filter via PynamoDB.
-
-
-11. Review following code to delete uploaded photo information in DynamoDB.
-* Find **TODO #4** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
-```python
-    ## TODO #4 : Review following code to delete uploaded photo information in DynamoDB.
-    ## -- begin --
-    photo = Photo.get(current_user.id, photo_id)
-    photo.delete()
-    ## -- end --
-```
-
-12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB02/01-CloudAlbum-DDB/cloudalbum/run.py`)
-
-* **NOTE:** **GMAPS_KEY** variable is must defined before you run.
-
-* Ensure **Runner: Python 3**
-<img src=./images/lab02-task1-run-console.png width=700>
-
-
-13. Connect to your application using **Cloud9 preview** in your browser. 
-<img src=images/lab01-08.png width=500>
-
-* You need to **Sign-up** first.
-
-14. Perform application test.
-<img src=./images/lab01-02.png width=800>
-
-* Sign in / up
-* Upload Sample Photos
-* Sample images download here
-  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
-* Look your Album
-* Change Profile
-* Find photos with Search tool
-* Check the Photo Map
-
-15. Then look into AWS DynamoDB console.
-* User and Photo tables are auto generated with 'user-email-index'
-* Review saved data of each DynamoDB tables.
-<img src=./images/lab02-task1-ddb_result.png width=800>
-
-Is it OK? Let's move to the next TASK.
-
-**NOTE:** Click the `stop icon` to stop your application.
-  * **Close your terminal** after application stop.
-  * **Close all your opened file tab.**
-<img src=./images/stop-app.png width=500>
-
-16. Delete data in the application for the next TASK.
-* File system will be changed from **local disk** to **Amazon S3**.
-* So, if you don't delete your album article which submitted this task, then **you will see your album article without images** when you run the application on the next TASK,
-
-<img src=images/lab02-task2-delete.png width=400>
-
-
-## TASK 2. Go to S3
-CloudAlbum stored user uploaded images into disk based storage. (EBS or NAS). However these storage is not scalable enough.
-
-[Amazon S3](https://aws.amazon.com/s3/) has a simple web services interface that you can use to store and retrieve any amount of data, at any time, from anywhere on the web. It gives any developer access to the same highly scalable, reliable, fast, inexpensive data storage infrastructure that Amazon uses to run its own global network of web sites. The service aims to maximize benefits of scale and to pass those benefits on to developers.
-
-<img src=./images/lab02-task2-arc.png width=600>
-
-* We will use Boto3 - S3 API to handle uploaded photo image object from the user.
-   * visit: https://boto3.readthedocs.io/en/latest/reference/services/s3.html
-
-* We will retrieve image object with pre-signed URL for authorized user.
-
-17. Make a bucket to save photo image objects and retriev it from Amazon S3.
-
-```
-aws s3 mb s3://cloudalbum-<INITIAL>
-```
-
-18. Review the config.py file which located in 'LAB02/02-CloudAlbum-S3/cloudalbum/config.py'
-
-* Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to **real API key** which used previous hands-on lab.
-
-* Set up the value of 'S3_PHOTO_BUCKET'. Please change the `cloudalbum-<INITIAL>` to your **real bucket name** which made above.
-
-```python
-import os
-
-conf = {
-
-    # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
-    
-    (....)
-
-    # DynamoDB
-    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
-    'DDB_RCU': os.getenv('DDB_RCU', 10),
-    'DDB_WCU': os.getenv('DDB_WCU', 10),
-
-    # S3
-    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>')
-}
-```
-
-
-19. Review following code to save thumbnail image object to S3.
-* Find **TODO #5** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
-```python
-    ## TODO #5 : Review following code to save thumbnail image object to S3
-    ## -- begin --
-    upload_file_stream.stream.seek(0)
-
-    s3_client.put_object(
-        Bucket=conf['S3_PHOTO_BUCKET'],
-        Key=key_thumb,
-        Body=make_thumbnails_s3(upload_file_stream, app),
-        ContentType='image/jpeg',
-        StorageClass='STANDARD'
-    )
-    ## -- end --
-```
-**NOTE**: To reuse file stream, we need to call **seek(0)**.
-```
-upload_file_stream.stream.seek(0)
-```
-
-20. Review your code to retrieve pre-signed URL from S3.
-* Find **TODO #6** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
-```python
-    ## TODO #6 : Review following code to retrieve pre-signed URL from S3.
-    ## -- begin --
-    if Thumbnail:
-        key_thumb = "{0}{1}".format(prefix_thumb, filename)
-        url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': conf['S3_PHOTO_BUCKET'],
-                    'Key': key_thumb})
-    else:
-        key = "{0}{1}".format(prefix, filename)
-        url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': conf['S3_PHOTO_BUCKET'],
-                    'Key': key})
-    ## -- end --
-```
-* Default expire time is 1 hour (3600 sec). Function description is below.
-  * Related document : https://boto3.readthedocs.io/en/latest/reference/services/s3.html 
-```python
-generate_presigned_url(ClientMethod, Params=None, ExpiresIn=3600, HttpMethod=None)
+* AWS Console Access
+* AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
 
-    Generate a presigned url given a client, its method, and arguments
 
-    Parameters
+## TASK 1. Create your multi-az VPC
 
-            ClientMethod (string) -- The client method to presign for
-            Params (dict) -- The parameters normally passed to ClientMethod.
-            ExpiresIn (int) -- The number of seconds the presigned url is valid for. By default it expires in an hour (3600 seconds)
-            HttpMethod (string) -- The http method to use on the generated url. By default, the http method is whatever is used in the method's model.
+In this section, you will create an VPC with multi-az for the high availability using CloudFormation.
 
-    Returns
+<img src=./images/lab02-task1-cf-diagram.png width=700?>
 
-        The presigned url
-```
 
+1. Make sure the current region is Singapore (ap-souteeast-1).
+ * <img src=./images/lab02-task1-region.png width=700>
 
-21. Open the `run.py` and run the application with DynamoDB and S3.
+2. In the AWS Console, click **Services**, then click **CloudFormation** to open the CloudFormation dashboard.
 
-* Ensure **Runner: Python 3**
-<img src=./images/lab02-task1-run-console.png width=800>
+3. Click **Create Stack** button at the top-left corner. (or click **Create new stack** at the center of page.)
 
-22. Connect to your application using **Cloud9 preview** in your browser. 
+4. Download the **CloudFormation** template file (network.yaml) to your local laptop.
+ * Download Link : https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/blob/master/resources/network.yaml
 
-23. Perform application test.
-<img src=./images/lab01-02.png width=700>
+5. On the **Select Tempalte** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose `network.yaml` file which is downloaded previous step.
 
-* Sign in / up
-* Upload Sample Photos
-* Sample images download here
-  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
-* Look your Album
-* Change Profile
-* Find photos with Search tool
-* Check the Photo Map
+6. Click **Next** button.
 
-24. Examine DynamoDB Console and S3 Console.
-<img src=./images/lab02-task2-s3-console.png width=500>
+7. On the **Specify Details** page. Type `workshop-vpc` for **Stack name**. 
 
-* You can find your uploaded image objects with thumbnails.
+8. Review `Parameters` section. You can check the CIDR address for VPC and subnets. If you want, you can modify these values your own.
 
-Is it OK? Let's move to the next TASK.
+9. Click **Next** button.
 
-**NOTE:** Click the `stop icon` to stop your application.
-  * **Close your terminal** after application stop.
-  * **Close all your opened file tab.**
-<img src=./images/stop-app.png width=500>
+10. On the **Options** page, just click **Next** button. 
 
-## TASK 3. Go to Cognito
-In this TASK, you will add a sign-up/sign-in component to CloudAlbum application by using Amazon Cognito. After setting up Amazon Cognito, user information will retrieved from the Amazon Cognito.
+11. On the **Review** page, click **Create** button. 
 
-<img src=./images/lab02-task3-cognito-arc.png width=600>
+12. About 5 minutes later, the stack creation will be completed. Check the **Status** field. You can see that the value of Satus is `CREATE_COMPLETE`.
 
-To begin, follow the steps below.
+<img src=./images/lab02-task1-cf-complete.png width=700>
 
-**Set up an Amazon Cognito user pool.**
+13. Explore the `outputs` tab. Copy the values of `outputs` tab to the your notepad for later use.
 
-25. In the AWS Console, go to the **Amazon Cognito**
 
-26. Make sure you are still in the **Singapore(ap-southeast-1)** region.
+## TASK 2. Create EFS(Elastic File System)
 
-27. Click **Manage your User Pools**.
+In this section, you will create an EFS for the CloudAlbum application. 
 
-28. At the top right corner, click **Create a user pool**.
+Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic file system for Linux-based workloads for use with AWS Cloud services and on-premises resources. It is built to scale on demand to petabytes without disrupting applications, growing and shrinking automatically as you add and remove files, so your applications have the storage they need – when they need it. It is designed to provide massively parallel shared access to thousands of Amazon EC2 instances, enabling your applications to achieve high levels of aggregate throughput and IOPS with consistent low latencies. Amazon EFS is a fully managed service that requires no changes to your existing applications and tools, providing access through a standard file system interface for seamless integration.
 
-29. For **Pool name**, type **cloudalbum-pool-\<INITIAL\>**.
 
-30. Click **Step through settings**.
+14. In the AWS Console, click **Services**, then click **EFS** to open the EFS dashboard console.
 
-31. For **How do you want your end users to sign in?**, select **Email address or phone number**.
-<img src=./images/lab02-task3-cognito-setup.png width=800>
+15. Click **Create file system** button.
 
-32. For **Which standard attributes do you want to require?**, select **name**.
+16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain `moving-to-serverless`. Then you have to choose pair of subnets and please check the each Availibity Zone of subnet. You can refer to following screen caputure image.
 
-33. Click **Next step**.
+<img src=./images/lab02-task2-efs-1.png width=700>
 
-34. Leave the default settings on the Policy page and click **Next step**.
 
-35. Skip the MFA and verifications pages and click **Next step**.
+17. On the **Configure optional settings** page, type `moving-to-serverless` for key `Name` under **Add tags** section.
 
-36. On the **Message customization** page, select **Verification Type** as **Link**. Feel free to customize the email body.
+18. Then click **Next Step**. (Leave the remaining configuration as default.)
 
-37. Click **Next Step**.
+19. On the **Review and create** page, check the configuration then click **Create File System** button.
 
-38. Skip the Tag section and click **Next Step**.
+20. After a while, you will see that the **Mount target state** changes from **Creating** to **Available** on the **Mount targets** section.
 
-39. Leave the default setting on the **Devices** page and click **Next step**.
+21. If the **Mount target state** becomes **Available**, Copy the **File system ID** and paste it `notepad` for later use in TASK 5. 
 
-40. On the **App Clients** page, click **Add an app client**.
 
-41. For **App client name,** type a client name, for example, **CloudAlbum**.
+* Move to the next TASK.
 
-42. Leave the other default settings and click **Create app client**.
 
-43. Click **Next Step**.
+## TASK 3. Create Elasticache 
+We'll create Amazon Elasticache - Redis to use as a session store for CloudAlbum application. By storing session data in a separate session store such Elasticache-Redis, we can improve our application from statefull to stateless.
 
-44. Skip the **Triggers** page and click **Next Step**
+Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, run, and scale popular open source compatible in-memory data stores. Build data-intensive apps or improve the performance of your existing apps by retrieving data from high throughput and low latency in-memory data stores. Amazon ElastiCache is a popular choice for Gaming, Ad-Tech, Financial Services, Healthcare, and IoT apps.
 
-45. On the **Review** page, click **Create Pool**.
+22. In the **AWS Managed Console**, on the **Service** menu, Click **ElastiCache**.
 
-46. After the pool is created, write down the **Pool ID** for later use.
+23. In the left navigation pane, click **Redis**.
 
-47. In the left navigation menu, under **App integration**, click **App client settings**.
+24. Click **Create**.
 
-48. For **Enabled Identity Providers**, check **Cognito User Pool**.
-* Check the Cloud9 ResourceId. 
-```console 
-RESOURCE_ID=$(aws ec2 describe-tags --query "Tags[].Value" --filters "Name=resource-id, Values=`ec2-metadata --instance-id | cut -f2 -d ' '`" "Name=key, Values=aws:cloud9:environment" --output text)
+ This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** `Cluster Mode enabled`. 
+ 
+ * Cluster engine : `Redis`
+ * Redis settings
+   * **Name** : `moving-to-serverless`
+   * **Description** : `workshop`
+   * **Engine version compatibility** : `5.0.0`
+   * **Port** : `6379`
+   * **Parameter group** : `default.redis5.0`
+   * **Node Type** : chache.t2.micro (0.5 GiB)
+   * **Number of replicas** : 2 
 
-echo "https://$RESOURCE_ID.vfs.cloud9.ap-southeast-1.amazonaws.com"
 
-```
-* **\<YOUR PREVIEW URL\>** is :  
-```
-https://<CLOUD9_RESOURCE_ID>.vfs.cloud9.ap-southeast-1.amazonaws.com
-```
-* **KEEP THIS VALUE FOR LATER USE**
+<img src=./images/lab02-task3-ec-1.png width=700>
 
- * For **Cloud9 Preview** user:
-   * For **Callback URL(s)** type `https://<YOUR PREVIEW URL>/callback`
-   * For **Sign out URL(s)** type `https://<YOUR PREVIEW URL>`
-   * **NOTE:** This is an **alternative way** of check ResourceId. If you complete checking <YOUR PREVIEW URL>, You can pass below steps and go to STEP 49. 
-   
-   <img src='images/lab02-task3-cloud9-preview.png' width='550'>
+25. In the **Advanced Redis settings** section, configure:
+* **Multi-AZ with Auto-Failover** : [v] (checked)
+* **Subnet  group** : `Create new`
+* **Name** : `moving-to-serverless`
+* **Description** : `workshop`
+* **VPC ID** : You can refer to the **VPCId** in `Outputs` tab values of CloudFormation.(**step 13**). 
+* **Subnets** : Choose two subnets with **PriSub1** and **PriSub2** in `Outputs` tab values of CloudFormation.(**step 13**). You can refer to the subnet id and CIDR block of **PriSub1** and **PriSub2**.
+* **Preferred availability zone(s)** : `No preference`
 
+<img src=./images/lab02-task3-ec-2.png width=700>
 
-49. Under **OAuth 2.0**, for **Allowed OAuth Flows**, select **Authorization code grant** and for **Allowed OAuth Scopes**, select **openid**.
-<img src="images/lab03-task2-cognito-app-client.png" width="500">
+* Leave the remaining configuration as default.
 
-50. Click **Save changes** at the bottom.
+26. Click **Create** button, at the bottom of the page.
 
-51. In the left navigation menu, under **App integration**, click **Domain name**.
+27. After a while, you will see that the **Status** column changes from **Creating** to **Available** on the **Status** column.
 
-52. Type a **domain name**(for example: `cloudalbum-<INITIAL>`, check its availability, and click **Save changes**. Write down the domain name for later use.
- * **NOTE:** Domain name You have to use **lowercase**.
-<img src="images/lab03-task2-cognito-domain.png" width="500">
+28. Copy the **Primary Endpoint**  and paste it `notepad` for later use in TASK 5. 
 
-53. In the left navigation menu, under **General settings**, click **App clients**.
+ * <img src=./images/lab02-task3-ec-3.png width=500>
 
-54. Click **Show details**.
+ * **NOTE**: You can click the refresh button in the dashboard, if your cluster status not changed.
 
-55. Make a note of the **App client ID** and **App client secret** for later use.
+## TASK 4. Confiugure ElasticBeanstalk.
 
-56. Click **Return to pool details** at the bottom to return to the Pool details page.
+We will now deploy the CloudAlbum application using ElasticBeanstalk. Our application will be  integrated EFS, Elasticache, RDS, ALB, and AutoScalingGroup via ElasticBeanstalk.
 
+With Elastic Beanstalk, you can quickly deploy and manage applications in the AWS Cloud without having to learn about the infrastructure that runs those applications. Elastic Beanstalk reduces management complexity without restricting choice or control. You simply upload your application, and Elastic Beanstalk automatically handles the details of capacity provisioning, load balancing, scaling, and application health monitoring.
 
-57. Install required Python packages:
-```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/03-CloudAlbum-COGNITO/requirements.txt
-```
+29. In the **AWS Management Console** on the **Service** menu, click Elastic Beanstalk.
 
-58. Review 'LAB02/03.CloudAlbum-COGNITO/cloudalbum/config.py'
-* Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
+30. At the top-right of screen, clikck **Create New Application**.
 
-* Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
+31. At the **Create New Application** window, configure the following:
 
-```python
-import os
+* **Application Name** : `HA-CloudAlbum`
+* **Description** : `Moving to AWS Serverless Workshop`
 
-options = {
+32. Click **Create** button.
 
-    # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
-    
-    (.....)
+33. At the **All Applications > HA-CloudAlbum** page, click the **Create one now**.
 
-    # DynamoDB
-    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
-    'DDB_RCU': os.getenv('DDB_RCU', 10),
-    'DDB_WCU': os.getenv('DDB_WCU', 10),
+34. On the **Select environment tier**, page:
 
-    # S3
-    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>'),
+ * Select **Web server environment**. 
+ 
+35. Click **Select** button.
 
-    # COGNITO
-    'COGNITO_POOL_ID': os.getenv('COGNITO_POOL_ID', '<YOUR_POOL_ID>'),
-    'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
-    'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
-    'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
-    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
-}
-```
-* Check the values under `# COGNITO`.
-* The second parameter of **os.getenv** is the default value to use when the first parameter does not exist.
+36. In the **Create a web server environemnt** section, for **Description** type `Moving to AWS Serverless Workshop`
 
-| COGNITO_POOL_ID | Copy and paste the pool ID you noted earlier. |
-----|----
-| COGNITO_CLIENT_ID | Copy and paste the App Client ID you noted earlier. |
-| COGNITO_CLIENT_SECRET | Copy and paste the App Client Secret you noted earlier. |
-|COGNITO_DOMAIN |Copy and paste the domain name you created earlier. It should look similar to the example below. Do not copy the entire URL starting with https://<YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com (for example(**without** `https://`): <YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com)|
-| BASE_URL | For **Cloud9 Preview** user set **https://<YOUR_PREVIEW_URL>** Do not include a trailing / for the BASE_URL. |
+37. In the **Base configuration** section, configure the following:
 
+* **Preconfigured plafform** : `Python` 
+<img src=./images/lab02-task4-eb-python.png width=500>
 
-59. Review following code to retrieve JSON Web Key (JWK) from cognito.
-* Find **TODO #7** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
-```python
-## TODO #7: Review following code to retrieve JSON Web Key (JWK) from cognito
-## https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
-## -- begin --
-JWKS_URL = "https://cognito-idp.{0}.amazonaws.com/{1}/.well-known/jwks.json".\
-    format(conf['AWS_REGION'], conf['COGNITO_POOL_ID'])
-JWKS = requests.get(JWKS_URL).json()["keys"]
-## -- end --
-```
+* **Application code** : `Upload your code`
 
+38. Choose `Sample application` button.
 
-60. Review following code to set up User objedct using id_token from Cognito.
-* Find **TODO #8** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
-```python
-    ## TODO #8: Review following code to set up User objedct using id_token from Cognito
-    ## -- begin --
-    user = User()
-    user.id = id_token["cognito:username"]
-    user.email = id_token["email"]
-    user.username = id_token["name"]
+39. Click **Configure more options**.
 
-    session['id'] = id_token["cognito:username"]
-    session['email'] = id_token["email"]
-    session['name'] = id_token["name"]
-    session['expires'] = id_token["exp"]
-    session['refresh_token'] = response.json()["refresh_token"]
+40. In the **Configure HaCloudalbum-env** page : Change the **Configuration presets** from `Low cost(Free Tier eligible)` to `High avalability`.
 
-    login_user(user, remember=True)
-    ## -- begin --
-```
+ * **Configuration presets** : `High avalability`
+ * <img src=./images/lab02-task4-eb-preset.png width=400>
 
+ * **NOTE**: We will start from `High availability` preset for the convenience. We need to change some configuration for our application. 
 
-61. **Open the run.py** and run the application. Connect to your application using **Cloud9 preview**in your browser. 
-* You can find default Cognito Login Screen.
-<img src="images/lab02-task3-cognito-login.png" width="450">
+41. In the **Database** section, click **Modify**.
 
-* You need to verify your email address after signup.
-<img src="images/lab02-task3-cog-verify.png" width="450">
+ * **NOTE**: Please note that creating the database with ElasticBeanstalk ties it to the life-cycle of the ElasticBeanstalk environment. If the database is required to persistent in the event of the ElasticBeanstalk environment, We need to remove it from ElasticBeanstalk environment. We would recommend creating a RDS instance outside of ElasticBeanstalk and then connecting the ElasticBeanstalk environment to this database.
+ 
+ * Using Elastic Beanstalk with Amazon Relational Database Service. (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.RDS.html)
 
-* You can **change default login screen** in the Cognito console dashboard.
 
+42. In the **Database settings** section, configure following parameters.
 
-62. Perform application test.
-<img src=./images/lab01-02.png width=500>
+ * **Username** : `serverless`
+ * **Password** : `workshop`
+ * **Retention** : `Delete`
+ * **Availability** : `High (Multi-AZ)`
+ * <img src=./images/lab02-task4-eb-db.png width=500>
 
-* Sign in / up
-* Upload Sample Photos
-* Sample images download here
-  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
-* Look your Album
-* Change Profile
-* Find photos with Search tool
-* Check the Photo Map
+**NOTE:** Because it is a hands-on environment, not a real operating environment, select **'Delete'** for convenience.
 
-63. Examine Cognito Console dashboard **after user sign-up.**
-<img src=./images/lab02-task3-cognito-userpool.png width=700>
+43. Click **Save** button.
 
-* You can find your profile information.
+44. In the **Network** section, click **Modify**.
 
-Is it OK? Let's move to the next TASK.
+45. In the **Virtual private cloud (VPC)** section of **Modify network** page, choose a VPC which tagged 'moving-to-serverless'.
 
-**NOTE:** Click the `stop icon` to stop your application.
-  * **Close your terminal** after application stop.
-  * **Close all your opened file tab.**
-<img src=./images/stop-app.png width=500>
+ *  <img src=./images/lab02-task4-eb-network.png width=500>
 
-## TASK 4. Go to X-ray
+46. In the **Load balancer settings** section, configure followings.
+ 
+ * **Visivility** : `Public`
+ 
+ * Choose **Availability Zone** and **Subnet**. You can choose `Public Subnet - 1` and `Public Subnet -2`
+  <img src=./images/lab02-task4-eb-alb.png width=700>
 
-AWS [X-Ray](https://aws.amazon.com/xray/) helps developers analyze and debug production, distributed applications, such as those built using a microservices architecture. With X-Ray, you can understand how your application and its underlying services are performing to identify and troubleshoot the root cause of performance issues and errors. X-Ray provides an end-to-end view of requests as they travel through your application, and shows a map of your application’s underlying components. You can use X-Ray to analyze both applications in development and in production, from simple three-tier applications to complex microservices applications consisting of thousands of services.
 
-<img src="./images/lab02-task4-x-ray-arc.png" width="600">
+47. In the **Instance settings** section, configure followings.
+ 
+ * Choose **Availability Zone** and **Subnet**. You can choose `Private Subnet - 1` and `Private Subnet -2`
+  <img src=./images/lab02-task4-eb-instance.png width=700>
 
-64. Install required Python packages for AWS X-Ray.
-```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/04-CloudAlbum-XRAY/requirements.txt
-```
+48. In the **Database settings** section, configure followings.
+ 
+ * Choose **Availability Zone** and **Subnet**. You can choose `Private Subnet - 1` and `Private Subnet -2`
+  <img src=./images/lab02-task4-eb-dbsubnet.png width=700>
 
-**Download and run the AWS X-Ray daemon on your AWS Cloud9 instance.**
+49. Click **Save** button.
 
-65. Visit the AWS X-Ray daemon documentation link below:
-* https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon.html
+50. Click **Modify** button of **Instances** section in the **Configure HaCloudalbum-env** page.
 
-66. On the documentation page, scroll down until you see a link to **Linux (executable)-aws-xray-daemon-linux-2.x.zip (sig).** Right-click the link and copy the link address.
+51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page.
 
-67. In your AWS **Cloud9 instance terminal**, type the command below to go to your home directory.
-```console
-cd ~
-```
+* <img src=./images/lab02-task4-eb-instance-sg.png width=500>
 
-68. Type wget and paste the AWS X-Ray daemon hyperlink address that you copied. The command should look like the example below.
-```console
-wget https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-2.x.zip
-```
+52. Click **Create environment** button in the bottom of the page.
 
-69. Unzip the AWS X-Ray daemon by typing the command below. Make sure that the name of the .zip file matches the one in the command below.
-```console
-unzip aws-xray-daemon-linux-2.x.zip
-```
+* **NOTE:** It will probably take 15 minutes or so. It is good to drink coffee for a while.
 
-70. Run the AWS X-Ray daemon by typing the command below. The X-Ray daemon buffers segments in a queue and uploads them to X-Ray in batches. 
+* <img src=./images/coffee-cup.png width=200>
 
-```console
-./xray
-```
+* <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
-* **Now, X-Ray daemon works and ready to use X-Ray to analyze applications.**
 
-70. Review, `### x-ray set up` part in the 'LAB02/04-CloudAlbum-XRAY/run.py' file.
+## TASK 5. Deploy Application with ElasticBeanstalk.
 
- * Related document
-   *  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-configuration.html
+If the previous TASK was successfully completed, you will see the following screen.
 
-   * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-middleware.html
+ * <img src=./images/lab02-task5-eb-simpleapp.png  width=500> 
 
-* To instrument CloudAlbum, *our Flask application*, first configure a segment name on the xray_recorder. Then, use the XRayMiddleware function to patch our CloudAlbum application in code. 
+ * You can see the deployed application by clicking on the URL link in the top line.
 
-```python
-(...)
+ * <img src=./images/lab02-task5-eb-simpleapp-screen.png width=500> 
 
-from aws_xray_sdk.core import xray_recorder, patch_all
-from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+Now, let's deploy our application.
 
-(...)
 
-    ### x-ray set up ###
-    plugins = ('EC2Plugin',)
-    xray_recorder.configure(service='CloudAlbum', plugins=plugins)
-    XRayMiddleware(app, xray_recorder)
-    patch_all()
+53. Click the **Configuration** button in the left navigation menu.
 
-(...)
-```
+ * <img src=./images/lab02-task5-eb-configuration.png width=300>
 
-* This tells the X-Ray recorder to trace requests served by your Flask application with the default sampling rate. You can configure the recorder in code to apply custom sampling rules or change other settings. 
+* We will change the some configuration for our application.
 
+54. Copy the RDS **Endpoint** value to the `notepad` for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
 
+* <img src=./images/lab02-task5-rds-endpoint.png width=300>
 
-**NOTE**: You can use 'xray_recorder' decorator for capture function execution information.
-```python
-## for example:
+55. In the **Software** section, click **Modify** button for the environment variable configuration.
 
-from aws_xray_sdk.core import xray_recorder
-(...)
+56. In the **Modify software** page, you can find  **Environment properties** section. Configure following variables.
 
-@xray_recorder.capture()
-def print_abc():
-    print('abc')
+* **APP_HOST** : `0.0.0.0`
+* **APP_PORT** : `5000`
+* **DB_URL** : `mysql+pymysql://serverless:workshop@<YOUR DATABASE ENDPOINT>/ebdb?charset=utf8`
+  * **NOTE**: Replace <YOUR DATABASE ENDPOINT> to **your own EndPoint** value which copied previous step. For example : `mysql+pymysql://serverless:workshop@aa1is6q2iidf84x.cjukz33spdko.ap-southeast-1.rds.amazonaws.com:3306/ebdb?charset=utf8`
+* **EFS_ID** : `<EFD_ID>`
+  * We already copied it to `notepad` in TASK 2.
+  * For example : `fs-5d3e921c`
+* **ELCACHE_EP** : `<ELCACHE_EP>`
+  * We already copied it to `notepad` in TASK 3.
+  * For example : `moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
+* **FLASK_SECRET** : `THIS_IS_THE_SECRET`
+  * This value will be used for Flask app's SECRET_KEY.
+* **GMAPS_KEY** : `<GMAPS_KEY>`
+  * You already get this key from instructor.
+* **UPLOAD_FOLDER** : `/mnt/efs`
 
-```
-* **NOTE:** Patching Libraries to Instrument Downstream Calls
-  * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-patching.html
+ * <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
-71. Review 'LAB02/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above `step 58` for `03.CloudAlbum-COGNITO`)
-* Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
+57. Click **Apply** button.
 
-* Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
 
-```python
-import os
+58. In the **Load balancer** section, click **Modify** button.
 
-options = {
+59. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of `default` process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
 
-    # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
-    
-    (.....)
+ * <img src=./images/lab02-task5-eb-alb-health.png width=500>
 
-    # DynamoDB
-    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
-    'DDB_RCU': os.getenv('DDB_RCU', 10),
-    'DDB_WCU': os.getenv('DDB_WCU', 10),
+60. Configure **Health check** variables.
+ * **HTTP code** : `200`
+ * **Path** : `/users/new`
 
-    # S3
-    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>'),
+ * <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
 
-    # COGNITO
-    'COGNITO_POOL_ID': os.getenv('COGNITO_POOL_ID', '<YOUR_POOL_ID>'),
-    'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
-    'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
-    'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
-    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
-}
-```
-72. **Open the run.py** and run the application. You can run the application to check all features are works well. Then you will see function tracing data collected on the X-Ray console.
 
-73. Connect to your application using **Cloud9 preview** in your browser. 
-* You can find default Cognito Login Screen.
-<img src=images/lab02-task3-cognito-login.png width=500>
+61. Click **Save** button.
 
-* You can change default login screen in the Cognito console dashboard.
+62. Next, click **Apply** button.
 
-74. Perform application test.
+63. Click the **Dashboard** and click **Upload and Deploy** button.
 
-<img src=images/lab01-02.png width=700>
+64. You can download the application to your laptop as a ZIP file, from the below URL:
+``
+    https://s3.amazonaws.com/moving-to-serverless/prod/cloudalbum_v1.0.zip
+``
 
-* Sign in / up
-* Upload Sample Photos
-* Sample images download here
-  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
-* Look your Album
-* Change Profile
-* Find photos with Search tool
-* Check the Photo Map
+65. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
 
-75. Examine X-Ray Console dashboard
-<img src=images/lab02-task4-x-ray.png width=500>
+ * <img src=./images/lab02-task5-deploy.png width=500>
 
-Is it OK? Let's go to next LAB.
+66. Click **Deploy** button.
 
-**NOTE:** Click the `stop icon` to stop your application.
-  * **Close your terminal** after application stop.
-  * **Close all your opened file tab.**
-<img src=images/stop-app.png width=700>
+67. After deploy operation, visit the our application URL. you can see our application in your browser like below.
+
+ * <img src=./images/lab02-task5-cloudalbum.png width=500>
+
+
+68. If the deployment is successful, Let's change our mimimum capacity configuration. In the **Capacity** section, click **Modify** button.
+
+
+69. In the **Modify capacity** page, change the atttribute of AutoScalingGroup `Min` value from 1 to 2. (or what you want..)
+
+ * <img src=./images/lab02-task5-asg.png width=500>
+
+
+70. Click the **Apply** button. let's wait until the configuration is applied.
+
+71. Test the deployed application and explore the ElasticBeastalk console.
+
+
+
+## Challenge : Investigate the application changes
+
+72. .ebextentions (설명 추가 예정)
+
+73. SessionStore (설명 추가 예정)
+
+
+## TASK 6. Remove your AWS resources.
+(자원 삭제 상세설명 추가예정)
+
+74. Remove your EB environment (RDS, ALB, ASG included). 
+
+75. Remove your EFS.
+
+76. Remove your Elasticache cluster.
+
+77. Remove your Elasticache cluster.
+
+78. Remove your VPC from CloudFormation console.
 
 
 # Congratulation! You completed LAB02.
-* Go to : [LAB 03 - Move to serverless](LAB03.md)
-
 
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
-* [LAB 02 - Move to serverless](LAB02.md)
-* [LAB 03 - Serverless with AWS Chalice](LAB03.md)
+* [LAB 02 - Build a High Availability Application Architecture](LAB02.md)
+* [LAB 03 - Move to serverless](LAB03.md)
+* [LAB 04 - Serverless with AWS Chalice](LAB04.md)

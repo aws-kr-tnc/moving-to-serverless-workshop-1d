@@ -1,801 +1,98 @@
-# LAB 03 - Serverless with AWS Chalice
-This exercise is divided into two parts. The first part is about the AWS serverless framework Chalice, and the second part is using the Chalice to run the CloudAlbum application.
+# LAB 02 - Move to serverless
+We will move the components of legacy application which has constraints of scalability and high availability to serverless environment one by one.
 
-## Serverless framework
-There are various serverless frameworks. Here is a brief introduction to each of the serverless frameworks.
+## TASK 0. Permission grant for Cloud9
 
-### AWS Chalice
-`Chalice` is a microframework(https://github.com/aws/chalice) for writing serverless apps in python. It makes it simple for you to use AWS Lambda and Amazon API Gateway to build serverless apps. It allows you to quickly create and deploy applications that use AWS Lambda. It provides:
+AWS Cloud9 is configured with **AWS managed temporary credentials** as default. However we will **not use** AWS managed temporary credentials due to our application need various service such as DynamoDB, S3, Lambda and so on. We will use our own policy for this workshop.
 
-* A command line tool for creating, deploying, and managing your app
-* A decorator based API for integrating with Amazon API Gateway, Amazon S3, Amazon SNS, Amazon SQS, and other AWS services.
-* Automatic IAM policy generation
+There are two ways. One is to use [1] **Using Instance Profile** with temporary credentials and this is recommended. The other way is **Store Permanent Access Credentials** in the credential file which related administrator privileadge already you used. (You can also use environment variables as a alternative way)
 
-### Serverless 
-The `Serverless` Framework (https://serverless.com) is an MIT open source framework that’s actively developed and maintained by a full-time team. At its essence, it allows users to define a serverless application—including Lambda functions and API Gateway APIs—and then deploy it using a command-line interface (CLI). It helps you organize and structure serverless applications, which is of great benefit as you begin to build larger systems, and it’s fully extensible via its plugin system.
+* Related document : [Create and Use an Instance Profile to Manage Temporary Credentials](https://docs.aws.amazon.com/cloud9/latest/user-guide/credentials.html)
 
-### Zappa
-`Zappa` (https://github.com/Miserlou/Zappa) makes it super easy to build and deploy server-less, event-driven Python applications (including, but not limited to, WSGI web apps) on AWS Lambda + API Gateway. Think of it as "serverless" web hosting for your Python apps. That means infinite scaling, zero downtime, zero maintenance - and at a fraction of the cost of your current deployments!
+* **Choose following one** :
+  * `[1] Using Instance Profile` or
+  * `[2] Store Permanent Access Credentials`
 
-**NOTE:** These `serverless frameworks` have many similarities. You can choose one framework from the above. In this hands-on lab, **you will use AWS Chalice**.
+* `[1] Using Instance Profile` is recommended. However If you want **quick start**, you can choose `[2] Store Permanent Access Credentials` with enough permission.
 
-## TASK 1 : Setup virtualenv
-`virtualenv` is a tool to create isolated Python environments. It is easy to use. We will create virtualenv for AWS Chalice microframework environment.
+### [1] Using Instance Profile
 
-1. Open new terminal in the Cloud9 IDE. (for MAC, **Option+T** is short cut)
-
- * Perform following command:
-
-```Console
-cd ~/environment/moving-to-serverless-techpump/LAB03/
-```
-
-```console
-unalias python
-```
-
-```console
-python --version
-
-```
-* output:
-```
-Python 2.7.14
-```
-```console
-which python
-```
-* output:
-```
-/usr/bin/python
-```
-
-```console
-which python36
-```
-* output:
-```
-/usr/bin/python36
-```
-
-```console
-virtualenv --version
-```
-* output:
-```
-16.0.0
-```
-```console
-virtualenv -p /usr/bin/python36 venv
-```
-* output:
-```
-Running virtualenv with interpreter /usr/bin/python36
-Using base prefix '/usr'
-New python executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python36
-Also creating executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
-Installing setuptools, pip, wheel...done.
-```
-
-2. Now you can activate your **virtualenv** (`venv`).
-```Console
-source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate
-echo "unalias python" >> ~/.bash_profile
-echo "source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate" >> ~/.bash_profile
-```
-<img src="./images/lab03-task1-venv.png" width="600">
-
-
-```console
-which python
-```
-* output :
-```
-~/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
-```
-
-```console
-which pip
-```
-* output:
-```
-~/environment/moving-to-serverless-techpump/LAB03/venv/bin/pip
-```
-
-3. Install AWS Chalice microframework (Of course, you must run following command after `venv` activation)
-```Console
-pip install chalice
-```
-
-```console
-chalice --version
-```
-* output:
-```
-chalice 1.6.1, python 3.6.5, linux 4.14.47-56.37.amzn1.x86_64
-```
-
-4. Install required packages for this lab. 
-
-* **Now, we are using `venv`. So we can run `pip` not `pip-3.6`.**
-```Console
-pip install -r ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
-```
-
-## TASK 2 : Build a simple AWS Chalice serverless app.
-This TASK will provide an introduction on how to use AWS Chalice and provide instructions on how to go about building your very first Chalice application. 
-
-5. We installed AWS Chalice serverless framework previous step, it is time to create your first Chalice application. Run the `chalice new-project` command to create a project called `myapp`:
-
-```console
-mkdir -p ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
-```
-```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
-```
-```console
-chalice new-project myapp
-```
-
-6. Review the generated files which generated by Chalice framework.
-```
-sudo yum install tree
-```
-```
-tree -a .
-```
-* output: 
-```
-<username>:~/environment/moving-to-serverless-techpump/LAB03/01-Chalice (master) $ tree -a .
-.
-└── myapp
-    ├── app.py
-    ├── .chalice
-    │   └── config.json
-    ├── .gitignore
-    └── requirements.txt
-
-```
-* You can find above files after run `chalice new-project myapp` command. 
-
-```
-cd myapp
-```
-```
-vi app.py (or use open int the Cloud9 default editor)
-```
-```python
-from chalice import Chalice
-
-app = Chalice(app_name='myapp')
-
-
-@app.route('/')
-def index():
-    return {'hello': 'world'}
-
-```
-* It looks very similar to the **Flask** framework. 
-
-7. Run Chalice application as a local application in your machine.
-```
-chalice local --port 8080
-```
-You can see the following message: `Serving on 127.0.0.1:8080`
-if you want detailed execution information, you can also run Chalice as debug mode `chalice --debug local --port 8080`
-
-For the convenience of test, we will use `httpie` in the shell. 
-
-* You can open **NEW TERMINAL** with bash shell and then type following command.
-<img src="./images/lab03-task1-new-terminal.png" width="500">
-
-```console
-pip install httpie
-```
-
-* After `httpie` is installed as `http` command, you can run following command for the application test. 
-```
-http localhost:8080/
-```
-* output:
-```
-HTTP/1.1 200 OK
-Content-Length: 18
-Content-Type: application/json
-Date: Sun, 05 Aug 2018 07:02:01 GMT
-Server: BaseHTTP/0.6 Python/3.6.5
-
-{
-    "hello": "world"
-}
-
-```
-
-8. To help your understanding, consider the following example.
-```python
-from chalice import Chalice
-from chalice import Response 
-import logging
-
-app = Chalice(app_name='myapp')
-app.debug = True
-app.log.setLevel(logging.DEBUG)
-
-
-@app.route('/')
-def index():
-    return {'hello': 'world'}
-
-
-@app.route('/users/{name}', methods=['GET'])
-def user_info(name):
-    request=app.current_request
-    app.log.debug(request.method)
-    app.log.debug(request.to_dict())
-    body='<h1> Your name is {0}.</h1>'.format(name)
-
-    return Response(body=body,
-        status_code=200,
-        headers={'Content-Type': 'text/html; charset=utf-8'})
-
-
-@app.route('/users', methods=['POST'])
-def user_add():
-    request = app.current_request
-    app.log.debug(request.method)
-    app.log.debug(request.to_dict())
-
-    return Response(body=request.json_body,
-        status_code=200,
-        headers={'Content-Type': 'application/json; charset=utf-8'})
-```
-
-* Review above code for new `app.py`. `Response` and `logging` are importted from top of the `app.py` file. Debug option is enabled for the application logging. `user_info` and `user_add` functions are added.
-
-* Replace `app.py` file with the contents of above source code.
-  * `app.py` file is located in `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp/app.py`
-
-9. Stop the previous `chalice local --port 8080` command with **CTRL+C** and run the new version of `myapp`.
-```console
-chalice local --port 8080
-```
-
-10. Test new Chalice application. For the convenience, you can open additional terminal in the Cloud9 environment. 
-<img src=./images/lab03-task1-new-terminal.png width=500>
-
-* **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
-```console
-http localhost:8080/users/David
-```
-* output:
-```
-HTTP/1.1 200 OK
-Content-Length: 29
-Content-Type: text/html; charset=utf-8
-Date: Sun, 05 Aug 2018 08:19:38 GMT
-Server: BaseHTTP/0.6 Python/3.6.5
-
-<h1> Your name is David.</h1>
-
-```
-* **DEBUG LOG** for this request (You can find it **on your terminal which running application by Chalice**.):
-
-```console
-(.....)
-myapp - DEBUG - GET
-myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'user-agent': 'HTTPie/0.9.9', 'accept-encoding': 'gzip, deflate', 'accept': '*/*', 'connection': 'keep-alive'}, 'uri_params': {'name': 'David'}, 'method': 'GET', 'context': {'httpMethod': 'GET', 'resourcePath': '/users/{name}', 'identity': {'sourceIp': '127.0.0.1'}, 'path': '/users/David'}, 'stage_vars': {}}
-127.0.0.1 - - [05/Aug/2018 08:19:38] "GET /users/David HTTP/1.1" 200 -
-
-```
-
-* **TEST #2**: `@app.route('/users', methods=['POST'])`
-```console
-echo '{"name": "David", "age": 22, "job": "student"}' | http localhost:8080/users
-```
-* output:
-```
-HTTP/1.1 200 OK
-Content-Length: 46
-Content-Type: application/json; charset=utf-8
-Date: Sun, 05 Aug 2018 08:26:13 GMT
-Server: BaseHTTP/0.6 Python/3.6.5
-
-{
-    "age": 22,
-    "job": "student",
-    "name": "David"
-}
-
-```
-
-* **DEBUG LOG** for this request:
-
-```console
-myapp - DEBUG - POST
-myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'user-agent': 'HTTPie/0.9.9', 'accept-encoding': 'gzip, deflate', 'accept': 'application/json, */*', 'connection': 'keep-alive', 'content-type': 'application/json', 'content-length': '48'}, 'uri_params': {}, 'method': 'POST', 'context': {'httpMethod': 'POST', 'resourcePath': '/users', 'identity': {'sourceIp': '127.0.0.1'}, 'path': '/users'}, 'stage_vars': {}}
-127.0.0.1 - - [05/Aug/2018 08:26:13] "POST /users HTTP/1.1" 200 -
-
-```
-
-11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp`)
-```console
-chalice deploy
+### [1-1] Check the AWS credentials in Cloud9 instance.
+* Run following command, then you can see the AWS managed temporary credentials.
+``` console
+aws configure list
 ```
 * output
+``` 
+lachesis:~/environment $ aws configure list
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key     ****************YV3J shared-credentials-file    
+secret_key     ****************F240 shared-credentials-file    
+    region           ap-southeast-1      config-file    ~/.aws/config
 ```
-Creating deployment package.
-Updating policy for IAM role: myapp-dev
-Creating lambda function: myapp-dev
-Creating Rest API
-Resources deployed:
-  - Lambda ARN: arn:aws:lambda:ap-southeast-1:123456789012:function:myapp-dev
-  - Rest API URL: https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/
-```  
 
-* You can get api URL easily using below command.
+### [1-2] Disable AWS managed temporary credentials
+<img src=./images/lab03-task0-aws-setup.png width=500>
 
+* (1) Click the setup(gear) icon
+* (2) Select `AWS SETTINGS`.
+* (3) Disable `AWS managed temporary credentials`
+
+* Check the AWS credentials in Cloud9 instance.
 ```console
-chalice url
-```
-* output
-```
-https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/
-```
-
-* **NOTE:** If you have following errors, you can check the **TASK 0. Permission grant for Cloud9** of **LAB 02 - Move to serverless**. 
-
-```console
-Creating deployment package.
-Updating policy for IAM role: myapp-dev
-Traceback (most recent call last):
-
-  (......)
-
-botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the PutRolePolicy operation: The security token included in the request is invalid
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-
-  (......)
-
-chalice.deploy.deployer.ChaliceDeploymentError: ERROR - While deploying your chalice application, received the following error:
-
- An error occurred (InvalidClientTokenId) when calling the PutRolePolicy 
- operation: The security token included in the request is invalid
-
-```
-
-
-12. Test your first Chalice application.
-
-* **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
-```console
-http https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/users/David
+aws configure list
 ```
 * output:
 ```
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 39
-Content-Type: application/json
-Date: Fri, 10 Aug 2018 10:42:40 GMT
-Via: 1.1 3dc529f17187385cec2a18e8aabac48c.cloudfront.net (CloudFront)
-X-Amz-Cf-Id: ZRsVySNWExMqL-BjuF3RL7_oNoGqi44PIw8DmwCUSz_fpSVkciHnTQ==
-X-Amzn-Trace-Id: Root=1-5b6d6c20-f399202e60639474e397634d;Sampled=0
-X-Cache: Miss from cloudfront
-x-amz-apigw-id: LZ3VIFHlyQ0Fm4w=
-x-amzn-RequestId: 1b0ee142-9c8a-11e8-9f60-0d307c709c87
-
-<h1> Your name is David.</h1>
-
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key                <not set>             None    None
+secret_key                <not set>             None    None
+    region                <not set>             None    None
 ```
 
-* **TEST #2**: `@app.route('/users', methods=['POST'])`
-```console
-echo '{"name": "David", "age": 22, "job": "student"}' | http https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/users
-```
-* output:
-```console
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 39
-Content-Type: application/json
-Date: Fri, 10 Aug 2018 10:44:12 GMT
-Via: 1.1 25db82f0268a052eaf4b613d96b80533.cloudfront.net (CloudFront)
-X-Amz-Cf-Id: IBoM5ONXfIFnGcU35Lu_pByFx-l7won3eBVaPOHKTeMI64ECkZNNmg==
-X-Amzn-Trace-Id: Root=1-5b6d6c7c-0a46d560ff5e119c201147a8;Sampled=0
-X-Cache: Miss from cloudfront
-x-amz-apigw-id: LZ3jbGLmyQ0FVyQ=
-x-amzn-RequestId: 519a0bcd-9c8a-11e8-8997-5550927d6916
+* OK, done. Move to next step.
 
-{
-    "age": 22,
-    "job": "student",
-    "name": "David"
-}
+#### [1-3] Create an Instance Profile with the AWS CLI ###
 
-```
+### Working on your LOCAL MACHINE terminal or your EC2
 
-* You can check the files of `deployed` and `deployments` directories. (~/environment/moving-to-serverless-techpump/LAB03/01-Chalice)
-```
-tree -a .
-```
-* output:
-```
-.
-└── myapp
-    ├── app.py
-    ├── .chalice
-    │   ├── config.json
-    │   ├── deployed
-    │   │   └── dev.json
-    │   └── deployments
-    │       └── d41d8cd98f00b204e9800998ecf8427e-python3.6.zip
-    ├── .gitignore
-    ├── __pycache__
-    │   └── app.cpython-36.pyc
-    └── requirements.txt
-5 directories, 7 files
-```
+**NOTE:** Before you run below command, **make sure you have enough privileges.** (such as `AdministratorAccess` policy).
 
-13. Examine your **API Gateway** and **Lambda** Console. You can see the new API and Lambda functions.
-* API Gateway console (myapp)
-<img src=./images/lab03-task1-api-gw-console.png width=700>
+* You may have `AdministratorAccess` privileged **AWS CLI environment** such as your LOCAL MACHINE or your EC2.
 
-* Lambda console (myapp-dev)
-<img src=./images/lab03-task1-lambda-console.png width=700>
-
-
-14. Delete deployed application
-```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp
-```
-```console
-chalice delete
-```
-* output:
-```
-Deleting Rest API: w2t3ueq9we
-Deleting function: arn:aws:lambda:ap-southeast-1:123456789012:function:myapp-dev
-Deleting IAM role: myapp-dev
-```
-
-* **NOTE: AWS Chalice support AWS Lambda event sources**
-  * You can consider **event driven processing with AWS Lambda** schedule, Amazon SQS, Amazon S3, AWS SNS.
-  * Refer to the following code
-      * Related document: https://chalice.readthedocs.io/en/latest/topics/events.html?highlight=event
-
-
-```python
-@app.on_s3_event('mybucket', events=['s3:ObjectCreated:Put'],
-                prefix='images/', suffix='.jpg')
-def resize_image(event):
-with tempfile.NamedTemporaryFile('w') as f:
-    s3.download_file(event.bucket, event.key, f.name)
-    resize_image(f.name)
-    s3.upload_file(event.bucket, 'resized/%s' % event.key, f.name)
-```   
-
-* **NOTE: Authorization** 
-   * Chalice supports multiple mechanisms for authorization. This topic covers how you can integrate authorization into your Chalice pplications.
-     * https://chalice.readthedocs.io/en/latest/topics/authorizers.html?highlight=authorizer
-
-
-* If it works well, let's go to next TASK!
-
-
-## TASK 3 : CloudAlbum with AWS Chalice
-We have removed server based components via LAB02. We are now going serverless by removing Web Server Tier and App Server Tier.
-
-<img src=./images/lab03-task2-serverless.png width=700>
-
-Finally, all servers are gone!
-
-<img src=./images/lab03-task2-serverless-full.png width=700>
-
-
-15. Let's take a look around `~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/` directory.
+  * Download `generate_instance_profile.sh`.
 
 ```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/generate_instance_profile.sh
 ```
+* If you want, **review** the `generate_instance_profile.sh` file.
 ```console
-tree -L 2 -a .
-```
-* output
-```
-├── app.py
-├── .chalice
-│   └── config.json
-├── chalicelib
-│   ├── config.py
-│   ├── __init__.py
-│   ├── models_ddb.py
-│   ├── templates
-│   └── util.py
-├── .gitignore
-├── requirements.txt
-└── vendor
-    ├── bin
-    ├── jinja2
-    ├── Jinja2-2.10.dist-info
-    ├── markupsafe
-    ├── pyasn1
-    ├── pyasn1-0.4.3.dist-info
-    ├── python_jose-3.0.0.dist-info
-    ├── rsa
-    └── rsa-3.4.2.dist-info
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-instance-profile-role-trust.json
+wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-policy.json
 
+PARN=$(aws iam create-policy --policy-name workshop-cloud9-policy --policy-document file://workshop-cloud9-policy.json --query "Policy.Arn" --output text)
+aws iam create-role --role-name workshop-cloud9-instance-profile-role --assume-role-policy-document file://workshop-cloud9-instance-profile-role-trust.json
+aws iam attach-role-policy --role-name workshop-cloud9-instance-profile-role --policy-arn $PARN
+aws iam create-instance-profile --instance-profile-name workshop-cloud9-instance-profile
+aws iam add-role-to-instance-profile --role-name workshop-cloud9-instance-profile-role --instance-profile-name workshop-cloud9-instance-profile
 ```
 
-* All of route functions are in the `app.py` and `template` and modules are in the `chalicelib` directory.
-
-**3rd Party Packages:** 
-There are two options for handling python package dependencies:
-
-* `requirements.txt` - During the packaging process, Chalice will install any packages it finds or can build compatible wheels for. Specifically all pure python packages as well as all packages that upload wheel files for the `manylinux1_x86_64` platform will be automatically installable.
-
-* `vendor/` - The contents of this directory are automatically added to the top level of the deployment package. Chalice will also check for an optional `vendor/` directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment.
-
-* Chalice will also check for an optional `vendor/` directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment package (see Examples for specific examples). The `vendor/` directory is helpful in these scenarios:
-
-* You need to include custom packages or binary content that is not accessible via pip. These may be internal packages that aren’t public.
-
-* `Wheel files` are not available for a package you need from pip.
-
-* A package is installable with requirements.txt but has optional c extensions. Chalice can build the dependency without the c extensions, but if you want better performance you can vendor a version that is compiled.
-
-* As a general rule of thumb, code that you write goes in either `app.py` or `chalicelib/`, and dependencies are
-either specified in `requirements.txt` or placed in the `vendor/` directory.
-
-16. Examine `.py` files. **Flask dependecies are removed**. Only **Jinja2 package is alived** in the `vendor` directory. 
-
-
-17. Set up application parameters. We will user **Parameter Store** (https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html) for the application configuration.
-
-* **NOTE:** Please make sure replace `<...>` values **YOUR OWN VALUE**.
-  * https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-cli.html 
-
+ * Add `execute` permission
 ```console
-
-aws ssm put-parameter --name "/cloudalbum/GMAPS_KEY" --value "<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/S3_PHOTO_BUCKET" --value "cloudalbum-<INITIAL>" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/COGNITO_POOL_ID" --value "<COGNITO_POOL_ID>" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/COGNITO_CLIENT_ID" --value "<COGNITO_CLIENT_ID>" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/COGNITO_CLIENT_SECRET" --value "<COGNITO_CLIENT_SECRET>" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/COGNITO_DOMAIN" --value "<COGNITO_DOMAIN>" --type "SecureString"
-
-aws ssm put-parameter --name "/cloudalbum/THUMBNAIL_WIDTH" --value "300" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/THUMBNAIL_HEIGHT" --value "200" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/AWS_REGION" --value "ap-southeast-1" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/DDB_RCU" --value "10" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/DDB_WCU" --value "10" --type "SecureString"
-aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "DUMMY" --type "SecureString"
+chmod +x generate_instance_profile.sh
 ```
-* Above **DUMMY** value of `/cloudalbum/BASE_URL` will be replaced real thing.(**We can get API Gateway url after deploy**)
 
-
-* **NOTE:** If you put the wrong value, you can **overwrite** that value with `--overwrite` parameter. If `--overwrite` parameter ommited, you can see the following error message. (`An error occurred (ParameterAlreadyExists) when calling the PutParameter operation: ...`)
-
-
-18. Verify your parameters. 
-
+ * **Run** script with enough privileges, such as `AdministratorAccess` policy. (**Currently, you can not run this command in Cloud9 terminal.**):
 ```console
-aws ssm describe-parameters
-```
-* output
-```
-{
-    "Parameters": [
-        {
-            "Name": "/cloudalbum/AWS_REGION",
-            "Type": "SecureString",
-            "KeyId": "alias/aws/ssm",
-            "LastModifiedDate": 1533589218.29,
-            "LastModifiedUser": "arn:aws:iam::123456789012:user/poweruser",
-            "Version": 1
-        },
-        {
-            "Name": "/cloudalbum/BASE_URL",
-            "Type": "SecureString",
-            "KeyId": "alias/aws/ssm",
-            "LastModifiedDate": 1533589322.314,
-            "LastModifiedUser": "arn:aws:iam::123456789012:user/poweruser",
-            "Version": 1
-        },
-        {
-            "Name": "/cloudalbum/COGNITO_CLIENT_ID",
-            "Type": "SecureString",
-            "KeyId": "alias/aws/ssm",
-            "LastModifiedDate": 1533589258.2,
-            "LastModifiedUser": "arn:aws:iam::123456789012:user/poweruser",
-            "Version": 1
-        },
-        {
-
-            (...........)
-
-        }
-}
+./generate_instance_profile.sh
 ```
 
-```console
-aws ssm get-parameters --names "/cloudalbum/DDB_RCU" --with-decryption
-```
-* output: 
-```
-{
-    "Parameters": [
-        {
-            "Name": "/cloudalbum/DDB_RCU",
-            "Type": "SecureString",
-            "Value": "10",
-            "Version": 1,
-            "LastModifiedDate": 1542092269.552,
-            "ARN": "arn:aws:ssm:ap-southeast-1:389833669077:parameter/cloudalbum/DDB_RCU"
-        }
-    ],
-    "InvalidParameters": []
-}
-```
-
-* You can also check the **System Manager - Parameter Store console**.
-<img src="./images/lab03-task3-ps-console.png" width="600">
-
-
-19. Review `config.py` file located in '**LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/config.py**'.
-
-```python
-from chalice import CORSConfig
-import boto3
-
-
-def get_param(param_name):
-    """
-    This function reads a secure parameter from AWS' SSM service.
-    The request must be passed a valid parameter name, as well as
-    temporary credentials which can be used to access the parameter.
-    The parameter's value is returned.
-    """
-    # Create the SSM Client
-    ssm = boto3.client('ssm')
-
-    # Get the requested parameter
-    response = ssm.get_parameters(
-        Names=[param_name, ], WithDecryption=True
-    )
-
-    # Store the credentials in a variable
-    result = response['Parameters'][0]['Value']
-
-    return result
-
-
-conf = {
-    # Mandatory variable
-    'GMAPS_KEY': get_param('/cloudalbum/GMAPS_KEY'),
-
-    # Default config values
-    'THUMBNAIL_WIDTH': get_param('/cloudalbum/THUMBNAIL_WIDTH'),
-    'THUMBNAIL_HEIGHT': get_param('/cloudalbum/THUMBNAIL_HEIGHT'),
-
-    # DynamoDB
-    'AWS_REGION': get_param('/cloudalbum/AWS_REGION'),
-    'DDB_RCU': get_param('/cloudalbum/DDB_RCU'),
-    'DDB_WCU': get_param('/cloudalbum/DDB_WCU'),
-
-    # S3
-    'S3_PHOTO_BUCKET': get_param('/cloudalbum/S3_PHOTO_BUCKET'),
-
-    # COGNITO
-    'COGNITO_POOL_ID': get_param('/cloudalbum/COGNITO_POOL_ID'),
-    'COGNITO_CLIENT_ID': get_param('/cloudalbum/COGNITO_CLIENT_ID'),
-    'COGNITO_CLIENT_SECRET': get_param('/cloudalbum/COGNITO_CLIENT_SECRET'),
-    'COGNITO_DOMAIN': get_param('/cloudalbum/COGNITO_DOMAIN'),
-    'BASE_URL': "https://{0}".format(get_param('/cloudalbum/BASE_URL'))
-}
-
-
-S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGION'], conf['S3_PHOTO_BUCKET'])
-
-cors_config = CORSConfig(
-    allow_origin='*',
-    allow_headers=['X-Special-Header'],
-    max_age=600,
-    expose_headers=['X-Special-Header'],
-    allow_credentials=True
-)
-
-```
-
-
-20. Review the `get_param` function in the `config.py` file. Through this function, we can get value easily in the **Parameter Store**.
-
-```python
-def get_param(param_name):
-    """
-    This function reads a secure parameter from AWS' SSM service.
-    The request must be passed a valid parameter name, as well as
-    temporary credentials which can be used to access the parameter.
-    The parameter's value is returned.
-    """
-    # Create the SSM Client
-    ssm = boto3.client('ssm')
-
-    # Get the requested parameter
-    response = ssm.get_parameters(
-        Names=[param_name, ], WithDecryption=True
-    )
-
-    # Store the credentials in a variable
-    result = response['Parameters'][0]['Value']
-
-    return result
-```
-
-
-21. Copy static files to your S3 Bucket for **static file hosting** such as **CSS** and **JavaScript**.
- * Following **cloudalbum-\<INITIAL\>** value must replace **YOUR OWN VALUE.**
-```console
-aws s3 sync ~/environment/moving-to-serverless-techpump/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
-```
-
-22. Enable S3 bucket CORS configuration in your S3 Console. (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
-
-<img src=./images/lab03-task2-s3-cors.png width=700>
-
-* **REVIEW** the CORS configuration
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-<CORSRule>
-    <AllowedOrigin>*</AllowedOrigin>
-    <AllowedMethod>GET</AllowedMethod>
-    <MaxAgeSeconds>3000</MaxAgeSeconds>
-    <AllowedHeader>Authorization</AllowedHeader>
-</CORSRule>
-</CORSConfiguration>
-
-```
-
-23. Review template files. Template files which stored `moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
-```python
-S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGION'], conf['S3_PHOTO_BUCKET'])
-```
-
-
-24. Review the `app.py` in the 'LAB03/02-CloudAlbum-Chalice/cloudalbum/app.py' 
-* Flask dependencies are removed
-  * Flask, url_for, flash, flask_login and so on.
-
-* Chalice has similar features like flask route decorator structure.
-
-* CloudAlbum is not restful, it is still **tightly coupled with Jinja2 template engine**. So, we use Jinja2 template engine in this time.
-
-* Chalice permmited to load python modules **from the `chalicelib` directory**. We will use this directory which contains `templates` directory. You can refer to following code in `LAB03/02-CloudAlbum-Chalice/cloudalbum/app.py`. 
-```python
-env = Environment(
-    loader=PackageLoader(__name__, 'chalicelib/templates'),
-    autoescape=select_autoescape(['html', 'xml']))
-```
-
-* We can use Jinja2 template engine like below:
-
-```python
-t = env.get_template('upload.html')
-body = t.render(current_user=user, gmaps_key=conf['GMAPS_KEY'], s3_static_url=S3_STATIC_URL)
-```
-
-**NOTE:** `static` contents will be moved S3, so we need to copy static files in your S3 bucket. Jinja2 Template engine will load template in the `chalicelib/templates` directory.
-
-
-25. Review provided **Lambda execution policy** before run. 
-* **NOTE:** As you know, this policy is just example for the convinience not for practical environment. 
-
-* This policy is provided for the workshop as `policy-dev.json` in the `LAB03/02-CloudAlbum-Chalice/cloudalbum/.chalice/policy-dev.json`. 
-
-```JSON
+* If you want, **review** the `workshop-cloud9-policy.json` policy.
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -803,9 +100,15 @@ body = t.render(current_user=user, gmaps_key=conf['GMAPS_KEY'], s3_static_url=S3
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "apigateway:*",
                 "s3:*",
+                "ec2:*",
+                "cloudwatch:*",
                 "logs:*",
+                "iam:*",
                 "ssm:*",
+                "lambda:*",
+                "cloud9:*",
                 "dynamodb:*",
                 "cognito-idp:*",
                 "xray:*"
@@ -814,85 +117,919 @@ body = t.render(current_user=user, gmaps_key=conf['GMAPS_KEY'], s3_static_url=S3
         }
     ]
 }
+
 ```
 
-* Whenever your application is deployed using chalice, the **auto generated policy** is written to disk at <projectdir>/.chalice/policy.json. When you run the chalice deploy command, you can also specify the --no-autogen-policy option. Doing so will result in the chalice CLI loading the <projectdir>/.chalice/policy.json file and using that file as the policy for the IAM role. You can manually edit this file and **specify --no-autogen-policy** if you'd like to have full control over what IAM policy to associate with the IAM role.
 
+#### [1-4] Attach an Instance Profile to Cloud9 Instance with the AWS CLI
 
-26. Now, you can deploy CloudAlbum application with chalice. 
+* Get instance-id of Cloud9 environment, For this we need **Cloud9 environment name**. We defined it LAB 01. (**workshop-\<INITIAL\>**). 
+
+* Attach an **Instance Profile** which made previous step to Cloud9 Instance.
+
+* Replace **workshop-\<INITIAL\>** to real value.
 ```console
-chalice deploy --no-autogen-policy
-```
+INSTANCE_ID=$(aws ec2 describe-instances --query "Reservations[*].Instances[*].InstanceId" --filter "Name=tag:Name, Values=aws-cloud9-workshop-<INITIAL>*" --region ap-southeast-1 --output=text)
 
-* output
-```
-Creating deployment package.
-Updating policy for IAM role: cloudalbum-dev-api_handler
-Updating lambda function: cloudalbum-dev
-Updating rest API
-Resources deployed:
-  - Lambda ARN: arn:aws:lambda:ap-southeast-1:389833669077:function:cloudalbum-dev
-  - Rest API URL: https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api/
-```
+echo $INSTANCE_ID
 
-* Keep the `Rest API URL` value and **update Parameter Store** using this value. You **should remove** `https://` and `/` (last character) like following strins.
-
-   * `Rest API URL` : v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api
+aws ec2 associate-iam-instance-profile --iam-instance-profile  Name=workshop-cloud9-instance-profile --region ap-southeast-1 --instance-id $INSTANCE_ID
+```
+* Run the following command to check the result: 
 
 ```console
-aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>" --type "SecureString" --overwrite
+aws ec2 describe-instances --query "Reservations[].Instances[].IamInstanceProfile" --instance-id $INSTANCE_ID --region ap-southeast-1
+```
+* output: 
+```
+[
+    {
+        "Arn": "arn:aws:iam::123456789012:instance-profile/workshop-cloud9-instance-profile",
+        "Id": "AIPAIFQCLU7KO6ML343DDD"
+    }
+]
+```
+* Now `workshop-cloud9-instance-profile` is attached our Cloud9 instance.
+
+
+### Back to the your Cloud9 terminal.
+
+ * Configure default region:
+```console
+aws configure set region ap-southeast-1
+```
+ * Check the configured credentials
+```console
+aws configure list
+```
+* output:
+```
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key     ****************LZOJ         iam-role    
+secret_key     ****************hK+3         iam-role    
+    region           ap-southeast-1      config-file    ~/.aws/config
+```
+
+* You can see the `iam-role` type of access_key and secret_key. Well done.
+
+* Is it OK? 
+  * **Go to TASK 1**
+
+### [2] Store Permanent Access Credentials ###
+**NOTE:** This is **an ALTERNATIVE WAY** of `[1] Using Instance Profile`. If you complete `[1] Using Instance Profile`, You can pass below steps and **go to TASK 1.**
+
+* **NOTE:** Before you proceed, please complet following steps:
+  * [1-1] Check the AWS credentials in Cloud9 instance.
+  * [1-2] You must disable AWS managed temporary credentials
+
+
+* Configure your own credentials:
+```console
+aws configure set aws_access_key_id <YOUR OWN ACCESS KEY ID>
+aws configure set aws_secret_access_key <YOUR OWN ACCESS KEY ID>
+aws configure set region ap-southeast-1
+```
+
+* OK, all things are done. Go to TASK 1.
+
+* **ALTERNATIVE**: You can configure following variables before run application or CLI commands. `AdministratorAccess` privilege is recommended. (refer to above `workshop-cloud9-policy.json`.)
+`export AWS_ACCESS_KEY_ID=<YOUR OWN ACCESS KEY ID>` and `export AWS_SECRET_ACCESS_KEY=<YOUR OWN ACCESS KEY ID>`
+
+
+## TASK 1. Go to DynamoDB
+Amazon [DynamoDB](https://aws.amazon.com/dynamodb/) is a nonrelational database that delivers reliable performance at any scale. It's a fully managed, multi-region, multi-master database that provides consistent single-digit millisecond latency, and offers built-in security, backup and restore, and in-memory caching.
+
+In this TASK, we will introduce DynamoDB for CloudAlbum application. We also introduce pynamodb which is a Pythonic interface to Amazon’s DynamoDB. By using simple, yet powerful abstractions over the DynamoDB API. It is similar to SQLAlchemy.
+
+
+* Leagacy application uses RDBMS(MySQL), we will replace it to DynamoDB. DynamoDB is fully managed service.It means that automatically scales throughput up or down, and continuously backs up your data for protection.
+<img src=./images/lab03-task1-ddb.png width=600>
+
+* Legacy application uses **SQLAlchemy** for OR-Mapping. SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL.
+  * visit : https://www.sqlalchemy.org/
+
+* We will use **PynamoDB** instead of **SQLAlchemy** for OR-Mapping of DynamoDB. It is similar with SQLAlchemy. PynamoDB is a Pythonic interface to Amazon’s DynamoDB. By using simple, yet powerful abstractions over the DynamoDB API, PynamoDB allows you to start developing immediately.
+  * visit : https://github.com/pynamodb/PynamoDB
+
+* Legacy application has simple data model and we can design DynamoDB table easily.
+  <img src=./images/lab03-task1-modeling.png width=600>
+
+1. Install required Python packaged:
+```console
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/01-CloudAlbum-DDB/requirements.txt
 ```
 
 
-27. Configure `App client cloudalbum` in the **Cognito console.**
-<img src=./images/lab03-task2-cog-console.png width=700>
+2. Open the **models.py** which located in  '**LAB02/01-CloudAlbum-DDB**/cloudalbum/model/models.py'.
 
-* Update `Callback URL(s)`.
-* Update `Sign out URL(s)`.
+3. Review the data model definition via **SQLAlchemy**. `User` tables and `Photo` tables are inherited from SQLAlchemy's **db.Model** and are represented in **Python classes**.
+```python
+from sqlalchemy import Float, DateTime, ForeignKey, Integer, String
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from cloudalbum import login
 
-28. Look into your **Lambda Console.**
-<img src=./images/lab03-task2-lambda-console.png width=700>
-
-
-29. Look into your **API Gateway Console.**
-<img src=./images/lab03-task2-apigw-console.png width=700>
+db = SQLAlchemy()
 
 
-30. Connect to your application through API Gateway. open `https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api` in your browser. 
-* If you missed API Gateway **URL**, you can use `chalice url` command.
-<img src=./images/lab02-task3-cognito-login.png width=500>
+class User(UserMixin, db.Model):
+    """
+    Database Model class for User table
+    """
+    __tablename__ = 'User'
+
+    id = db.Column(Integer, primary_key=True)
+    username = db.Column(String(50), unique=False)
+    email = db.Column(String(50), unique=True)
+    password = db.Column(String(100), unique=False)
+
+    photos = db.relationship('Photo',
+                             backref='user',
+                             cascade='all, delete, delete-orphan')
+
+    def __init__(self, name, email, password):
+        self.username = name
+        self.email = email
+        self.password = password
+
+    def __repr__(self):
+        return '<%r %r %r>' % (self.__tablename__, self.username, self.email)
 
 
-31. Perform application test.
-<img src=./images/lab01-02.png width=700>
+class Photo(db.Model):
+    """
+    Database Model class for Photo table
+    """
+    __tablename__ = 'Photo'
+
+    id = db.Column(Integer, primary_key=True)
+    user_id = db.Column(Integer, ForeignKey(User.id))
+    tags = db.Column(String(400), unique=False)
+    desc = db.Column(String(400), unique=False)
+    filename_orig = db.Column(String(400), unique=False)
+    filename = db.Column(String(400), unique=False)
+    filesize = db.Column(Integer, unique=False)
+    geotag_lat = db.Column(Float, unique=False)
+    geotag_lng = db.Column(Float, unique=False)
+    upload_date = db.Column(DateTime, unique=False)
+    taken_date = db.Column(DateTime, unique=False)
+    make = db.Column(String(400), unique=False)
+    model = db.Column(String(400), unique=False)
+    width = db.Column(String(400), unique=False)
+    height = db.Column(String(400), unique=False)
+    city = db.Column(String(400), unique=False)
+    nation = db.Column(String(400), unique=False)
+    address = db.Column(String(400), unique=False)
+
+    def __init__(self, user_id, tags, desc, filename_orig, filename, filesize, geotag_lat, geotag_lng, upload_date,
+                 taken_date, make, model, width, height, city, nation, address):
+        """Initialize"""
+
+        self.user_id = user_id
+        self.tags = tags
+        self.desc = desc
+        self.filename_orig = filename_orig
+        self.filename = filename
+        self.filesize = filesize
+        self.geotag_lat = geotag_lat
+        self.geotag_lng = geotag_lng
+        self.upload_date = upload_date
+        self.taken_date = taken_date
+        self.make = make
+        self.model = model
+        self.width = width
+        self.height = height
+        self.city = city
+        self.nation = nation
+        self.address = address
+
+    def __repr__(self):
+        """print information"""
+
+        return '<%r %r %r>' % (self.__tablename__, self.user_id, self.upload_date)
+```
+
+4. Open the **models_ddb.py** which located in  'LAB02/01-CloudAlbum-DDB/cloudalbum/model/models_ddb.py'.
+<img src=./images/lab03-task1-models_ddb.png width=300>
+
+
+
+5. Review the data model definition via **PynamoDB**. This will show how DynamoDB tables and GSI are defined in PynamoDB. They are all expressed in **Python Class.**
+
+```python
+from pynamodb.models import Model
+from pynamodb.attributes import UnicodeAttribute, NumberAttribute, UTCDateTimeAttribute
+from flask_login import UserMixin
+from pynamodb.indexes import GlobalSecondaryIndex, IncludeProjection
+from cloudalbum import login
+from cloudalbum import util
+from cloudalbum.config import conf
+
+
+class EmailIndex(GlobalSecondaryIndex):
+    """
+    This class represents a global secondary index
+    """
+
+    class Meta:
+        index_name = 'user-email-index'
+        read_capacity_units = 2
+        write_capacity_units = 1
+        projection = IncludeProjection(['password'])
+
+    # This attribute is the hash key for the index
+    # Note that this attribute must also exist
+    # in the model
+    email = UnicodeAttribute(hash_key=True)
+
+
+class User(Model, UserMixin):
+    """
+    User table for DynamoDB
+    """
+
+    class Meta:
+        table_name = 'User'
+        region = conf['AWS_REGION']
+
+    id = UnicodeAttribute(hash_key=True)
+    email_index = EmailIndex()
+    email = UnicodeAttribute(null=False)
+    username = UnicodeAttribute(null=False)
+    password = UnicodeAttribute(null=False)
+
+
+class Photo(Model):
+    """
+    User table for DynamoDB
+    """
+
+    class Meta:
+        table_name = 'Photo'
+        region = conf['AWS_REGION']
+
+    user_id = UnicodeAttribute(hash_key=True)
+    id = NumberAttribute(range_key=True)
+    tags = UnicodeAttribute(null=False)
+    desc = UnicodeAttribute(null=False)
+    filename_orig = UnicodeAttribute(null=False)
+    filename = UnicodeAttribute(null=False)
+    filesize = NumberAttribute(null=False)
+    geotag_lat = UnicodeAttribute(null=False)
+    geotag_lng = UnicodeAttribute(null=False)
+    upload_date = UTCDateTimeAttribute(default=util.the_time_now())
+    taken_date = UTCDateTimeAttribute(default=util.the_time_now())
+    make = UnicodeAttribute(null=True)
+    model = UnicodeAttribute(null=True)
+    width = UnicodeAttribute(null=False)
+    height = UnicodeAttribute(null=False)
+    city = UnicodeAttribute(null=True)
+    nation = UnicodeAttribute(null=False)
+    address = UnicodeAttribute(null=False)
+```
+
+6. Review the `__init__.py` in the model package. The DynamoDB **User** and **Photo** **tables will be created automatically** for the convenience. **Note** the `create_table` function.
+
+```python
+from cloudalbum.config import conf
+from cloudalbum.model.models_ddb import User
+from cloudalbum.model.models_ddb import Photo
+
+if not User.exists():
+    User.create_table(read_capacity_units=conf['DDB_RCU'], write_capacity_units=conf['DDB_WCU'], wait=True)
+    print('DynamoDB User table created!')
+
+if not Photo.exists():
+    Photo.create_table(read_capacity_units=conf['DDB_RCU'], write_capacity_units=conf['DDB_WCU'], wait=True)
+    print('DynamoDB Photo table created!')
+```
+
+7. Review the 'LAB02/01-CloudAlbum-DDB/cloudalbum/config.py' file. **New attributes** are added for DynamoDB.
+
+ * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to real value which used previous hands-on lab.
+
+```python
+import os
+
+conf = {
+
+    # Mandatory variable
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
+
+    ( ... )
+
+    # DynamoDB
+    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
+    'DDB_RCU': os.getenv('DDB_RCU', 10),
+    'DDB_WCU': os.getenv('DDB_WCU', 10),
+
+}
+```
+* The second parameter of **os.getenv** function is the default value to use when the first parameter does not exist.
+
+8. Review following code for user signup.
+* Find **TODO #1** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
+```python
+    if not user_exist:
+        ## TODO #1 : Review following code to save user information
+        ## -- begin --
+        user = User(uuid.uuid4().hex)
+        user.email = form.email.data
+        user.password = generate_password_hash(form.password.data)
+        user.username = form.username.data
+        user.save()
+        ## -- end --
+```
+
+**NOTE**: The partition key value of User table used **uuid.uuid4().hex** for the appropriate key distribution.
+
+9. Review following code to update user profile to DynamoDB.
+* Find **TODO #2** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
+```python
+    ## TODO #2 : Review following code to update user profile to DynamoDB.
+    ## -- begin --
+    user = User.get(user_id)
+    user.update(actions=[
+        User.username.set(data['username']),
+        User.password.set(generate_password_hash(data['password']))
+    ])
+    ## --end --
+```
+* Above code shows the way of `update` DynamoDB table via PynamoDB query mapper.
+
+
+10. Review following code to search result via keyword in the DynamoDB.
+* find **TODO #3** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
+```python
+    ## TODO #3 : Review following code to search result via keyword in the DynamoDB.
+    ## -- begin --
+    keyword = request.form['search']
+    photo_pages = Photo.query(current_user.id,
+                                Photo.tags.contains(keyword) |
+                                Photo.desc.contains(keyword))
+    ## -- end --
+```
+* Above code shows how to use query filter via PynamoDB.
+
+
+11. Review following code to delete uploaded photo information in DynamoDB.
+* Find **TODO #4** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
+```python
+    ## TODO #4 : Review following code to delete uploaded photo information in DynamoDB.
+    ## -- begin --
+    photo = Photo.get(current_user.id, photo_id)
+    photo.delete()
+    ## -- end --
+```
+
+12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB02/01-CloudAlbum-DDB/cloudalbum/run.py`)
+
+* **NOTE:** **GMAPS_KEY** variable is must defined before you run.
+
+* Ensure **Runner: Python 3**
+<img src=./images/lab03-task1-run-console.png width=700>
+
+
+13. Connect to your application using **Cloud9 preview** in your browser. 
+<img src=images/lab01-08.png width=500>
+
+* You need to **Sign-up** first.
+
+14. Perform application test.
+<img src=./images/lab01-02.png width=800>
 
 * Sign in / up
 * Upload Sample Photos
-* Sample images download here 
+* Sample images download here
   *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
 * Look your Album
 * Change Profile
 * Find photos with Search tool
 * Check the Photo Map
 
-## Go further
-* Legacy backend is **tightly coupled with Jinja2** Template Engine!
-<img src="./images/lab03-task3-go-further-jinja2.png" width="550">
+15. Then look into AWS DynamoDB console.
+* User and Photo tables are auto generated with 'user-email-index'
+* Review saved data of each DynamoDB tables.
+<img src=./images/lab03-task1-ddb_result.png width=800>
 
-* It means almost request returned rendered HTML **not JSON data**.
-* If you want to build **more flexible backend**, you can **re-design your client code rendering it self using data response from backend API**.
-* AWS Chalice is suitable for **RESTful API** server.
-* **Continuous Deployment** (CD)
-   * Related document: https://chalice.readthedocs.io/en/latest/topics/cd.html
+Is it OK? Let's move to the next TASK.
+
+**NOTE:** Click the `stop icon` to stop your application.
+  * **Close your terminal** after application stop.
+  * **Close all your opened file tab.**
+<img src=./images/stop-app.png width=500>
+
+16. Delete data in the application for the next TASK.
+* File system will be changed from **local disk** to **Amazon S3**.
+* So, if you don't delete your album article which submitted this task, then **you will see your album article without images** when you run the application on the next TASK,
+
+<img src=images/lab03-task2-delete.png width=400>
+
+
+## TASK 2. Go to S3
+CloudAlbum stored user uploaded images into disk based storage. (EBS or NAS). However these storage is not scalable enough.
+
+[Amazon S3](https://aws.amazon.com/s3/) has a simple web services interface that you can use to store and retrieve any amount of data, at any time, from anywhere on the web. It gives any developer access to the same highly scalable, reliable, fast, inexpensive data storage infrastructure that Amazon uses to run its own global network of web sites. The service aims to maximize benefits of scale and to pass those benefits on to developers.
+
+<img src=./images/lab03-task2-arc.png width=600>
+
+* We will use Boto3 - S3 API to handle uploaded photo image object from the user.
+   * visit: https://boto3.readthedocs.io/en/latest/reference/services/s3.html
+
+* We will retrieve image object with pre-signed URL for authorized user.
+
+17. Make a bucket to save photo image objects and retriev it from Amazon S3.
+
+```
+aws s3 mb s3://cloudalbum-<INITIAL>
+```
+
+18. Review the config.py file which located in 'LAB02/02-CloudAlbum-S3/cloudalbum/config.py'
+
+* Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to **real API key** which used previous hands-on lab.
+
+* Set up the value of 'S3_PHOTO_BUCKET'. Please change the `cloudalbum-<INITIAL>` to your **real bucket name** which made above.
+
+```python
+import os
+
+conf = {
+
+    # Mandatory variable
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
+    
+    (....)
+
+    # DynamoDB
+    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
+    'DDB_RCU': os.getenv('DDB_RCU', 10),
+    'DDB_WCU': os.getenv('DDB_WCU', 10),
+
+    # S3
+    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>')
+}
+```
+
+
+19. Review following code to save thumbnail image object to S3.
+* Find **TODO #5** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
+```python
+    ## TODO #5 : Review following code to save thumbnail image object to S3
+    ## -- begin --
+    upload_file_stream.stream.seek(0)
+
+    s3_client.put_object(
+        Bucket=conf['S3_PHOTO_BUCKET'],
+        Key=key_thumb,
+        Body=make_thumbnails_s3(upload_file_stream, app),
+        ContentType='image/jpeg',
+        StorageClass='STANDARD'
+    )
+    ## -- end --
+```
+**NOTE**: To reuse file stream, we need to call **seek(0)**.
+```
+upload_file_stream.stream.seek(0)
+```
+
+20. Review your code to retrieve pre-signed URL from S3.
+* Find **TODO #6** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
+```python
+    ## TODO #6 : Review following code to retrieve pre-signed URL from S3.
+    ## -- begin --
+    if Thumbnail:
+        key_thumb = "{0}{1}".format(prefix_thumb, filename)
+        url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': conf['S3_PHOTO_BUCKET'],
+                    'Key': key_thumb})
+    else:
+        key = "{0}{1}".format(prefix, filename)
+        url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': conf['S3_PHOTO_BUCKET'],
+                    'Key': key})
+    ## -- end --
+```
+* Default expire time is 1 hour (3600 sec). Function description is below.
+  * Related document : https://boto3.readthedocs.io/en/latest/reference/services/s3.html 
+```python
+generate_presigned_url(ClientMethod, Params=None, ExpiresIn=3600, HttpMethod=None)
+
+    Generate a presigned url given a client, its method, and arguments
+
+    Parameters
+
+            ClientMethod (string) -- The client method to presign for
+            Params (dict) -- The parameters normally passed to ClientMethod.
+            ExpiresIn (int) -- The number of seconds the presigned url is valid for. By default it expires in an hour (3600 seconds)
+            HttpMethod (string) -- The http method to use on the generated url. By default, the http method is whatever is used in the method's model.
+
+    Returns
+
+        The presigned url
+```
+
+
+21. Open the `run.py` and run the application with DynamoDB and S3.
+
+* Ensure **Runner: Python 3**
+<img src=./images/lab03-task1-run-console.png width=800>
+
+22. Connect to your application using **Cloud9 preview** in your browser. 
+
+23. Perform application test.
+<img src=./images/lab01-02.png width=700>
+
+* Sign in / up
+* Upload Sample Photos
+* Sample images download here
+  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
+* Look your Album
+* Change Profile
+* Find photos with Search tool
+* Check the Photo Map
+
+24. Examine DynamoDB Console and S3 Console.
+<img src=./images/lab03-task2-s3-console.png width=500>
+
+* You can find your uploaded image objects with thumbnails.
+
+Is it OK? Let's move to the next TASK.
+
+**NOTE:** Click the `stop icon` to stop your application.
+  * **Close your terminal** after application stop.
+  * **Close all your opened file tab.**
+<img src=./images/stop-app.png width=500>
+
+## TASK 3. Go to Cognito
+In this TASK, you will add a sign-up/sign-in component to CloudAlbum application by using Amazon Cognito. After setting up Amazon Cognito, user information will retrieved from the Amazon Cognito.
+
+<img src=./images/lab03-task3-cognito-arc.png width=600>
+
+To begin, follow the steps below.
+
+**Set up an Amazon Cognito user pool.**
+
+25. In the AWS Console, go to the **Amazon Cognito**
+
+26. Make sure you are still in the **Singapore(ap-southeast-1)** region.
+
+27. Click **Manage your User Pools**.
+
+28. At the top right corner, click **Create a user pool**.
+
+29. For **Pool name**, type **cloudalbum-pool-\<INITIAL\>**.
+
+30. Click **Step through settings**.
+
+31. For **How do you want your end users to sign in?**, select **Email address or phone number**.
+<img src=./images/lab03-task3-cognito-setup.png width=800>
+
+32. For **Which standard attributes do you want to require?**, select **name**.
+
+33. Click **Next step**.
+
+34. Leave the default settings on the Policy page and click **Next step**.
+
+35. Skip the MFA and verifications pages and click **Next step**.
+
+36. On the **Message customization** page, select **Verification Type** as **Link**. Feel free to customize the email body.
+
+37. Click **Next Step**.
+
+38. Skip the Tag section and click **Next Step**.
+
+39. Leave the default setting on the **Devices** page and click **Next step**.
+
+40. On the **App Clients** page, click **Add an app client**.
+
+41. For **App client name,** type a client name, for example, **CloudAlbum**.
+
+42. Leave the other default settings and click **Create app client**.
+
+43. Click **Next Step**.
+
+44. Skip the **Triggers** page and click **Next Step**
+
+45. On the **Review** page, click **Create Pool**.
+
+46. After the pool is created, write down the **Pool ID** for later use.
+
+47. In the left navigation menu, under **App integration**, click **App client settings**.
+
+48. For **Enabled Identity Providers**, check **Cognito User Pool**.
+* Check the Cloud9 ResourceId. 
+```console 
+RESOURCE_ID=$(aws ec2 describe-tags --query "Tags[].Value" --filters "Name=resource-id, Values=`ec2-metadata --instance-id | cut -f2 -d ' '`" "Name=key, Values=aws:cloud9:environment" --output text)
+
+echo "https://$RESOURCE_ID.vfs.cloud9.ap-southeast-1.amazonaws.com"
+
+```
+* **\<YOUR PREVIEW URL\>** is :  
+```
+https://<CLOUD9_RESOURCE_ID>.vfs.cloud9.ap-southeast-1.amazonaws.com
+```
+* **KEEP THIS VALUE FOR LATER USE**
+
+ * For **Cloud9 Preview** user:
+   * For **Callback URL(s)** type `https://<YOUR PREVIEW URL>/callback`
+   * For **Sign out URL(s)** type `https://<YOUR PREVIEW URL>`
+   * **NOTE:** This is an **alternative way** of check ResourceId. If you complete checking <YOUR PREVIEW URL>, You can pass below steps and go to STEP 49. 
+   
+   <img src='images/lab03-task3-cloud9-preview.png' width='550'>
+
+
+49. Under **OAuth 2.0**, for **Allowed OAuth Flows**, select **Authorization code grant** and for **Allowed OAuth Scopes**, select **openid**.
+<img src="images/lab03-task2-cognito-app-client.png" width="500">
+
+50. Click **Save changes** at the bottom.
+
+51. In the left navigation menu, under **App integration**, click **Domain name**.
+
+52. Type a **domain name**(for example: `cloudalbum-<INITIAL>`, check its availability, and click **Save changes**. Write down the domain name for later use.
+ * **NOTE:** Domain name You have to use **lowercase**.
+<img src="images/lab03-task2-cognito-domain.png" width="500">
+
+53. In the left navigation menu, under **General settings**, click **App clients**.
+
+54. Click **Show details**.
+
+55. Make a note of the **App client ID** and **App client secret** for later use.
+
+56. Click **Return to pool details** at the bottom to return to the Pool details page.
+
+
+57. Install required Python packages:
+```console
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/03-CloudAlbum-COGNITO/requirements.txt
+```
+
+58. Review 'LAB02/03.CloudAlbum-COGNITO/cloudalbum/config.py'
+* Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
+
+* Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
+
+```python
+import os
+
+options = {
+
+    # Mandatory variable
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
+    
+    (.....)
+
+    # DynamoDB
+    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
+    'DDB_RCU': os.getenv('DDB_RCU', 10),
+    'DDB_WCU': os.getenv('DDB_WCU', 10),
+
+    # S3
+    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>'),
+
+    # COGNITO
+    'COGNITO_POOL_ID': os.getenv('COGNITO_POOL_ID', '<YOUR_POOL_ID>'),
+    'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
+    'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
+    'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
+    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
+}
+```
+* Check the values under `# COGNITO`.
+* The second parameter of **os.getenv** is the default value to use when the first parameter does not exist.
+
+| COGNITO_POOL_ID | Copy and paste the pool ID you noted earlier. |
+----|----
+| COGNITO_CLIENT_ID | Copy and paste the App Client ID you noted earlier. |
+| COGNITO_CLIENT_SECRET | Copy and paste the App Client Secret you noted earlier. |
+|COGNITO_DOMAIN |Copy and paste the domain name you created earlier. It should look similar to the example below. Do not copy the entire URL starting with https://<YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com (for example(**without** `https://`): <YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com)|
+| BASE_URL | For **Cloud9 Preview** user set **https://<YOUR_PREVIEW_URL>** Do not include a trailing / for the BASE_URL. |
+
+
+59. Review following code to retrieve JSON Web Key (JWK) from cognito.
+* Find **TODO #7** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
+```python
+## TODO #7: Review following code to retrieve JSON Web Key (JWK) from cognito
+## https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
+## -- begin --
+JWKS_URL = "https://cognito-idp.{0}.amazonaws.com/{1}/.well-known/jwks.json".\
+    format(conf['AWS_REGION'], conf['COGNITO_POOL_ID'])
+JWKS = requests.get(JWKS_URL).json()["keys"]
+## -- end --
+```
+
+
+60. Review following code to set up User objedct using id_token from Cognito.
+* Find **TODO #8** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
+```python
+    ## TODO #8: Review following code to set up User objedct using id_token from Cognito
+    ## -- begin --
+    user = User()
+    user.id = id_token["cognito:username"]
+    user.email = id_token["email"]
+    user.username = id_token["name"]
+
+    session['id'] = id_token["cognito:username"]
+    session['email'] = id_token["email"]
+    session['name'] = id_token["name"]
+    session['expires'] = id_token["exp"]
+    session['refresh_token'] = response.json()["refresh_token"]
+
+    login_user(user, remember=True)
+    ## -- begin --
+```
+
+
+61. **Open the run.py** and run the application. Connect to your application using **Cloud9 preview**in your browser. 
+* You can find default Cognito Login Screen.
+<img src="images/lab03-task3-cognito-login.png" width="450">
+
+* You need to verify your email address after signup.
+<img src="images/lab03-task3-cog-verify.png" width="450">
+
+* You can **change default login screen** in the Cognito console dashboard.
+
+
+62. Perform application test.
+<img src=./images/lab01-02.png width=500>
+
+* Sign in / up
+* Upload Sample Photos
+* Sample images download here
+  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
+* Look your Album
+* Change Profile
+* Find photos with Search tool
+* Check the Photo Map
+
+63. Examine Cognito Console dashboard **after user sign-up.**
+<img src=./images/lab03-task3-cognito-userpool.png width=700>
+
+* You can find your profile information.
+
+Is it OK? Let's move to the next TASK.
+
+**NOTE:** Click the `stop icon` to stop your application.
+  * **Close your terminal** after application stop.
+  * **Close all your opened file tab.**
+<img src=./images/stop-app.png width=500>
+
+## TASK 4. Go to X-ray
+
+AWS [X-Ray](https://aws.amazon.com/xray/) helps developers analyze and debug production, distributed applications, such as those built using a microservices architecture. With X-Ray, you can understand how your application and its underlying services are performing to identify and troubleshoot the root cause of performance issues and errors. X-Ray provides an end-to-end view of requests as they travel through your application, and shows a map of your application’s underlying components. You can use X-Ray to analyze both applications in development and in production, from simple three-tier applications to complex microservices applications consisting of thousands of services.
+
+<img src="./images/lab03-task4-x-ray-arc.png" width="600">
+
+64. Install required Python packages for AWS X-Ray.
+```console
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/04-CloudAlbum-XRAY/requirements.txt
+```
+
+**Download and run the AWS X-Ray daemon on your AWS Cloud9 instance.**
+
+65. Visit the AWS X-Ray daemon documentation link below:
+* https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon.html
+
+66. On the documentation page, scroll down until you see a link to **Linux (executable)-aws-xray-daemon-linux-2.x.zip (sig).** Right-click the link and copy the link address.
+
+67. In your AWS **Cloud9 instance terminal**, type the command below to go to your home directory.
+```console
+cd ~
+```
+
+68. Type wget and paste the AWS X-Ray daemon hyperlink address that you copied. The command should look like the example below.
+```console
+wget https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-2.x.zip
+```
+
+69. Unzip the AWS X-Ray daemon by typing the command below. Make sure that the name of the .zip file matches the one in the command below.
+```console
+unzip aws-xray-daemon-linux-2.x.zip
+```
+
+70. Run the AWS X-Ray daemon by typing the command below. The X-Ray daemon buffers segments in a queue and uploads them to X-Ray in batches. 
+
+```console
+./xray
+```
+
+* **Now, X-Ray daemon works and ready to use X-Ray to analyze applications.**
+
+70. Review, `### x-ray set up` part in the 'LAB02/04-CloudAlbum-XRAY/run.py' file.
+
+ * Related document
+   *  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-configuration.html
+
+   * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-middleware.html
+
+* To instrument CloudAlbum, *our Flask application*, first configure a segment name on the xray_recorder. Then, use the XRayMiddleware function to patch our CloudAlbum application in code. 
+
+```python
+(...)
+
+from aws_xray_sdk.core import xray_recorder, patch_all
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+(...)
+
+    ### x-ray set up ###
+    plugins = ('EC2Plugin',)
+    xray_recorder.configure(service='CloudAlbum', plugins=plugins)
+    XRayMiddleware(app, xray_recorder)
+    patch_all()
+
+(...)
+```
+
+* This tells the X-Ray recorder to trace requests served by your Flask application with the default sampling rate. You can configure the recorder in code to apply custom sampling rules or change other settings. 
+
+
+
+**NOTE**: You can use 'xray_recorder' decorator for capture function execution information.
+```python
+## for example:
+
+from aws_xray_sdk.core import xray_recorder
+(...)
+
+@xray_recorder.capture()
+def print_abc():
+    print('abc')
+
+```
+* **NOTE:** Patching Libraries to Instrument Downstream Calls
+  * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-patching.html
+
+71. Review 'LAB02/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above `step 58` for `03.CloudAlbum-COGNITO`)
+* Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
+
+* Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
+
+```python
+import os
+
+options = {
+
+    # Mandatory variable
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', '<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>'),
+    
+    (.....)
+
+    # DynamoDB
+    'AWS_REGION': os.getenv('AWS_REGION', 'ap-southeast-1'),
+    'DDB_RCU': os.getenv('DDB_RCU', 10),
+    'DDB_WCU': os.getenv('DDB_WCU', 10),
+
+    # S3
+    'S3_PHOTO_BUCKET': os.getenv('S3_PHOTO_BUCKET', 'cloudalbum-<INITIAL>'),
+
+    # COGNITO
+    'COGNITO_POOL_ID': os.getenv('COGNITO_POOL_ID', '<YOUR_POOL_ID>'),
+    'COGNITO_CLIENT_ID': os.getenv('COGNITO_CLIENT_ID', '<YOUR_CLIENT_ID>'),
+    'COGNITO_CLIENT_SECRET': os.getenv('COGNITO_CLIENT_SECRET', '<YOUR_CLIENT_SECRET>'),
+    'COGNITO_DOMAIN': os.getenv('COGNITO_DOMAIN', '<YOUR_COGNITO_DOMAIN>'),
+    'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
+}
+```
+72. **Open the run.py** and run the application. You can run the application to check all features are works well. Then you will see function tracing data collected on the X-Ray console.
+
+73. Connect to your application using **Cloud9 preview** in your browser. 
+* You can find default Cognito Login Screen.
+<img src=images/lab03-task3-cognito-login.png width=500>
+
+* You can change default login screen in the Cognito console dashboard.
+
+74. Perform application test.
+
+<img src=images/lab01-02.png width=700>
+
+* Sign in / up
+* Upload Sample Photos
+* Sample images download here
+  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
+* Look your Album
+* Change Profile
+* Find photos with Search tool
+* Check the Photo Map
+
+75. Examine X-Ray Console dashboard
+<img src=images/lab03-task4-x-ray.png width=500>
+
+Is it OK? Let's go to next LAB.
+
+**NOTE:** Click the `stop icon` to stop your application.
+  * **Close your terminal** after application stop.
+  * **Close all your opened file tab.**
+<img src=images/stop-app.png width=700>
+
 
 # Congratulation! You completed LAB03.
 
-
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
-* [LAB 02 - Move to serverless](LAB02.md)
-* [LAB 03 - Serverless with AWS Chalice](LAB03.md)
-
-## Feedback 
-* Please leave your feed back.
-  * http://bit.ly/serverless_tp_feedback 
+* [LAB 02 - Build a High Availability Application Architecture](LAB02.md)
+* [LAB 03 - Move to serverless](LAB03.md)
+* [LAB 04 - Serverless with AWS Chalice](LAB04.md)
