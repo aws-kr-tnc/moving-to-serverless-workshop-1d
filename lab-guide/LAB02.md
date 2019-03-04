@@ -334,6 +334,7 @@ Now, let's deploy our application.
 
 70. Click the **Apply** button. let's wait until the configuration is applied.
 
+
 71. Test the deployed application and explore the ElasticBeastalk console.
 
 
@@ -359,6 +360,7 @@ Now, let's deploy our application.
 
 
 # Congratulation! You completed LAB02.
+
 
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
