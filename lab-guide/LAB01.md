@@ -94,7 +94,7 @@ Check out the workshop repository from the Github.
 cd ~/environment
 ```
 ```console
-git clone https://github.com/aws-kr-tnc/moving-to-serverless-techpump.git --depth 1
+git clone https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d --depth 1
 ```
 
 14. Install the requirements for the project by executing the command below in your AWS Cloud9 terminal.

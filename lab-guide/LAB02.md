@@ -1,6 +1,8 @@
 # LAB 02 - Build a High Availability Application Architecture.
 
-In this hands-on lab, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
+Before we go to the serverless application architecture, let's deploy our application into the High Availability Applciation Architecture environment to see the obvious differences from the hostbased environment.
+
+So, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
 
 ## In this lab cover.. 
 * Configure VPC for the HA environment. (CloudFormation template will be provided.)
@@ -55,7 +57,7 @@ In this section, you will create an VPC with multi-az for the high availability 
 13. Explore the `outputs` tab. Copy the values of `outputs` tab to the your notepad for later use.
 
 
-## TASK 2. Create EFS(Elastic File System)
+## TASK 2. Create EFS
 
 In this section, you will create an EFS for the CloudAlbum application. 
 
@@ -134,7 +136,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
  * **NOTE**: You can click the refresh button in the dashboard, if your cluster status not changed.
 
-## TASK 4. Confiugure ElasticBeanstalk.
+## TASK 4. Confiugure ElasticBeanstalk
 
 We will now deploy the CloudAlbum application using ElasticBeanstalk. Our application will be  integrated EFS, Elasticache, RDS, ALB, and AutoScalingGroup via ElasticBeanstalk.
 
@@ -239,7 +241,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 * <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
 
-## TASK 5. Deploy Application with ElasticBeanstalk.
+## TASK 5. Deploy Application with ElasticBeanstalk
 
 If the previous TASK was successfully completed, you will see the following screen.
 
@@ -276,7 +278,7 @@ Now, let's deploy our application.
 * **ELCACHE_EP** : `<ELCACHE_EP>`
   * We already copied it to `notepad` in TASK 3.
   * For example : `moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
-* **FLASK_SECRET** : `THIS_IS_THE_SECRET`
+* **FLASK_SECRET** : `serverless`
   * This value will be used for Flask app's SECRET_KEY.
 * **GMAPS_KEY** : `<GMAPS_KEY>`
   * You already get this key from instructor.
@@ -335,15 +337,14 @@ Now, let's deploy our application.
 71. Test the deployed application and explore the ElasticBeastalk console.
 
 
-
-## Challenge : Investigate the application changes
+## Options : Investigate the application changes
 
 72. .ebextentions (설명 추가 예정)
 
 73. SessionStore (설명 추가 예정)
 
 
-## TASK 6. Remove your AWS resources.
+## TASK 6. Remove your AWS resources
 (자원 삭제 상세설명 추가예정)
 
 74. Remove your EB environment (RDS, ALB, ASG included). 
