@@ -1,4 +1,4 @@
-# LAB 03 - Serverless with AWS Chalice
+# LAB 04 - Serverless with AWS Chalice
 This exercise is divided into two parts. The first part is about the AWS serverless framework Chalice, and the second part is using the Chalice to run the CloudAlbum application.
 
 ## Serverless framework
@@ -890,8 +890,8 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
-* [LAB 02 - Build a High Availability Application Architecture](LAB02.md)
-* [LAB 03 - Move to serverless](LAB03.md)
+* [LAB 02 - Building and deploying your application in HA environment](LAB02.md)
+* [LAB 03 - Moving to AWS serverless](LAB03.md)
 * [LAB 04 - Serverless with AWS Chalice](LAB04.md)
 
 ## Feedback 

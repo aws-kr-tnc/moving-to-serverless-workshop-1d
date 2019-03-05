@@ -1,4 +1,4 @@
-# LAB 02 - Move to serverless
+# LAB 03 - Moving to AWS serverless
 We will move the components of legacy application which has constraints of scalability and high availability to serverless environment one by one.
 
 ## TASK 0. Permission grant for Cloud9
@@ -1006,6 +1006,6 @@ Is it OK? Let's go to next LAB.
 
 ## LAB GUIDE LINKS
 * [LAB 01 - Take a look around](LAB01.md)
-* [LAB 02 - Build a High Availability Application Architecture](LAB02.md)
+* [LAB 02 - Building and deploying your application in HA environment](LAB02.md)
 * [LAB 03 - Move to serverless](LAB03.md)
 * [LAB 04 - Serverless with AWS Chalice](LAB04.md)
