@@ -309,8 +309,9 @@ Now, let's deploy our application.
 63. Click the **Dashboard** and click **Upload and Deploy** button.
 
 64. You can download the application to your laptop as a ZIP file, from the below URL:
+
 ``
-    https://s3.amazonaws.com/moving-to-serverless/prod/cloudalbum_v1.0.zip
+    https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip
 ``
 
 65. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 

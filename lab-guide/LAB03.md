@@ -56,42 +56,22 @@ secret_key                <not set>             None    None
 
 * OK, done. Move to next step.
 
-#### [1-3] Create an Instance Profile with the AWS CLI ###
+### [1-3] Create an Instance Profile for Cloud9 instance
+We will grant appropriate permissions to Cloud9 instance for application development. If you prefer to use the AWS CLI to do this, see the LINK below.
 
-### Working on your LOCAL MACHINE terminal or your EC2
+* **For CLI (local machine or EC2) users** : <a href="LAB03-ROLE-CLI.md" target="_blank">CLI GUIDE (click)</a>
 
-**NOTE:** Before you run below command, **make sure you have enough privileges.** (such as `AdministratorAccess` policy).
+#### Let's Start!
 
-* You may have `AdministratorAccess` privileged **AWS CLI environment** such as your LOCAL MACHINE or your EC2.
+* You may have **AdministratorAccess** privileged aws account or IAM account.
+* In AWS Console, move to **IAM** service.
+* Select **Policy** menu in the left and click **Create Policy** button.
 
-  * Download `generate_instance_profile.sh`.
+<img src=./images/lab03-task0-iam-policy.png width=600>
 
-```console
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/generate_instance_profile.sh
-```
-* If you want, **review** the `generate_instance_profile.sh` file.
-```console
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-instance-profile-role-trust.json
-wget https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-techpump/master/resources/workshop-cloud9-policy.json
+* Click **JSON** tab in the editor.
+* Copy and paste below JSON.
 
-PARN=$(aws iam create-policy --policy-name workshop-cloud9-policy --policy-document file://workshop-cloud9-policy.json --query "Policy.Arn" --output text)
-aws iam create-role --role-name workshop-cloud9-instance-profile-role --assume-role-policy-document file://workshop-cloud9-instance-profile-role-trust.json
-aws iam attach-role-policy --role-name workshop-cloud9-instance-profile-role --policy-arn $PARN
-aws iam create-instance-profile --instance-profile-name workshop-cloud9-instance-profile
-aws iam add-role-to-instance-profile --role-name workshop-cloud9-instance-profile-role --instance-profile-name workshop-cloud9-instance-profile
-```
-
- * Add `execute` permission
-```console
-chmod +x generate_instance_profile.sh
-```
-
- * **Run** script with enough privileges, such as `AdministratorAccess` policy. (**Currently, you can not run this command in Cloud9 terminal.**):
-```console
-./generate_instance_profile.sh
-```
-
-* If you want, **review** the `workshop-cloud9-policy.json` policy.
 ```json
 {
     "Version": "2012-10-17",
@@ -117,39 +97,35 @@ chmod +x generate_instance_profile.sh
         }
     ]
 }
-
 ```
 
+* Click **Review Policy** in the bottom line.
+* Type `workshop-cloud9-policy` in the name field and click **Create Policy** in the bottom line.
+* Ok. You made the IAM policy used in the role.
+* Next, you will make "assume role" with the predefined policy.
+* Click **Role** in the left menu.
+* Click **Create Role** button.
+* Select **AWS services** in the **Select type of trusted entity** section.
+* Select **EC2** in the **Choose the service that will use this role** section.
+<img src=./images/lab03-task0-iam-role.png width=700>
+* Click **Next Permission** button in the bottom line.
+* Search **workshop-cloud9-policy** policy using **Filter policies**.
+* Check the result item and click **Next: Tags** button in the bottom line.
+* Click **Next: Review** button in the bottom line.
+* Type `workshop-cloud9-instance-profile-role` in the name field and click **Create Role** button in the bottom line.
 
-#### [1-4] Attach an Instance Profile to Cloud9 Instance with the AWS CLI
 
-* Get instance-id of Cloud9 environment, For this we need **Cloud9 environment name**. We defined it LAB 01. (**workshop-\<INITIAL\>**). 
+### [1-4] Attach an Instance Profile to Cloud9 Instance
+* We will find Cloud9 EC2 instance in **AWS Management Console**
+* Move to **EC2** service in AWS Management Console.
+* You can find EC2 instance which name include **aws-cloud9-...**.
+* Click **Actions** button and click **Instance settings**.
+<img src=./images/lab03-task0-ec2-instance-profile.png width=700>
+* Click **Attach/Replace IAM Role** menu.
+* You can find **workshop-cloud9-instance-profile-role** in the list and select it.
+* Click **Apply** button.
+* Click **Close** button.
 
-* Attach an **Instance Profile** which made previous step to Cloud9 Instance.
-
-* Replace **workshop-\<INITIAL\>** to real value.
-```console
-INSTANCE_ID=$(aws ec2 describe-instances --query "Reservations[*].Instances[*].InstanceId" --filter "Name=tag:Name, Values=aws-cloud9-workshop-<INITIAL>*" --region ap-southeast-1 --output=text)
-
-echo $INSTANCE_ID
-
-aws ec2 associate-iam-instance-profile --iam-instance-profile  Name=workshop-cloud9-instance-profile --region ap-southeast-1 --instance-id $INSTANCE_ID
-```
-* Run the following command to check the result: 
-
-```console
-aws ec2 describe-instances --query "Reservations[].Instances[].IamInstanceProfile" --instance-id $INSTANCE_ID --region ap-southeast-1
-```
-* output: 
-```
-[
-    {
-        "Arn": "arn:aws:iam::123456789012:instance-profile/workshop-cloud9-instance-profile",
-        "Id": "AIPAIFQCLU7KO6ML343DDD"
-    }
-]
-```
-* Now `workshop-cloud9-instance-profile` is attached our Cloud9 instance.
 
 
 ### Back to the your Cloud9 terminal.
@@ -218,11 +194,11 @@ In this TASK, we will introduce DynamoDB for CloudAlbum application. We also int
 
 1. Install required Python packaged:
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/01-CloudAlbum-DDB/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-workshop-1d/LAB03/01-CloudAlbum-DDB/requirements.txt
 ```
 
 
-2. Open the **models.py** which located in  '**LAB02/01-CloudAlbum-DDB**/cloudalbum/model/models.py'.
+2. Open the **models.py** which located in  '**LAB03/01-CloudAlbum-DDB**/cloudalbum/model/models.py'.
 
 3. Review the data model definition via **SQLAlchemy**. `User` tables and `Photo` tables are inherited from SQLAlchemy's **db.Model** and are represented in **Python classes**.
 ```python
@@ -311,7 +287,7 @@ class Photo(db.Model):
         return '<%r %r %r>' % (self.__tablename__, self.user_id, self.upload_date)
 ```
 
-4. Open the **models_ddb.py** which located in  'LAB02/01-CloudAlbum-DDB/cloudalbum/model/models_ddb.py'.
+4. Open the **models_ddb.py** which located in  'LAB03/01-CloudAlbum-DDB/cloudalbum/model/models_ddb.py'.
 <img src=./images/lab03-task1-models_ddb.png width=300>
 
 
@@ -406,7 +382,7 @@ if not Photo.exists():
     print('DynamoDB Photo table created!')
 ```
 
-7. Review the 'LAB02/01-CloudAlbum-DDB/cloudalbum/config.py' file. **New attributes** are added for DynamoDB.
+7. Review the 'LAB03/01-CloudAlbum-DDB/cloudalbum/config.py' file. **New attributes** are added for DynamoDB.
 
  * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to real value which used previous hands-on lab.
 
@@ -430,7 +406,7 @@ conf = {
 * The second parameter of **os.getenv** function is the default value to use when the first parameter does not exist.
 
 8. Review following code for user signup.
-* Find **TODO #1** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
+* Find **TODO #1** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
 ```python
     if not user_exist:
         ## TODO #1 : Review following code to save user information
@@ -446,7 +422,7 @@ conf = {
 **NOTE**: The partition key value of User table used **uuid.uuid4().hex** for the appropriate key distribution.
 
 9. Review following code to update user profile to DynamoDB.
-* Find **TODO #2** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
+* Find **TODO #2** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/user/userView.py' file.
 ```python
     ## TODO #2 : Review following code to update user profile to DynamoDB.
     ## -- begin --
@@ -461,7 +437,7 @@ conf = {
 
 
 10. Review following code to search result via keyword in the DynamoDB.
-* find **TODO #3** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
+* find **TODO #3** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
 ```python
     ## TODO #3 : Review following code to search result via keyword in the DynamoDB.
     ## -- begin --
@@ -475,7 +451,7 @@ conf = {
 
 
 11. Review following code to delete uploaded photo information in DynamoDB.
-* Find **TODO #4** in the 'LAB02/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
+* Find **TODO #4** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
 ```python
     ## TODO #4 : Review following code to delete uploaded photo information in DynamoDB.
     ## -- begin --
@@ -484,7 +460,7 @@ conf = {
     ## -- end --
 ```
 
-12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB02/01-CloudAlbum-DDB/cloudalbum/run.py`)
+12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB03/01-CloudAlbum-DDB/cloudalbum/run.py`)
 
 * **NOTE:** **GMAPS_KEY** variable is must defined before you run.
 
@@ -546,7 +522,7 @@ CloudAlbum stored user uploaded images into disk based storage. (EBS or NAS). Ho
 aws s3 mb s3://cloudalbum-<INITIAL>
 ```
 
-18. Review the config.py file which located in 'LAB02/02-CloudAlbum-S3/cloudalbum/config.py'
+18. Review the config.py file which located in 'LAB03/02-CloudAlbum-S3/cloudalbum/config.py'
 
 * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to **real API key** which used previous hands-on lab.
 
@@ -574,7 +550,7 @@ conf = {
 
 
 19. Review following code to save thumbnail image object to S3.
-* Find **TODO #5** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
+* Find **TODO #5** in the 'LAB03/02-CloudAlbum-S3/cloudalbum/util.py' file.
 ```python
     ## TODO #5 : Review following code to save thumbnail image object to S3
     ## -- begin --
@@ -595,7 +571,7 @@ upload_file_stream.stream.seek(0)
 ```
 
 20. Review your code to retrieve pre-signed URL from S3.
-* Find **TODO #6** in the 'LAB02/02-CloudAlbum-S3/cloudalbum/util.py' file.
+* Find **TODO #6** in the 'LAB03/02-CloudAlbum-S3/cloudalbum/util.py' file.
 ```python
     ## TODO #6 : Review following code to retrieve pre-signed URL from S3.
     ## -- begin --
@@ -764,10 +740,10 @@ https://<CLOUD9_RESOURCE_ID>.vfs.cloud9.ap-southeast-1.amazonaws.com
 
 57. Install required Python packages:
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/03-CloudAlbum-COGNITO/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-workshop-1d/LAB03/03-CloudAlbum-COGNITO/requirements.txt
 ```
 
-58. Review 'LAB02/03.CloudAlbum-COGNITO/cloudalbum/config.py'
+58. Review 'LAB03/03.CloudAlbum-COGNITO/cloudalbum/config.py'
 * Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
 
 * Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
@@ -810,7 +786,7 @@ options = {
 
 
 59. Review following code to retrieve JSON Web Key (JWK) from cognito.
-* Find **TODO #7** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
+* Find **TODO #7** in the 'LAB03/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
 ```python
 ## TODO #7: Review following code to retrieve JSON Web Key (JWK) from cognito
 ## https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
@@ -823,7 +799,7 @@ JWKS = requests.get(JWKS_URL).json()["keys"]
 
 
 60. Review following code to set up User objedct using id_token from Cognito.
-* Find **TODO #8** in the 'LAB02/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
+* Find **TODO #8** in the 'LAB03/03-CloudAlbum-COGNITO/cloudalbum/controlloer/site/siteView.py' file.
 ```python
     ## TODO #8: Review following code to set up User objedct using id_token from Cognito
     ## -- begin --
@@ -885,7 +861,7 @@ AWS [X-Ray](https://aws.amazon.com/xray/) helps developers analyze and debug pro
 
 64. Install required Python packages for AWS X-Ray.
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB02/04-CloudAlbum-XRAY/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-workshop-1d/LAB03/04-CloudAlbum-XRAY/requirements.txt
 ```
 
 **Download and run the AWS X-Ray daemon on your AWS Cloud9 instance.**
@@ -918,7 +894,7 @@ unzip aws-xray-daemon-linux-2.x.zip
 
 * **Now, X-Ray daemon works and ready to use X-Ray to analyze applications.**
 
-70. Review, `### x-ray set up` part in the 'LAB02/04-CloudAlbum-XRAY/run.py' file.
+70. Review, `### x-ray set up` part in the 'LAB03/04-CloudAlbum-XRAY/run.py' file.
 
  * Related document
    *  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-configuration.html
@@ -963,7 +939,7 @@ def print_abc():
 * **NOTE:** Patching Libraries to Instrument Downstream Calls
   * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-patching.html
 
-71. Review 'LAB02/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above `step 58` for `03.CloudAlbum-COGNITO`)
+71. Review 'LAB03/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above `step 58` for `03.CloudAlbum-COGNITO`)
 * Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
 
 * Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.

@@ -100,13 +100,13 @@ git clone https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d --depth
 14. Install the requirements for the project by executing the command below in your AWS Cloud9 terminal.
 
 ```console
-sudo pip-3.6 install -r ~/environment/moving-to-serverless-techpump/LAB01/CloudAlbum/requirements.txt
+sudo pip-3.6 install -r ~/environment/moving-to-serverless-workshop-1d/LAB01/CloudAlbum/requirements.txt
 ```
 
 15. Check the **config.py** Open this file in **Cloud9 terminal window** or **Cloud9 IDE editor**.
 
 ```console
-vi ~/environment/moving-to-serverless-techpump/LAB01/CloudAlbum/cloudalbum/config.py
+vi ~/environment/moving-to-serverless-workshop-1d/LAB01/CloudAlbum/cloudalbum/config.py
 ```
 
 
@@ -160,7 +160,7 @@ conf = {
 
 18. Setup these variables **before run** this application.
 
-19. Select **moving-to-serverless-techpump/LAB01/CloudAlbum/run.py** in the tree view.
+19. Select **moving-to-serverless-workshop-1d/LAB01/CloudAlbum/run.py** in the tree view.
 
 20. First, **open the run.py**(double click), and on the top menu bar, click **Run → Run With → Python 3**. Ensure that you are using the **Python 3 runner**, as shown in the screenshot below.
 <img src=images/lab01-03.png width=800>
@@ -181,12 +181,12 @@ Check your environment variables!
 24. First, In the **Name column**, type **DB_URL**. In the Value column, type the **SQLITE** file DB URL (*for the test purpose only*) like this. **DB table will be created automatically** via [SQLAlchemy](https://www.sqlalchemy.org/).
 
 ```python
-sqlite:////home/ec2-user/environment/moving-to-serverless-techpump/LAB01/sqlite.db
+sqlite:////home/ec2-user/environment/moving-to-serverless-workshop-1d/LAB01/sqlite.db
 ```
 
 * **ALTERNATIVE WAY:** You can set the **DB_URL** value directly in `config.py`.
 ```python
-'DB_URL': os.getenv('DB_URL', 'sqlite:////home/ec2-user/environment/moving-to-serverless-techpump /LAB01/sqlite.db'),
+'DB_URL': os.getenv('DB_URL', 'sqlite:////home/ec2-user/environment/moving-to-serverless-workshop-1d/LAB01/sqlite.db'),
 ```
 
 25. Second, in the **Name column**, type **GMAPS_KEY**. In the Value column, type the **Google MAP API KEY** (**Temporary API Key** will be provided to the workshop attendees by presenter).

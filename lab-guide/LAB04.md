@@ -27,7 +27,7 @@ The `Serverless` Framework (https://serverless.com) is an MIT open source framew
  * Perform following command:
 
 ```Console
-cd ~/environment/moving-to-serverless-techpump/LAB03/
+cd ~/environment/moving-to-serverless-workshop-1d/LAB04/
 ```
 
 ```console
@@ -72,16 +72,16 @@ virtualenv -p /usr/bin/python36 venv
 ```
 Running virtualenv with interpreter /usr/bin/python36
 Using base prefix '/usr'
-New python executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python36
-Also creating executable in /home/ec2-user/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
+New python executable in /home/ec2-user/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/python36
+Also creating executable in /home/ec2-user/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/python
 Installing setuptools, pip, wheel...done.
 ```
 
 2. Now you can activate your **virtualenv** (`venv`).
 ```Console
-source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate
+source ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/activate
 echo "unalias python" >> ~/.bash_profile
-echo "source ~/environment/moving-to-serverless-techpump/LAB03/venv/bin/activate" >> ~/.bash_profile
+echo "source ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/activate" >> ~/.bash_profile
 ```
 <img src="./images/lab03-task1-venv.png" width="600">
 
@@ -91,7 +91,7 @@ which python
 ```
 * output :
 ```
-~/environment/moving-to-serverless-techpump/LAB03/venv/bin/python
+~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/python
 ```
 
 ```console
@@ -99,7 +99,7 @@ which pip
 ```
 * output:
 ```
-~/environment/moving-to-serverless-techpump/LAB03/venv/bin/pip
+~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/pip
 ```
 
 3. Install AWS Chalice microframework (Of course, you must run following command after `venv` activation)
@@ -119,7 +119,7 @@ chalice 1.6.1, python 3.6.5, linux 4.14.47-56.37.amzn1.x86_64
 
 * **Now, we are using `venv`. So we can run `pip` not `pip-3.6`.**
 ```Console
-pip install -r ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
+pip install -r ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
 ```
 
 ## TASK 2 : Build a simple AWS Chalice serverless app.
@@ -128,10 +128,10 @@ This TASK will provide an introduction on how to use AWS Chalice and provide ins
 5. We installed AWS Chalice serverless framework previous step, it is time to create your first Chalice application. Run the `chalice new-project` command to create a project called `myapp`:
 
 ```console
-mkdir -p ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
+mkdir -p ~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/
 ```
 ```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/
+cd ~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/
 ```
 ```console
 chalice new-project myapp
@@ -146,7 +146,7 @@ tree -a .
 ```
 * output: 
 ```
-<username>:~/environment/moving-to-serverless-techpump/LAB03/01-Chalice (master) $ tree -a .
+<username>:~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice (master) $ tree -a .
 .
 └── myapp
     ├── app.py
@@ -187,7 +187,7 @@ if you want detailed execution information, you can also run Chalice as debug mo
 For the convenience of test, we will use `httpie` in the shell. 
 
 * You can open **NEW TERMINAL** with bash shell and then type following command.
-<img src="./images/lab03-task1-new-terminal.png" width="500">
+<img src="./images/lab04-task1-new-terminal.png" width="500">
 
 ```console
 pip install httpie
@@ -253,7 +253,7 @@ def user_add():
 * Review above code for new `app.py`. `Response` and `logging` are importted from top of the `app.py` file. Debug option is enabled for the application logging. `user_info` and `user_add` functions are added.
 
 * Replace `app.py` file with the contents of above source code.
-  * `app.py` file is located in `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp/app.py`
+  * `app.py` file is located in `~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp/app.py`
 
 9. Stop the previous `chalice local --port 8080` command with **CTRL+C** and run the new version of `myapp`.
 ```console
@@ -261,7 +261,7 @@ chalice local --port 8080
 ```
 
 10. Test new Chalice application. For the convenience, you can open additional terminal in the Cloud9 environment. 
-<img src=./images/lab03-task1-new-terminal.png width=500>
+<img src=./images/lab04-task1-new-terminal.png width=500>
 
 * **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
 ```console
@@ -317,7 +317,7 @@ myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'us
 
 ```
 
-11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp`)
+11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp`)
 ```console
 chalice deploy
 ```
@@ -417,7 +417,7 @@ x-amzn-RequestId: 519a0bcd-9c8a-11e8-8997-5550927d6916
 
 ```
 
-* You can check the files of `deployed` and `deployments` directories. (~/environment/moving-to-serverless-techpump/LAB03/01-Chalice)
+* You can check the files of `deployed` and `deployments` directories. (~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice)
 ```
 tree -a .
 ```
@@ -441,15 +441,15 @@ tree -a .
 
 13. Examine your **API Gateway** and **Lambda** Console. You can see the new API and Lambda functions.
 * API Gateway console (myapp)
-<img src=./images/lab03-task1-api-gw-console.png width=700>
+<img src=./images/lab04-task1-api-gw-console.png width=700>
 
 * Lambda console (myapp-dev)
-<img src=./images/lab03-task1-lambda-console.png width=700>
+<img src=./images/lab04-task1-lambda-console.png width=700>
 
 
 14. Delete deployed application
 ```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/01-Chalice/myapp
+cd ~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp
 ```
 ```console
 chalice delete
@@ -488,17 +488,17 @@ with tempfile.NamedTemporaryFile('w') as f:
 ## TASK 3 : CloudAlbum with AWS Chalice
 We have removed server based components via LAB02. We are now going serverless by removing Web Server Tier and App Server Tier.
 
-<img src=./images/lab03-task2-serverless.png width=700>
+<img src=./images/lab04-task2-serverless.png width=700>
 
 Finally, all servers are gone!
 
-<img src=./images/lab03-task2-serverless-full.png width=700>
+<img src=./images/lab04-task2-serverless-full.png width=700>
 
 
-15. Let's take a look around `~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/` directory.
+15. Let's take a look around `~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/` directory.
 
 ```console
-cd ~/environment/moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/
+cd ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/
 ```
 ```console
 tree -L 2 -a .
@@ -641,10 +641,10 @@ aws ssm get-parameters --names "/cloudalbum/DDB_RCU" --with-decryption
 ```
 
 * You can also check the **System Manager - Parameter Store console**.
-<img src="./images/lab03-task3-ps-console.png" width="600">
+<img src="./images/lab04-task3-ps-console.png" width="600">
 
 
-19. Review `config.py` file located in '**LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/config.py**'.
+19. Review `config.py` file located in '**LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/config.py**'.
 
 ```python
 from chalice import CORSConfig
@@ -738,12 +738,12 @@ def get_param(param_name):
 21. Copy static files to your S3 Bucket for **static file hosting** such as **CSS** and **JavaScript**.
  * Following **cloudalbum-\<INITIAL\>** value must replace **YOUR OWN VALUE.**
 ```console
-aws s3 sync ~/environment/moving-to-serverless-techpump/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
+aws s3 sync ~/environment/moving-to-serverless-workshop-1d/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
 ```
 
 22. Enable S3 bucket CORS configuration in your S3 Console. (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
 
-<img src=./images/lab03-task2-s3-cors.png width=700>
+<img src=./images/lab04-task2-s3-cors.png width=700>
 
 * **REVIEW** the CORS configuration
 ```xml
@@ -759,13 +759,13 @@ aws s3 sync ~/environment/moving-to-serverless-techpump/resources/static s3://cl
 
 ```
 
-23. Review template files. Template files which stored `moving-to-serverless-techpump/LAB03/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
+23. Review template files. Template files which stored `moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
 ```python
 S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGION'], conf['S3_PHOTO_BUCKET'])
 ```
 
 
-24. Review the `app.py` in the 'LAB03/02-CloudAlbum-Chalice/cloudalbum/app.py' 
+24. Review the `app.py` in the 'LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py' 
 * Flask dependencies are removed
   * Flask, url_for, flash, flask_login and so on.
 
@@ -773,7 +773,7 @@ S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGIO
 
 * CloudAlbum is not restful, it is still **tightly coupled with Jinja2 template engine**. So, we use Jinja2 template engine in this time.
 
-* Chalice permmited to load python modules **from the `chalicelib` directory**. We will use this directory which contains `templates` directory. You can refer to following code in `LAB03/02-CloudAlbum-Chalice/cloudalbum/app.py`. 
+* Chalice permmited to load python modules **from the `chalicelib` directory**. We will use this directory which contains `templates` directory. You can refer to following code in `LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py`. 
 ```python
 env = Environment(
     loader=PackageLoader(__name__, 'chalicelib/templates'),
@@ -793,7 +793,7 @@ body = t.render(current_user=user, gmaps_key=conf['GMAPS_KEY'], s3_static_url=S3
 25. Review provided **Lambda execution policy** before run. 
 * **NOTE:** As you know, this policy is just example for the convinience not for practical environment. 
 
-* This policy is provided for the workshop as `policy-dev.json` in the `LAB03/02-CloudAlbum-Chalice/cloudalbum/.chalice/policy-dev.json`. 
+* This policy is provided for the workshop as `policy-dev.json` in the `LAB04/02-CloudAlbum-Chalice/cloudalbum/.chalice/policy-dev.json`. 
 
 ```JSON
 {
@@ -845,22 +845,22 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 
 
 27. Configure `App client cloudalbum` in the **Cognito console.**
-<img src=./images/lab03-task2-cog-console.png width=700>
+<img src=./images/lab04-task2-cog-console.png width=700>
 
 * Update `Callback URL(s)`.
 * Update `Sign out URL(s)`.
 
 28. Look into your **Lambda Console.**
-<img src=./images/lab03-task2-lambda-console.png width=700>
+<img src=./images/lab04-task2-lambda-console.png width=700>
 
 
 29. Look into your **API Gateway Console.**
-<img src=./images/lab03-task2-apigw-console.png width=700>
+<img src=./images/lab04-task2-apigw-console.png width=700>
 
 
 30. Connect to your application through API Gateway. open `https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api` in your browser. 
 * If you missed API Gateway **URL**, you can use `chalice url` command.
-<img src=./images/lab02-task3-cognito-login.png width=500>
+<img src=./images/lab03-task3-cognito-login.png width=500>
 
 
 31. Perform application test.
@@ -877,7 +877,7 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 
 ## Go further
 * Legacy backend is **tightly coupled with Jinja2** Template Engine!
-<img src="./images/lab03-task3-go-further-jinja2.png" width="550">
+<img src="./images/lab04-task3-go-further-jinja2.png" width="550">
 
 * It means almost request returned rendered HTML **not JSON data**.
 * If you want to build **more flexible backend**, you can **re-design your client code rendering it self using data response from backend API**.

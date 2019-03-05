@@ -1,4 +1,4 @@
-# Moving to AWS Serverless application with AWS Chalice framework.
+# Moving to AWS Serverless.
 <img src="lab-guide/images/Serverless-logo-github.png" width=640>
 
 ## Welcome! ##
