@@ -34,7 +34,7 @@ In this section, you will create an VPC with multi-az for the high availability 
 3. Click **Create Stack** button at the top-left corner. (or click **Create new stack** at the center of page.)
 
 4. Download the **CloudFormation** template file (network.yaml) to your local laptop.
- * Download Link : https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/blob/master/resources/network.yaml
+ * Download Link : https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-workshop-1d/master/resources/network.yaml
 
 5. On the **Select Tempalte** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose `network.yaml` file which is downloaded previous step.
 
