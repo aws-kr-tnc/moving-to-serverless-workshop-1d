@@ -68,20 +68,22 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 
 15. Click **Create file system** button.
 
-16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain `moving-to-serverless`. Then you have to choose pair of subnets and please check the each Availibity Zone of subnet. You can refer to following screen caputure image.
+16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain `moving-to-serverless`. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
+
+17. Click **Next Step** button. You can refer to following screen caputure image.
 
 <img src=./images/lab02-task2-efs-1.png width=700>
 
 
-17. On the **Configure optional settings** page, type `moving-to-serverless` for key `Name` under **Add tags** section.
+18. On the **Configure optional settings** page, type `moving-to-serverless` for key `Name` under **Add tags** section.
 
-18. Then click **Next Step**. (Leave the remaining configuration as default.)
+19. Then click **Next Step**. (Leave the remaining configuration as default.)
 
-19. On the **Review and create** page, check the configuration then click **Create File System** button.
+20. On the **Review and create** page, check the configuration then click **Create File System** button.
 
-20. After a while, you will see that the **Mount target state** changes from **Creating** to **Available** on the **Mount targets** section.
+21. After a while, you will see that the **Mount target state** changes from **Creating** to **Available** on the **Mount targets** section at the right-bottom corner.
 
-21. If the **Mount target state** becomes **Available**, Copy the **File system ID** and paste it `notepad` for later use in TASK 5. 
+22. If the **Mount target state** becomes **Available**, Copy the **File system ID** and paste it `notepad` for later use in TASK 5. 
 
 
 * Move to the next TASK.
@@ -92,15 +94,15 @@ We'll create Amazon Elasticache - Redis to use as a session store for CloudAlbum
 
 Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, run, and scale popular open source compatible in-memory data stores. Build data-intensive apps or improve the performance of your existing apps by retrieving data from high throughput and low latency in-memory data stores. Amazon ElastiCache is a popular choice for Gaming, Ad-Tech, Financial Services, Healthcare, and IoT apps.
 
-22. In the **AWS Managed Console**, on the **Service** menu, Click **ElastiCache**.
+23. In the **AWS Managed Console**, on the **Service** menu, Click **ElastiCache**.
 
-23. In the left navigation pane, click **Redis**.
+24. In the left navigation pane, click **Redis**.
 
-24. Click **Create**.
+25. Click **Create**.
 
  This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** `Cluster Mode enabled`. 
  
- * Cluster engine : `Redis`
+ * Cluster engine : **Redis**
  * Redis settings
    * **Name** : `moving-to-serverless`
    * **Description** : `workshop`
@@ -113,7 +115,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
 <img src=./images/lab02-task3-ec-1.png width=700>
 
-25. In the **Advanced Redis settings** section, configure:
+26. In the **Advanced Redis settings** section, configure:
 * **Multi-AZ with Auto-Failover** : [v] (checked)
 * **Subnet  group** : `Create new`
 * **Name** : `moving-to-serverless`
@@ -126,11 +128,11 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
 * Leave the remaining configuration as default.
 
-26. Click **Create** button, at the bottom of the page.
+27. Click **Create** button, at the bottom of the page.
 
-27. After a while, you will see that the **Status** column changes from **Creating** to **Available** on the **Status** column.
+28. After a while, you will see that the **Status** column changes from **Creating** to **Available** on the **Status** column.
 
-28. Copy the **Primary Endpoint**  and paste it `notepad` for later use in TASK 5. 
+29. Copy the **Primary Endpoint**  and paste it `notepad` for later use in TASK 5. 
 
  * <img src=./images/lab02-task3-ec-3.png width=500>
 
@@ -142,41 +144,41 @@ We will now deploy the CloudAlbum application using ElasticBeanstalk. Our applic
 
 With Elastic Beanstalk, you can quickly deploy and manage applications in the AWS Cloud without having to learn about the infrastructure that runs those applications. Elastic Beanstalk reduces management complexity without restricting choice or control. You simply upload your application, and Elastic Beanstalk automatically handles the details of capacity provisioning, load balancing, scaling, and application health monitoring.
 
-29. In the **AWS Management Console** on the **Service** menu, click Elastic Beanstalk.
+30. In the **AWS Management Console** on the **Service** menu, click Elastic Beanstalk.
 
-30. At the top-right of screen, clikck **Create New Application**.
+31. At the top-right of screen, clikck **Create New Application**.
 
-31. At the **Create New Application** window, configure the following:
+32. At the **Create New Application** window, configure the following:
 
 * **Application Name** : `HA-CloudAlbum`
 * **Description** : `Moving to AWS Serverless Workshop`
 
-32. Click **Create** button.
+33. Click **Create** button.
 
-33. At the **All Applications > HA-CloudAlbum** page, click the **Create one now**.
+34. At the **All Applications > HA-CloudAlbum** page, click the **Create one now**.
 
-34. On the **Select environment tier**, page:
+35. On the **Select environment tier**, page:
 
  * Select **Web server environment**. 
  
-35. Click **Select** button.
+36. Click **Select** button.
 
-36. In the **Create a web server environemnt** section, for **Description** type `Moving to AWS Serverless Workshop`
+37. In the **Create a web server environemnt** section, for **Description** type `Moving to AWS Serverless Workshop`
 
-37. In the **Base configuration** section, configure the following:
+38. In the **Base configuration** section, configure the following:
 
 * **Preconfigured plafform** : `Python` 
-<img src=./images/lab02-task4-eb-python.png width=500>
 
-* **Application code** : `Upload your code`
+* <img src=./images/lab02-task4-eb-python.png width=500>
 
-38. Choose `Sample application` button.
+* **Application code** : `Sample application`
 
 39. Click **Configure more options**.
 
 40. In the **Configure HaCloudalbum-env** page : Change the **Configuration presets** from `Low cost(Free Tier eligible)` to `High avalability`.
 
  * **Configuration presets** : `High avalability`
+ 
  * <img src=./images/lab02-task4-eb-preset.png width=400>
 
  * **NOTE**: We will start from `High availability` preset for the convenience. We need to change some configuration for our application. 
@@ -228,9 +230,8 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 50. Click **Modify** button of **Instances** section in the **Configure HaCloudalbum-env** page.
 
-51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page.
-
-* <img src=./images/lab02-task4-eb-instance-sg.png width=500>
+51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page. And click **Save** button.
+ <img src=./images/lab02-task4-eb-instance-sg.png width=500>
 
 52. Click **Create environment** button in the bottom of the page.
 
@@ -268,72 +269,73 @@ Now, let's deploy our application.
 
 56. In the **Modify software** page, you can find  **Environment properties** section. Configure following variables.
 
-* **APP_HOST** : `0.0.0.0`
-* **APP_PORT** : `5000`
-* **DB_URL** : `mysql+pymysql://serverless:workshop@<YOUR DATABASE ENDPOINT>/ebdb?charset=utf8`
-  * **NOTE**: Replace <YOUR DATABASE ENDPOINT> to **your own EndPoint** value which copied previous step. For example : `mysql+pymysql://serverless:workshop@aa1is6q2iidf84x.cjukz33spdko.ap-southeast-1.rds.amazonaws.com:3306/ebdb?charset=utf8`
-* **EFS_ID** : `<EFD_ID>`
-  * We already copied it to `notepad` in TASK 2.
-  * For example : `fs-5d3e921c`
-* **ELCACHE_EP** : `<ELCACHE_EP>`
-  * We already copied it to `notepad` in TASK 3.
-  * For example : `moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
-* **FLASK_SECRET** : `serverless`
+**Name** : **Value**
+* `APP_HOST` : `0.0.0.0`
+* `APP_PORT` : `5000`
+* `DB_URL` : `mysql+pymysql://serverless:workshop@<YOUR DATABASE ENDPOINT>/ebdb?charset=utf8`
+  * **NOTE**: Replace <YOUR DATABASE ENDPOINT> to **your own EndPoint** value which copied previous step. 
+  * For example : mysql+pymysql://serverless:workshop@aa1is6q2iidf84x.cjukz33spdko.ap-southeast-1.rds.amazonaws.com:3306/ebdb?charset=utf8
+* `EFS_ID` : `<YOUR FILE SYSTEM ID>`
+  * We already copied it to notepad in **TASK 2**.
+  * For example : fs-5d3e921c
+* `ELCACHE_EP` : `<YOUR ELASTICACHE_ENDPOINT>`
+  * We already copied it to notepad in **TASK 3**.
+  * For example (Exclude the port number): moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com
+* `FLASK_SECRET` : `serverless`
   * This value will be used for Flask app's SECRET_KEY.
-* **GMAPS_KEY** : `<GMAPS_KEY>`
+* `GMAPS_KEY` : `<GMAPS_KEY>`
   * You already get this key from instructor.
-* **UPLOAD_FOLDER** : `/mnt/efs`
+* `UPLOAD_FOLDER` : `/mnt/efs`
 
- * <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
+  <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
 57. Click **Apply** button.
 
 
-58. In the **Load balancer** section, click **Modify** button.
+58. In the left side Navigation plain, choose **Configuration**.
 
-59. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of `default` process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
+59. In the **Load balancer** section, click **Modify** button.
+
+60. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of `default` process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
 
  * <img src=./images/lab02-task5-eb-alb-health.png width=500>
 
-60. Configure **Health check** variables.
+61. Configure **Health check** variables.
  * **HTTP code** : `200`
  * **Path** : `/users/new`
 
  * <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
 
 
-61. Click **Save** button.
+62. Click **Save** button.
 
-62. Next, click **Apply** button.
-
-63. Click the **Dashboard** and click **Upload and Deploy** button.
+63. Next, click **Apply** button.
 
 64. You can download the application to your laptop as a ZIP file, from the below URL:
+https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip
 
-``
-    https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip
-``
+65. Click the **Dashboard** and click **Upload and Deploy** button.
 
-65. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
+66. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
 
  * <img src=./images/lab02-task5-deploy.png width=500>
 
-66. Click **Deploy** button.
+67. Click **Deploy** button.
 
-67. After deploy operation, visit the our application URL. you can see our application in your browser like below.
+68. After deploy operation, visit the our application URL. you can see our application in your browser like below.
 
  * <img src=./images/lab02-task5-cloudalbum.png width=500>
 
 
-68. If the deployment is successful, Let's change our mimimum capacity configuration. In the **Capacity** section, click **Modify** button.
+69. If the deployment is successful, Let's change our mimimum capacity configuration. In the **Capacity** section, click **Modify** button.
 
 
-69. In the **Modify capacity** page, change the atttribute of AutoScalingGroup `Min` value from 1 to 2. (or what you want..)
+70. In the **Modify capacity** page, change the atttribute of AutoScalingGroup `Min` value from 1 to 2. (or what you want..)
 
- * <img src=./images/lab02-task5-asg.png width=500>
+  <img src=./images/lab02-task5-asg.png width=500>
 
 
-70. Click the **Apply** button. let's wait until the configuration is applied.
+71. Click the **Apply** button. let's wait until the configuration is applied.
 
 
 71. Test the deployed application and explore the ElasticBeastalk console.
