@@ -5,6 +5,7 @@ Before we go to the serverless application architecture, let's deploy our applic
 So, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
 
 ## In this lab cover.. 
+
 <img src=./images/lab02-eb-diagram.png width=700>
 
 * Configure VPC for the HA environment. (CloudFormation template will be provided.)
@@ -29,7 +30,8 @@ In this section, you will create an VPC with multi-az for the high availability 
 
 
 1. Make sure the current region is Singapore (ap-souteeast-1).
-<img src=./images/lab02-task1-region.png width=700>
+
+    <img src=./images/lab02-task1-region.png width=700>
 
 2. In the AWS Console, click **Services**, then click **CloudFormation** to open the CloudFormation dashboard.
 
@@ -53,7 +55,8 @@ In this section, you will create an VPC with multi-az for the high availability 
 11. On the **Review** page, click **Create** button. 
 
 12. About 5 minutes later, the stack creation will be completed. Check the **Status** field. You can see that the value of Satus is ***CREATE_COMPLETE***.
-<img src=./images/lab02-task1-cf-complete.png width=700>
+
+    <img src=./images/lab02-task1-cf-complete.png width=700>
 
 13. Explore the ***outputs*** tab. Copy the values of ***outputs*** tab to the your notepad for later use.
 
@@ -72,7 +75,8 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain ***moving-to-serverless***. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
 
 17. Click **Next Step** button. You can refer to following screen caputure image.
-<img src=./images/lab02-task2-efs-1.png width=700>
+
+    <img src=./images/lab02-task2-efs-1.png width=700>
 
 
 18. On the **Configure optional settings** page, type `moving-to-serverless` for key `Name` under **Add tags** section.
@@ -212,17 +216,20 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
  * **Visivility** : `Public`
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Public Subnet - 1*** and ***Public Subnet -2***
+
     <img src=./images/lab02-task4-eb-alb.png width=700>
 
 
 47. In the **Instance settings** section, configure followings.
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
+
     <img src=./images/lab02-task4-eb-instance.png width=700>
 
 48. In the **Database settings** section, configure followings.
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
+
     <img src=./images/lab02-task4-eb-dbsubnet.png width=700>
 
 49. Click **Save** button.
@@ -230,6 +237,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 50. Click **Modify** button of **Instances** section in the **Configure HaCloudalbum-env** page.
 
 51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page.
+
     <img src=./images/lab02-task4-eb-instance-sg.png width=500>
 
 52. Click **Save** button.
@@ -247,7 +255,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 If the previous TASK was successfully completed, you will see the following screen.
 
- <img src=./images/lab02-task5-eb-simpleapp.png  width=700> 
+<img src=./images/lab02-task5-eb-simpleapp.png  width=700> 
 
 * You can see the deployed application by clicking on the URL link in the top line.
 
@@ -303,6 +311,7 @@ Now, let's deploy our application.
 62. Configure **Health check** variables.
 * **HTTP code** : `200`
 * **Path** : `/users/new`
+
      <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
 
 
@@ -330,6 +339,7 @@ Now, let's deploy our application.
 
 
 71. In the **Modify capacity** page, change the atttribute of AutoScalingGroup ***Min*** value from 1 to 2. (or what you want..)
+
     <img src=./images/lab02-task5-asg.png width=500>
 
 
