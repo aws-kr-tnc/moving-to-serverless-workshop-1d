@@ -16,7 +16,7 @@ So, you'll deploy the CloudAlbum application with HA(high availability) architec
 The following prerequisited are required for this hands-on lab:
 
 * AWS Console Access
-* AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
+* AWS CLI installed and configured on your EC2 or PC. (***AdministratorAccess*** recommended)
 
 
 ## TASK 1. Create your multi-az VPC
@@ -34,15 +34,15 @@ In this section, you will create an VPC with multi-az for the high availability 
 3. Click **Create Stack** button at the top-left corner. (or click **Create new stack** at the center of page.)
 
 4. Download the **CloudFormation** template file (network.yaml) to your local laptop.
- * Download Link : https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-workshop-1d/master/resources/network.yaml
+ * Download Link : <https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-workshop-1d/master/resources/network.yaml>
 
-5. On the **Select Tempalte** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose `network.yaml` file which is downloaded previous step.
+5. On the **Select Tempalte** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose ***network.yaml*** file which is downloaded previous step.
 
 6. Click **Next** button.
 
 7. On the **Specify Details** page. Type `workshop-vpc` for **Stack name**. 
 
-8. Review `Parameters` section. You can check the CIDR address for VPC and subnets. If you want, you can modify these values your own.
+8. Review ***Parameters*** section. You can check the CIDR address for VPC and subnets. If you want, you can modify these values your own.
 
 9. Click **Next** button.
 
@@ -50,11 +50,11 @@ In this section, you will create an VPC with multi-az for the high availability 
 
 11. On the **Review** page, click **Create** button. 
 
-12. About 5 minutes later, the stack creation will be completed. Check the **Status** field. You can see that the value of Satus is `CREATE_COMPLETE`.
+12. About 5 minutes later, the stack creation will be completed. Check the **Status** field. You can see that the value of Satus is ***CREATE_COMPLETE***.
 
 <img src=./images/lab02-task1-cf-complete.png width=700>
 
-13. Explore the `outputs` tab. Copy the values of `outputs` tab to the your notepad for later use.
+13. Explore the ***outputs*** tab. Copy the values of ***outputs*** tab to the your notepad for later use.
 
 
 ## TASK 2. Create EFS
@@ -68,7 +68,7 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 
 15. Click **Create file system** button.
 
-16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain `moving-to-serverless`. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
+16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain ***moving-to-serverless***. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
 
 17. Click **Next Step** button. You can refer to following screen caputure image.
 
@@ -83,7 +83,7 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 
 21. After a while, you will see that the **Mount target state** changes from **Creating** to **Available** on the **Mount targets** section at the right-bottom corner.
 
-22. If the **Mount target state** becomes **Available**, Copy the **File system ID** and paste it `notepad` for later use in TASK 5. 
+22. If the **Mount target state** becomes **Available**, Copy the **File system ID** and paste it ***notepad*** for later use in TASK 5. 
 
 
 * Move to the next TASK.
@@ -100,9 +100,9 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
 25. Click **Create**.
 
- This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** `Cluster Mode enabled`. 
+ This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** ***Cluster Mode enabled***. 
  
- * Cluster engine : **Redis**
+ * Cluster engine : ***Redis***
  * Redis settings
    * **Name** : `moving-to-serverless`
    * **Description** : `workshop`
@@ -120,9 +120,9 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 * **Subnet  group** : `Create new`
 * **Name** : `moving-to-serverless`
 * **Description** : `workshop`
-* **VPC ID** : You can refer to the **VPCId** in `Outputs` tab values of CloudFormation.(**step 13**). 
-* **Subnets** : Choose two subnets with **PriSub1** and **PriSub2** in `Outputs` tab values of CloudFormation.(**step 13**). You can refer to the subnet id and CIDR block of **PriSub1** and **PriSub2**.
-* **Preferred availability zone(s)** : `No preference`
+* **VPC ID** : You can refer to the **VPCId** in ***Outputs*** tab values of CloudFormation.(**step 13**). 
+* **Subnets** : Choose two subnets with **PriSub1** and **PriSub2** in ***Outputs*** tab values of CloudFormation.(**step 13**). You can refer to the subnet id and CIDR block of **PriSub1** and **PriSub2**.
+* **Preferred availability zone(s)** : ***No preference***
 
 <img src=./images/lab02-task3-ec-2.png width=700>
 
@@ -132,7 +132,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
 28. After a while, you will see that the **Status** column changes from **Creating** to **Available** on the **Status** column.
 
-29. Copy the **Primary Endpoint**  and paste it `notepad` for later use in TASK 5. 
+29. Copy the **Primary Endpoint**  and paste it ***notepad*** for later use in TASK 5. 
 
  * <img src=./images/lab02-task3-ec-3.png width=500>
 
@@ -167,21 +167,21 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 38. In the **Base configuration** section, configure the following:
 
-* **Preconfigured plafform** : `Python` 
+* **Preconfigured plafform** : `Python`
 
 * <img src=./images/lab02-task4-eb-python.png width=500>
 
-* **Application code** : `Sample application`
+* **Application code** : ***Sample application***
 
 39. Click **Configure more options**.
 
-40. In the **Configure HaCloudalbum-env** page : Change the **Configuration presets** from `Low cost(Free Tier eligible)` to `High avalability`.
+40. In the **Configure HaCloudalbum-env** page : Change the **Configuration presets** from **Low cost(Free Tier eligible)** to ***High avalability***.
 
- * **Configuration presets** : `High avalability`
+ * **Configuration presets** : ***High avalability***
  
  * <img src=./images/lab02-task4-eb-preset.png width=400>
 
- * **NOTE**: We will start from `High availability` preset for the convenience. We need to change some configuration for our application. 
+ * **NOTE**: We will start from ***High availability*** preset for the convenience. We need to change some configuration for our application. 
 
 41. In the **Database** section, click **Modify**.
 
@@ -212,18 +212,18 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
  
  * **Visivility** : `Public`
  
- * Choose **Availability Zone** and **Subnet**. You can choose `Public Subnet - 1` and `Public Subnet -2`
+ * Choose **Availability Zone** and **Subnet**. You can choose ***Public Subnet - 1*** and ***Public Subnet -2***
   <img src=./images/lab02-task4-eb-alb.png width=700>
 
 
 47. In the **Instance settings** section, configure followings.
  
- * Choose **Availability Zone** and **Subnet**. You can choose `Private Subnet - 1` and `Private Subnet -2`
+ * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
   <img src=./images/lab02-task4-eb-instance.png width=700>
 
 48. In the **Database settings** section, configure followings.
  
- * Choose **Availability Zone** and **Subnet**. You can choose `Private Subnet - 1` and `Private Subnet -2`
+ * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
   <img src=./images/lab02-task4-eb-dbsubnet.png width=700>
 
 49. Click **Save** button.
@@ -261,7 +261,7 @@ Now, let's deploy our application.
 
 * We will change the some configuration for our application.
 
-54. Copy the RDS **Endpoint** value to the `notepad` for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
+54. Copy the RDS **Endpoint** value to the ***notepad*** for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
 
 * <img src=./images/lab02-task5-rds-endpoint.png width=300>
 
@@ -269,18 +269,18 @@ Now, let's deploy our application.
 
 56. In the **Modify software** page, you can find  **Environment properties** section. Configure following variables.
 
-**Name** : **Value**
+* ***Name*** : ***Value***
 * `APP_HOST` : `0.0.0.0`
 * `APP_PORT` : `5000`
 * `DB_URL` : `mysql+pymysql://serverless:workshop@<YOUR DATABASE ENDPOINT>/ebdb?charset=utf8`
-  * **NOTE**: Replace <YOUR DATABASE ENDPOINT> to **your own EndPoint** value which copied previous step. 
-  * For example : mysql+pymysql://serverless:workshop@aa1is6q2iidf84x.cjukz33spdko.ap-southeast-1.rds.amazonaws.com:3306/ebdb?charset=utf8
+  * **NOTE**: Replace ***`<YOUR DATABASE ENDPOINT>`*** to **your own EndPoint** value which copied previous step. 
+  * For example : "mysql+pymysql://serverless:workshop@`aa1is6q2iidf84x.cjukz33spdko.ap-southeast-1.rds.amazonaws.com:3306`/ebdb?charset=utf8"
 * `EFS_ID` : `<YOUR FILE SYSTEM ID>`
   * We already copied it to notepad in **TASK 2**.
   * For example : fs-5d3e921c
 * `ELCACHE_EP` : `<YOUR ELASTICACHE_ENDPOINT>`
   * We already copied it to notepad in **TASK 3**.
-  * For example (Exclude the port number): moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com
+  * For example (Exclude the port number): "moving-to-serverless.ttvhbi.ng.0001.apse1.cache.amazonaws.com"
 * `FLASK_SECRET` : `serverless`
   * This value will be used for Flask app's SECRET_KEY.
 * `GMAPS_KEY` : `<GMAPS_KEY>`
@@ -312,7 +312,7 @@ Now, let's deploy our application.
 63. Next, click **Apply** button.
 
 64. You can download the application to your laptop as a ZIP file, from the below URL:
-https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip
+ <https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip>
 
 65. Click the **Dashboard** and click **Upload and Deploy** button.
 
@@ -357,9 +357,7 @@ https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resour
 
 76. Remove your Elasticache cluster.
 
-77. Remove your Elasticache cluster.
-
-78. Remove your VPC from CloudFormation console.
+77. Remove your VPC from CloudFormation console.
 
 
 # Congratulation! You completed LAB02.
