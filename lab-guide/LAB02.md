@@ -230,10 +230,12 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 50. Click **Modify** button of **Instances** section in the **Configure HaCloudalbum-env** page.
 
-51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page. And click **Save** button.
+51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page.
  <img src=./images/lab02-task4-eb-instance-sg.png width=500>
 
-52. Click **Create environment** button in the bottom of the page.
+52. Click **Save** button.
+
+53. Click **Create environment** button in the bottom of the Configure HaCloudalbum-env page.
 
 * **NOTE:** It will probably take 15 minutes or so. It is good to drink coffee for a while.
 
@@ -255,19 +257,19 @@ If the previous TASK was successfully completed, you will see the following scre
 Now, let's deploy our application.
 
 
-53. Click the **Configuration** button in the left navigation menu.
+54. Click the **Configuration** button in the left navigation menu.
 
  * <img src=./images/lab02-task5-eb-configuration.png width=300>
 
 * We will change the some configuration for our application.
 
-54. Copy the RDS **Endpoint** value to the ***notepad*** for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
+55. Copy the RDS **Endpoint** value to the ***notepad*** for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
 
 * <img src=./images/lab02-task5-rds-endpoint.png width=300>
 
-55. In the **Software** section, click **Modify** button for the environment variable configuration.
+56. In the **Software** section, click **Modify** button for the environment variable configuration.
 
-56. In the **Modify software** page, you can find  **Environment properties** section. Configure following variables.
+57. In the **Modify software** page, you can find  **Environment properties** section. Configure following variables.
 
 * ***Name*** : ***Value***
 * `APP_HOST` : `0.0.0.0`
@@ -289,75 +291,75 @@ Now, let's deploy our application.
 
   <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
-57. Click **Apply** button.
+58. Click **Apply** button.
 
+59. Click the **Configuration** button in the left navigation menu.
 
-58. In the left side Navigation plain, choose **Configuration**.
+60. In the **Load balancer** section, click **Modify** button.
 
-59. In the **Load balancer** section, click **Modify** button.
-
-60. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of `default` process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
+61. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of ***default*** process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
 
  * <img src=./images/lab02-task5-eb-alb-health.png width=500>
 
-61. Configure **Health check** variables.
+62. Configure **Health check** variables.
  * **HTTP code** : `200`
  * **Path** : `/users/new`
 
  * <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
 
 
-62. Click **Save** button.
+63. Click **Save** button.
 
-63. Next, click **Apply** button.
+64. Next, click **Apply** button.
 
-64. You can download the application to your laptop as a ZIP file, from the below URL:
+65. You can download the application to your laptop as a ZIP file, from the below URL:
  <https://github.com/aws-kr-tnc/moving-to-serverless-workshop-1d/raw/master/resources/cloudalbum_v1.0.zip>
 
-65. Click the **Dashboard** and click **Upload and Deploy** button.
+66. In the **Dashboard**, click **Upload and Deploy** button.
 
-66. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
+67. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
 
  * <img src=./images/lab02-task5-deploy.png width=500>
 
-67. Click **Deploy** button.
+68. Click **Deploy** button.
 
-68. After deploy operation, visit the our application URL. you can see our application in your browser like below.
+69. After deploy operation, visit the our application URL. you can see our application in your browser like below.
 
  * <img src=./images/lab02-task5-cloudalbum.png width=500>
 
 
-69. If the deployment is successful, Let's change our mimimum capacity configuration. In the **Capacity** section, click **Modify** button.
+70. If the deployment is successful, Let's change your mimimum capacity configuration. In the Configuration menu, click **Modify** button of **Capacity** section.
 
 
-70. In the **Modify capacity** page, change the atttribute of AutoScalingGroup `Min` value from 1 to 2. (or what you want..)
+71. In the **Modify capacity** page, change the atttribute of AutoScalingGroup ***Min*** value from 1 to 2. (or what you want..)
 
   <img src=./images/lab02-task5-asg.png width=500>
 
 
-71. Click the **Apply** button. let's wait until the configuration is applied.
+72. Click the **Apply** button. let's wait until the configuration is applied.
 
 
-71. Test the deployed application and explore the ElasticBeastalk console.
+73. Test the deployed application and explore the ElasticBeastalk console.
 
 
 ## Options : Investigate the application changes
 
-72. .ebextentions (설명 추가 예정)
+74. .ebextentions (설명 추가 예정)
 
-73. SessionStore (설명 추가 예정)
+75. SessionStore (설명 추가 예정)
 
 
 ## TASK 6. Remove your AWS resources
 (자원 삭제 상세설명 추가예정)
 
-74. Remove your EB environment (RDS, ALB, ASG included). 
+76. Remove your EB environment (RDS, ALB, ASG included). 
 
-75. Remove your EFS.
+77. Remove your EFS.
 
-76. Remove your Elasticache cluster.
+78. Remove your Elasticache cluster.
+* ELCache Subnet group delete
 
-77. Remove your VPC from CloudFormation console.
+79. Remove your VPC from CloudFormation console.
 
 
 # Congratulation! You completed LAB02.
