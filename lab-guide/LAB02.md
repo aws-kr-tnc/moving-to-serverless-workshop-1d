@@ -5,6 +5,8 @@ Before we go to the serverless application architecture, let's deploy our applic
 So, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
 
 ## In this lab cover.. 
+<img src=./images/lab02-eb-diagram.png width=700>
+
 * Configure VPC for the HA environment. (CloudFormation template will be provided.)
 * Configure EFS for the scalable shared storage.
 * Configure Elasticache - Redis for the session store.
@@ -23,11 +25,11 @@ The following prerequisited are required for this hands-on lab:
 
 In this section, you will create an VPC with multi-az for the high availability using CloudFormation.
 
-<img src=./images/lab02-task1-cf-diagram.png width=700?>
+<img src=./images/lab02-task1-cf-diagram.png width=700>
 
 
 1. Make sure the current region is Singapore (ap-souteeast-1).
- * <img src=./images/lab02-task1-region.png width=700>
+<img src=./images/lab02-task1-region.png width=700>
 
 2. In the AWS Console, click **Services**, then click **CloudFormation** to open the CloudFormation dashboard.
 
@@ -51,7 +53,6 @@ In this section, you will create an VPC with multi-az for the high availability 
 11. On the **Review** page, click **Create** button. 
 
 12. About 5 minutes later, the stack creation will be completed. Check the **Status** field. You can see that the value of Satus is ***CREATE_COMPLETE***.
-
 <img src=./images/lab02-task1-cf-complete.png width=700>
 
 13. Explore the ***outputs*** tab. Copy the values of ***outputs*** tab to the your notepad for later use.
@@ -71,7 +72,6 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain ***moving-to-serverless***. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
 
 17. Click **Next Step** button. You can refer to following screen caputure image.
-
 <img src=./images/lab02-task2-efs-1.png width=700>
 
 
@@ -99,8 +99,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 24. In the left navigation pane, click **Redis**.
 
 25. Click **Create**.
-
- This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** ***Cluster Mode enabled***. 
+* This will bring you to the **Create your Amazon ElastiCache cluster** page. **Do not choose** ***Cluster Mode enabled***. 
  
  * Cluster engine : ***Redis***
  * Redis settings
@@ -112,8 +111,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
    * **Node Type** : chache.t2.micro (0.5 GiB)
    * **Number of replicas** : 2 
 
-
-<img src=./images/lab02-task3-ec-1.png width=700>
+    <img src=./images/lab02-task3-ec-1.png width=700>
 
 26. In the **Advanced Redis settings** section, configure:
 * **Multi-AZ with Auto-Failover** : [v] (checked)
@@ -124,7 +122,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 * **Subnets** : Choose two subnets with **PriSub1** and **PriSub2** in ***Outputs*** tab values of CloudFormation.(**step 13**). You can refer to the subnet id and CIDR block of **PriSub1** and **PriSub2**.
 * **Preferred availability zone(s)** : ***No preference***
 
-<img src=./images/lab02-task3-ec-2.png width=700>
+  <img src=./images/lab02-task3-ec-2.png width=700>
 
 * Leave the remaining configuration as default.
 
@@ -134,7 +132,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 
 29. Copy the **Primary Endpoint**  and paste it ***notepad*** for later use in TASK 5. 
 
- * <img src=./images/lab02-task3-ec-3.png width=500>
+    <img src=./images/lab02-task3-ec-3.png width=500>
 
  * **NOTE**: You can click the refresh button in the dashboard, if your cluster status not changed.
 
@@ -169,7 +167,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 * **Preconfigured plafform** : `Python`
 
-* <img src=./images/lab02-task4-eb-python.png width=500>
+    <img src=./images/lab02-task4-eb-python.png width=500>
 
 * **Application code** : ***Sample application***
 
@@ -179,7 +177,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
  * **Configuration presets** : ***High avalability***
  
- * <img src=./images/lab02-task4-eb-preset.png width=400>
+    <img src=./images/lab02-task4-eb-preset.png width=400>
 
  * **NOTE**: We will start from ***High availability*** preset for the convenience. We need to change some configuration for our application. 
 
@@ -196,7 +194,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
  * **Password** : `workshop`
  * **Retention** : `Delete`
  * **Availability** : `High (Multi-AZ)`
- * <img src=./images/lab02-task4-eb-db.png width=500>
+    <img src=./images/lab02-task4-eb-db.png width=500>
 
 **NOTE:** Because it is a hands-on environment, not a real operating environment, select **'Delete'** for convenience.
 
@@ -206,32 +204,32 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 45. In the **Virtual private cloud (VPC)** section of **Modify network** page, choose a VPC which tagged 'moving-to-serverless'.
 
- *  <img src=./images/lab02-task4-eb-network.png width=500>
+    <img src=./images/lab02-task4-eb-network.png width=500>
 
 46. In the **Load balancer settings** section, configure followings.
  
  * **Visivility** : `Public`
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Public Subnet - 1*** and ***Public Subnet -2***
-  <img src=./images/lab02-task4-eb-alb.png width=700>
+    <img src=./images/lab02-task4-eb-alb.png width=700>
 
 
 47. In the **Instance settings** section, configure followings.
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
-  <img src=./images/lab02-task4-eb-instance.png width=700>
+    <img src=./images/lab02-task4-eb-instance.png width=700>
 
 48. In the **Database settings** section, configure followings.
  
  * Choose **Availability Zone** and **Subnet**. You can choose ***Private Subnet - 1*** and ***Private Subnet -2***
-  <img src=./images/lab02-task4-eb-dbsubnet.png width=700>
+    <img src=./images/lab02-task4-eb-dbsubnet.png width=700>
 
 49. Click **Save** button.
 
 50. Click **Modify** button of **Instances** section in the **Configure HaCloudalbum-env** page.
 
 51. Choose a default security group, in the **EC2 security groups** section in the **Modify instances** page.
- <img src=./images/lab02-task4-eb-instance-sg.png width=500>
+    <img src=./images/lab02-task4-eb-instance-sg.png width=500>
 
 52. Click **Save** button.
 
@@ -239,7 +237,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 * **NOTE:** It will probably take 15 minutes or so. It is good to drink coffee for a while.
 
-* <img src=./images/coffee-cup.png width=200>
+    <img src=./images/coffee-cup.png width=200>
 
 * <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
@@ -248,24 +246,24 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
 
 If the previous TASK was successfully completed, you will see the following screen.
 
- * <img src=./images/lab02-task5-eb-simpleapp.png  width=500> 
+ <img src=./images/lab02-task5-eb-simpleapp.png  width=700> 
 
- * You can see the deployed application by clicking on the URL link in the top line.
+* You can see the deployed application by clicking on the URL link in the top line.
 
- * <img src=./images/lab02-task5-eb-simpleapp-screen.png width=500> 
+    <img src=./images/lab02-task5-eb-simpleapp-screen.png width=500> 
 
 Now, let's deploy our application.
 
 
 54. Click the **Configuration** button in the left navigation menu.
 
- * <img src=./images/lab02-task5-eb-configuration.png width=300>
+    <img src=./images/lab02-task5-eb-configuration.png width=300>
 
 * We will change the some configuration for our application.
 
 55. Copy the RDS **Endpoint** value to the ***notepad*** for the later use. You can find it in **Database** section. It is located bottom of the **Configuration overview** page.
 
-* <img src=./images/lab02-task5-rds-endpoint.png width=300>
+    <img src=./images/lab02-task5-rds-endpoint.png width=300>
 
 56. In the **Software** section, click **Modify** button for the environment variable configuration.
 
@@ -289,7 +287,7 @@ Now, let's deploy our application.
   * You already get this key from instructor.
 * `UPLOAD_FOLDER` : `/mnt/efs`
 
-  <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
+    <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
 58. Click **Apply** button.
 
@@ -299,13 +297,12 @@ Now, let's deploy our application.
 
 61. In the **Modify load balancer** page, Find **Processes** section then click the checkbox of ***default*** process for the application health check configuration. And click the **Actions** button, then you can choose **Edit** menu.
 
- * <img src=./images/lab02-task5-eb-alb-health.png width=500>
+    <img src=./images/lab02-task5-eb-alb-health.png width=500>
 
 62. Configure **Health check** variables.
- * **HTTP code** : `200`
- * **Path** : `/users/new`
-
- * <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
+* **HTTP code** : `200`
+* **Path** : `/users/new`
+     <img src=./images/lab02-task5-eb-alb-health-2.png width=500>
 
 
 63. Click **Save** button.
@@ -319,21 +316,20 @@ Now, let's deploy our application.
 
 67. Click the **Browse...** button and choose `cloudalbum_v1.0.zip` file which downloaded previous step. 
 
- * <img src=./images/lab02-task5-deploy.png width=500>
+    <img src=./images/lab02-task5-deploy.png width=500>
 
 68. Click **Deploy** button.
 
 69. After deploy operation, visit the our application URL. you can see our application in your browser like below.
 
- * <img src=./images/lab02-task5-cloudalbum.png width=500>
+    <img src=./images/lab02-task5-cloudalbum.png width=500>
 
 
 70. If the deployment is successful, Let's change your mimimum capacity configuration. In the Configuration menu, click **Modify** button of **Capacity** section.
 
 
 71. In the **Modify capacity** page, change the atttribute of AutoScalingGroup ***Min*** value from 1 to 2. (or what you want..)
-
-  <img src=./images/lab02-task5-asg.png width=500>
+    <img src=./images/lab02-task5-asg.png width=500>
 
 
 72. Click the **Apply** button. let's wait until the configuration is applied.
