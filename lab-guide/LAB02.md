@@ -194,6 +194,7 @@ With Elastic Beanstalk, you can quickly deploy and manage applications in the AW
  * **Password** : `workshop`
  * **Retention** : `Delete`
  * **Availability** : `High (Multi-AZ)`
+
     <img src=./images/lab02-task4-eb-db.png width=500>
 
 **NOTE:** Because it is a hands-on environment, not a real operating environment, select **'Delete'** for convenience.
