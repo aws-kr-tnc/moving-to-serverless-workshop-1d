@@ -79,7 +79,7 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
     <img src=./images/lab02-task2-efs-1.png width=700>
 
 
-18. On the **Configure optional settings** page, type `moving-to-serverless` for key `Name` under **Add tags** section.
+18. On the **Configure optional settings** page, type `shared-storage-for-cloudalbum` for key **Name** under **Add tags** section.
 
 19. Then click **Next Step**. (Leave the remaining configuration as default.)
 
@@ -107,7 +107,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
  
  * Cluster engine : ***Redis***
  * Redis settings
-   * **Name** : `moving-to-serverless`
+   * **Name** : `session-store-for-cloudalbum`
    * **Description** : `workshop`
    * **Engine version compatibility** : `5.0.0`
    * **Port** : `6379`
@@ -120,7 +120,7 @@ Amazon ElastiCache offers fully managed Redis and Memcached. Seamlessly deploy, 
 26. In the **Advanced Redis settings** section, configure:
 * **Multi-AZ with Auto-Failover** : [v] (checked)
 * **Subnet  group** : `Create new`
-* **Name** : `moving-to-serverless`
+* **Name** : `session-store-subnet-group`
 * **Description** : `workshop`
 * **VPC ID** : You can refer to the **VPCId** in ***Outputs*** tab values of CloudFormation.(**step 13**). 
 * **Subnets** : Choose two subnets with **PriSub1** and **PriSub2** in ***Outputs*** tab values of CloudFormation.(**step 13**). You can refer to the subnet id and CIDR block of **PriSub1** and **PriSub2**.
