@@ -289,7 +289,7 @@ Now, let's deploy our application.
   * For example : fs-5d3e921c
 * `ELCACHE_EP` : `<YOUR ELASTICACHE_ENDPOINT>`
   * We already copied it to notepad in **TASK 3**.
-  * For example (Exclude the port number): `session-store-for-cloudalbum.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
+  * For example (Exclude the port number): `session-store.ttvhbi.ng.0001.apse1.cache.amazonaws.com`
 * `FLASK_SECRET` : `serverless`
   * This value will be used for Flask app's SECRET_KEY.
 * `GMAPS_KEY` : `<GMAPS_KEY>`
