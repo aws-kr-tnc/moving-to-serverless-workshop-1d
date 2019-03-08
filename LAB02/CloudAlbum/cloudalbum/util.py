@@ -77,6 +77,7 @@ def delete(app, filename, current_user):
         path = os.path.join(conf['UPLOAD_FOLDER'], email_normalize(current_user.email))
         thumbnail = os.path.join(os.path.join(path, "thumbnail"), filename)
         original = os.path.join(path, filename)
+
         if os.path.exists(thumbnail):
             os.remove(thumbnail)
         if os.path.exists(original):

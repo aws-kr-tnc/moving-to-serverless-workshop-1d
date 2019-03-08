@@ -100,7 +100,7 @@ def photo_delete(photo_id):
         photo = db.session.query(Photo).filter_by(id=photo_id).first()
         db.session.delete(photo)
         db.session.commit()
-        util.delete(app, photo, current_user)
+        util.delete(app, photo.filename, current_user)
         flash('Successfully removed!')
         app.logger.debug('Successfully removed!')
 
