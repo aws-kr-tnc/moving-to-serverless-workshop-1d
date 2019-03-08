@@ -20,6 +20,10 @@ class User(UserMixin, db.Model):
     Database Model class for User table
     """
     __tablename__ = 'User'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8'
+    }
 
     id = db.Column(Integer, primary_key=True)
     username = db.Column(String(50), unique=False)
@@ -44,6 +48,10 @@ class Photo(db.Model):
     Database Model class for Photo table
     """
     __tablename__ = 'Photo'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8'
+    }
 
     id = db.Column(Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey(User.id))
