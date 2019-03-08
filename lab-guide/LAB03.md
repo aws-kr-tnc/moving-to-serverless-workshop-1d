@@ -460,7 +460,7 @@ conf = {
     ## -- end --
 ```
 
-12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB03/01-CloudAlbum-DDB/cloudalbum/run.py`)
+12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB03/01-CloudAlbum-DDB/run.py`)
 
 * **NOTE:** **GMAPS_KEY** variable is must defined before you run.
 
