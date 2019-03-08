@@ -59,7 +59,7 @@ secret_key                <not set>             None    None
 ### [1-3] Create an Instance Profile for Cloud9 instance
 We will grant appropriate permissions to Cloud9 instance for application development. If you prefer to use the AWS CLI to do this, see the LINK below.
 
-* **For CLI (local machine or EC2) users** : <a href="LAB03-ROLE-CLI.md" target="_blank">CLI GUIDE (click)</a>
+* **For CLI (local machine or EC2) users** : [CLI GUIDE (click)](LAB03-ROLE-CLI.md){:target="_blank"}.
 
 #### Let's Start!
 
