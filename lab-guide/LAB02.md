@@ -350,11 +350,80 @@ Now, let's deploy our application.
 
 
 ## Options : Investigate the application changes
+As you may have recognized, we have added a couple of things to the previous application for this hands-on lab. Here's what we've added:
 
-74. .ebextentions (설명 추가 예정)
+ * We needed a separate **session-store** for **scale-out** of the application. So, we add a [flask-session](https://github.com/fengsp/flask-session) package. Now, the session data is stored in **Elasticache**'s [Redis](https://redis.io/).
+
+ * We added a **.ebextentions/cloudalbum.config** file for the application deployment.
+
+ * We added **wsgi.py** file for ElasticBeanstalk python preconfigured environment. This file contains the code to store the session-data to Redis.
+
+Let's look a little closer now.
+
+74. Open the `LAB02/CloudAlbum/.ebextensions/cloudalbum.config` file. Take a look at the cloudalbum.config file. We use this file to configure the application. Install the necessary packages, mount EFS, and specify the required environment variables.
+
+```yaml
+packages:
+  yum:
+    amazon-efs-utils : []
+
+files:
+  "/app/cloudalbum/efs_setup.sh":
+    mode: "000755"
+    owner: root
+    group: root
+    content: |
+      #!/bin/bash
+
+      # Commands that will be run on containter_commmands
+      # Here the container variables will be visible as environment variables.
+      . /opt/elasticbeanstalk/support/envvars
+
+      ## EFS mount
+      mkdir -p /mnt/efs
+      
+      mountpoint /mnt/efs
+      
+      if [ $? -eq 0 ] ; then
+        echo "Already mounted"
+      
+      else
+        mount -t efs $EFS_ID:/ /mnt/efs
+      fi
+
+      chown -R wsgi:wsgi /mnt/efs
+
+container_commands:
+  efs_setup:
+    command: /app/cloudalbum/efs_setup.sh
+
+option_settings:
+  aws:elasticbeanstalk:application:environment:
+    LANG: ko_KR.UTF-8
+    LC_ALL: ko_KR.UTF-8
+
+  aws:elasticbeanstalk:container:python:
+    WSGIPath: wsgi.py
+
+```
+
 
 75. SessionStore (설명 추가 예정)
 
+```python
+
+from flask_session import Session
+
+```
+
+```python
+
+# Flask Session for Redis
+application.config['SESSION_TYPE'] = 'redis'
+application.config['SESSION_REDIS'] = StrictRedis(host=conf['ELCACHE_EP'], port=6379)
+Session(application)
+
+```
 
 ## TASK 6. Remove your AWS resources
 (자원 삭제 상세설명 추가예정)
