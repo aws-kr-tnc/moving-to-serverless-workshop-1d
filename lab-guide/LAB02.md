@@ -476,7 +476,7 @@ Session(application)
 * In the same way, **delete the subnet group** that was created together from the **Subnet Groups** menu.
 
 
-80. Remove your VPC from CloudFormation console. Choose your CloudFormation stack(**network**) and click the **Actions** button then choose **Delete Stack**. Confirm that the Stack resources has been deleted.
+80. Remove your VPC from CloudFormation console. Choose your CloudFormation stack(**workshop-vpc**) and click the **Actions** button then choose **Delete Stack**. Confirm that the Stack resources has been deleted.
 
     <img src=./images/lab02-task7-cf-delete.png width=500>
 
