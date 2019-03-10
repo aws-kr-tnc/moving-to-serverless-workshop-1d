@@ -22,7 +22,7 @@ conf = {
 
 
     #'LOG_FILE_PATH': os.getenv('LOG_FILE_PATH', os.path.join(os.getcwd(), 'logs')),
-    'LOG_FILE_PATH': '/tmp/',
+    'LOG_FILE_PATH': os.getenv('LOG_FILE_PATH', os.path.join(os.getcwd(), 'logs')),
     'LOG_FILE_NAME': os.getenv('LOG_FILE_NAME', 'cloudalbum.log'),
     'ALLOWED_EXTENSIONS': ['jpg', 'jpeg'],
     'UPLOAD_FOLDER': os.getenv('UPLOAD_FOLDER', os.path.join(os.getcwd(), 'upload')),
