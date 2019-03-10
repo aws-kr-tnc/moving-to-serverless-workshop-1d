@@ -8,18 +8,18 @@ So, you'll deploy the CloudAlbum application with HA(high availability) architec
 
 <img src=./images/lab02-eb-diagram.png width=700>
 
-* Configure VPC for the HA environment. (CloudFormation template will be provided.)
-* Configure EFS for the scalable shared storage.
-* Configure Elasticache - Redis for the session store.
-* Configure ElasticBeanstalk
-  * with RDS, ALB and AutoScaling 
+* Configure [VPC](https://aws.amazon.com/vpc/) for the HA environment. (CloudFormation template will be provided.)
+* Configure [EFS](https://aws.amazon.com/efs/) for the scalable **shared storage**.
+* Configure [Elasticache](https://aws.amazon.com/elasticache/) - Redis for the **session store.**
+* Configure [ElasticBeanstalk](https://aws.amazon.com/elasticbeanstalk/).
+  * with [RDS](https://aws.amazon.com/rds/), [ALB](https://aws.amazon.com/elasticloadbalancing/) and [AutoScaling](https://aws.amazon.com/autoscaling/). 
 
 
 ## Prerequisites
-The following prerequisited are required for this hands-on lab:
+The following **prerequisited** are required for this hands-on lab:
 
-* AWS Console Access
-* AWS CLI installed and configured on your EC2 or PC. (***AdministratorAccess*** recommended)
+* AWS Console Access.
+* AWS CLI configured EC2 or PC. (***AdministratorAccess*** recommended)
 
 
 ## TASK 1. Create your multi-az VPC
@@ -298,6 +298,9 @@ Now, let's deploy our application.
 
     <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
+* You can check the `LAB02/CloudAlbum/cloudalbum/config.py` file about above variables.
+
+
 58. Click **Apply** button.
 
 59. Click the **Configuration** button in the left navigation menu.
@@ -408,13 +411,21 @@ option_settings:
 ```
 
 
-75. SessionStore (설명 추가 예정)
+75. We've changed the application source code to ensure that the CloudAlbum application has **High Availability** in the scale-out environment. For this we introduced a **session-store** and decided to use **Elasticache**'s Redis as the session-store. To do this, we added some codes at **wsgi.py** file.
+
+* **wsgi.py** is used to invoke a [WSGI](https://www.python.org/dev/peps/pep-3333/) application in an ElasticBeanstalk python configured environment. 
+
+* Review following code.
+
 
 ```python
 
 from flask_session import Session
 
 ```
+
+* [Flask_Session](https://github.com/fengsp/flask-session) package is imported for using of Redis as an session-store.
+
 
 ```python
 
@@ -424,6 +435,8 @@ application.config['SESSION_REDIS'] = StrictRedis(host=conf['ELCACHE_EP'], port=
 Session(application)
 
 ```
+* Variables set-up to use Elasticache(Redis) as an session-store. 
+
 
 ## TASK 6. Remove your AWS resources
 (자원 삭제 상세설명 추가예정)
