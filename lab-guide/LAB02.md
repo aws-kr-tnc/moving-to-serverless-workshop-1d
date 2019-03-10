@@ -2,7 +2,7 @@
 
 Before we go to the serverless application architecture, let's deploy our application into the High Availability Applciation Architecture environment to see the obvious differences from the hostbased environment.
 
-So, you'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
+So, we'll deploy the CloudAlbum application with HA(high availability) architecture in the Amazon Web Services environment.
 
 ## In this lab cover.. 
 
