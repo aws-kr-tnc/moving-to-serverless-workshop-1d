@@ -26,10 +26,10 @@ It has following several features.
 
 
 ## Prerequisites
-The following prerequisited are required for the workshop:
+The following **prerequisited** are required for the workshop:
 
-* AWS Console Access
-* AWS CLI installed and configured on your EC2 or PC. (`AdministratorAccess` recommended)
+* AWS Console Access.
+* AWS CLI configured EC2 or PC. (`AdministratorAccess` recommended)
 
 
 ## TASK 1. Create AWS Cloud9 environment and explore the environment.
