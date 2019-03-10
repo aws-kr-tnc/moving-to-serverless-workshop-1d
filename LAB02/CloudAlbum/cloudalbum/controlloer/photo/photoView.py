@@ -241,3 +241,4 @@ class PhotoForm(FlaskForm):
     nation = HiddenField('nation')
     address = HiddenField('address')
     formatted_address = HiddenField('formatted_address')
+

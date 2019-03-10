@@ -26,8 +26,16 @@ from redis import StrictRedis
 
 import os
 import logging
+import socket
 
+## NOTE : For ElasticBeanstalk, Flask object variable name should be 'application'
 application = Flask(__name__)
+
+# This code is inserted for only LAB02.
+@application.template_filter()
+def get_ip_addr(value):
+    hostname = '({0})'.format(socket.gethostname())
+    return hostname
 
 # Flask Session for Redis
 application.config['SESSION_TYPE'] = 'redis'

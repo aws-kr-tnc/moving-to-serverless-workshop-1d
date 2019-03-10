@@ -191,4 +191,3 @@ class UserForm(FlaskForm):
     email = StringField('email', validators=[DataRequired()])
     password = StringField('password', validators=[DataRequired()])
     password_confirm = StringField('password_confirm', validators=[DataRequired()])
-

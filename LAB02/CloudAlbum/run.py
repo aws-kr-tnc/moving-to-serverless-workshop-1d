@@ -4,6 +4,7 @@ from cloudalbum import application as CloudAlbum
 from cloudalbum.config import conf
 from cloudalbum import util
 from redis import StrictRedis
+import os, socket
 
 app = Flask(__name__)
 
@@ -11,6 +12,13 @@ app = Flask(__name__)
 #app.config['SESSION_TYPE'] = 'redis'
 #app.config['SESSION_REDIS'] = StrictRedis(host='<ELASTICACHE_ENDPOINT>', port=<PORT>)
 #Session(app)
+
+
+# This code is inserted for only LAB02.
+@app.template_filter()
+def get_ip_addr(value):
+    hostname = '({0})'.format(socket.gethostname())
+    return hostname
 
 
 if __name__ == '__main__':

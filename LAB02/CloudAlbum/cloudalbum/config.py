@@ -20,8 +20,6 @@ conf = {
     'DB_SQLALCHEMY_POOL_TIMEOUT': os.getenv('DB_SQLALCHEMY_POOL_TIMEOUT', 15),
     'DB_SQLALCHEMY_POOL_RECYCLE': os.getenv('DB_SQLALCHEMY_POOL_RECYCLE', 7200),
 
-
-    #'LOG_FILE_PATH': os.getenv('LOG_FILE_PATH', os.path.join(os.getcwd(), 'logs')),
     'LOG_FILE_PATH': os.getenv('LOG_FILE_PATH', os.path.join(os.getcwd(), 'logs')),
     'LOG_FILE_NAME': os.getenv('LOG_FILE_NAME', 'cloudalbum.log'),
     'ALLOWED_EXTENSIONS': ['jpg', 'jpeg'],

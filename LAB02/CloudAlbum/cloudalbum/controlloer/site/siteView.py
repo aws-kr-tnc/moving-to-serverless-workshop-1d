@@ -53,3 +53,5 @@ def routes_info():
             # func_list[rule.rule] = obj.__doc__
 
     return jsonify(code=200, data=routes)
+
+
