@@ -146,7 +146,7 @@ We will now deploy the CloudAlbum application using ElasticBeanstalk. Our applic
 
 With Elastic Beanstalk, you can quickly deploy and manage applications in the AWS Cloud without having to learn about the infrastructure that runs those applications. Elastic Beanstalk reduces management complexity without restricting choice or control. You simply upload your application, and Elastic Beanstalk automatically handles the details of capacity provisioning, load balancing, scaling, and application health monitoring.
 
-30. In the **AWS Management Console** on the **Service** menu, click Elastic Beanstalk.
+30. In the **AWS Management Console** on the **Service** menu, click **ElasticBeanstalk**.
 
 31. At the top-right of screen, clikck **Create New Application**.
 
@@ -352,6 +352,22 @@ Now, let's deploy our application.
 73. Test the deployed application and explore the ElasticBeastalk console.
 
 
+
+## TASK 6. Perform application test
+
+74. Perform application test.
+<img src=./images/lab01-02.png width=800>
+
+* Sign in / up
+* Upload Sample Photos
+* Sample images download here
+  *  https://d2r3btx883i63b.cloudfront.net/temp/sample-photo.zip
+* Look your Album
+* Change Profile
+* Find photos with Search tool
+* Check the Photo Map
+
+
 ## Options : Investigate the application changes
 As you may have recognized, we have added a couple of things to the previous application for this hands-on lab. Here's what we've added:
 
@@ -363,7 +379,7 @@ As you may have recognized, we have added a couple of things to the previous app
 
 Let's look a little closer now.
 
-74. Open the `LAB02/CloudAlbum/.ebextensions/cloudalbum.config` file. Take a look at the cloudalbum.config file. We use this file to configure the application. Install the necessary packages, mount EFS, and specify the required environment variables.
+75. Open the `LAB02/CloudAlbum/.ebextensions/cloudalbum.config` file. Take a look at the cloudalbum.config file. We use this file to configure the application. Install the necessary packages, mount EFS, and specify the required environment variables.
 
 ```yaml
 packages:
@@ -411,7 +427,7 @@ option_settings:
 ```
 
 
-75. We've changed the application source code to ensure that the CloudAlbum application has **High Availability** in the scale-out environment. For this we introduced a **session-store** and decided to use **Elasticache**'s Redis as the session-store. To do this, we added some codes at **wsgi.py** file.
+76. We've changed the application source code to ensure that the CloudAlbum application has **High Availability** in the scale-out environment. For this we introduced a **session-store** and decided to use **Elasticache**'s Redis as the session-store. To do this, we added some codes at **wsgi.py** file.
 
 * **wsgi.py** is used to invoke a [WSGI](https://www.python.org/dev/peps/pep-3333/) application in an ElasticBeanstalk python configured environment. 
 
@@ -438,18 +454,31 @@ Session(application)
 * Variables set-up to use Elasticache(Redis) as an session-store. 
 
 
-## TASK 6. Remove your AWS resources
-(자원 삭제 상세설명 추가예정)
 
-76. Remove your EB environment (RDS, ALB, ASG included). 
 
-77. Remove your EFS.
 
-78. Remove your Elasticache cluster.
-* ELCache Subnet group delete
+## TASK 7. Remove your AWS resources
+**CAUTION**: If you have completed this hands-on lab so far, **please delete the AWS resources** which used in this lab. You may incur an unwanted fee.
 
-79. Remove your VPC from CloudFormation console.
+77. Remove your EB environment (RDS, ALB, ASG included). Click the **Actions** button in your ElasticBeanstalk application dashboard and then choose **Terminate Environment**. Confirm that resources created by ElasticBeanstalk are deleted.
 
+    <img src=./images/lab02-task7-eb-delete.png width=600 >
+
+
+78. Remove your EFS. Choose your file-system(**shared-storage**) and click the **Actions** button then choose **Delete file system**. Confirm that the EFS resource has been deleted. 
+
+    <img src=./images/lab02-task7-efs-delete.png width=500>
+
+79. Remove your Elasticache cluster. Choose your Redis cluster(**session-store**) and click the **Delete** button. Confirm **Create dinal backup?** : **NO** , then click **Delete** button. Confirm that the Elasticache resource has been deleted. 
+   
+    <img src=./images/lab02-task7-ec-delete.png width=500>
+
+* In the same way, **delete the subnet group** that was created together from the **Subnet Groups** menu.
+
+
+80. Remove your VPC from CloudFormation console. Choose your CloudFormation stack(**network**) and click the **Actions** button then choose **Delete Stack**. Confirm that the Stack resources has been deleted.
+
+    <img src=./images/lab02-task7-cf-delete.png width=500>
 
 # Congratulation! You completed LAB02.
 
