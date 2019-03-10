@@ -293,8 +293,9 @@ Now, let's deploy our application.
 * `FLASK_SECRET` : `serverless`
   * This value will be used for Flask app's SECRET_KEY.
 * `GMAPS_KEY` : `<GMAPS_KEY>`
-  * You already get this key from instructor.
+  * You already get this key from **instructor**.
 * `UPLOAD_FOLDER` : `/mnt/efs`
+* `LOG_FILE_PATH` " `/app/cloudalbum/logs`
 
     <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
 
