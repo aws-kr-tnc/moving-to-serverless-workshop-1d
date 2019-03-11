@@ -894,6 +894,3 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 * [LAB 03 - Moving to AWS serverless](LAB03.md)
 * [LAB 04 - Serverless with AWS Chalice](LAB04.md)
 
-## Feedback 
-* Please leave your feed back.
-  * http://bit.ly/serverless_tp_feedback 

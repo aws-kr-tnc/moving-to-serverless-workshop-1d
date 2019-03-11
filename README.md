@@ -39,6 +39,3 @@ This workshop content will handle the server based Python Flask web application 
 	* [TASK 3. CloudAlbum with AWS Chalice](lab-guide/LAB04.md#task-3--cloudalbum-with-aws-chalice)
 
 
-## Feedback (TBD)
-* Please leave your feed back.
-  * http://bit.ly/serverless_tp_feedback 
