@@ -125,7 +125,9 @@ We will grant appropriate permissions to Cloud9 instance for application develop
 * Move to **EC2** service in AWS Management Console.
 * You can find EC2 instance which name include **aws-cloud9-...**.
 * Click **Actions** button and click **Instance settings**.
+
 <img src=./images/lab03-task0-ec2-instance-profile.png width=700>
+
 * Click **Attach/Replace IAM Role** menu.
 * You can find **workshop-cloud9-instance-profile-role** in the list and select it.
 * Click **Apply** button.
