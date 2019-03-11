@@ -10,7 +10,10 @@ There are two ways. One is to use [1] **Using Instance Profile** with temporary 
 * Related document : [Create and Use an Instance Profile to Manage Temporary Credentials](https://docs.aws.amazon.com/cloud9/latest/user-guide/credentials.html)
 
 * **Choose following one** :
-  * ***[1] Using Instance Profile*** or
+  * ***[1] Using Instance Profile*** 
+  
+      or
+  
   * ***[2] Store Permanent Access Credentials***
 
 * ***[1] Using Instance Profile*** is recommended. However If you want **quick start**, you can choose ***[2] Store Permanent Access Credentials*** with enough permission.
@@ -107,7 +110,9 @@ We will grant appropriate permissions to Cloud9 instance for application develop
 * Click **Create Role** button.
 * Select **AWS services** in the **Select type of trusted entity** section.
 * Select **EC2** in the **Choose the service that will use this role** section.
+
 <img src=./images/lab03-task0-iam-role.png width=700>
+
 * Click **Next Permission** button in the bottom line.
 * Search **workshop-cloud9-policy** policy using **Filter policies**.
 * Check the result item and click **Next: Tags** button in the bottom line.
