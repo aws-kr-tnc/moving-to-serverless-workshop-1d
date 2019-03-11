@@ -522,7 +522,7 @@ CloudAlbum stored user uploaded images into disk based storage. (EBS or NAS). Ho
 aws s3 mb s3://cloudalbum-<INITIAL>
 ```
 
-18. Review the config.py file which located in 'LAB03/02-CloudAlbum-S3/cloudalbum/config.py'
+18. Review the config.py file which located in `LAB03/02-CloudAlbum-S3/cloudalbum/config.py`
 
 * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to **real API key** which used previous hands-on lab.
 

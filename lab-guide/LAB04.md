@@ -367,11 +367,11 @@ chalice.deploy.deployer.ChaliceDeploymentError: ERROR - While deploying your cha
 ```
 
 
-12. Test your first Chalice application.
+12. Test your first Chalice application. 
 
 * **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
 ```console
-http https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/users/David
+http https://<YOUR_URL>.execute-api.ap-southeast-1.amazonaws.com/api/users/David
 ```
 * output:
 ```
@@ -393,7 +393,7 @@ x-amzn-RequestId: 1b0ee142-9c8a-11e8-9f60-0d307c709c87
 
 * **TEST #2**: `@app.route('/users', methods=['POST'])`
 ```console
-echo '{"name": "David", "age": 22, "job": "student"}' | http https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/users
+echo '{"name": "David", "age": 22, "job": "student"}' | http https://<YOUR_URL>.execute-api.ap-southeast-1.amazonaws.com/api/users
 ```
 * output:
 ```console
