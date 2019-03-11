@@ -44,7 +44,6 @@ class Photo(db.Model):
     Database Model class for Photo table
     """
     __tablename__ = 'Photo'
-    }
 
     id = db.Column(Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey(User.id))
