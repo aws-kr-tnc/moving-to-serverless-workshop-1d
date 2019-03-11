@@ -24,7 +24,8 @@ This workshop content will handle the server based Python Flask web application 
 	* [TASK 3. Create Elasticache](lab-guide/LAB02.md#task-3-create-elasticache)
 	* [TASK 4. Confiugure ElasticBeanstalk](lab-guide/LAB02.md#task-4-confiugure-elasticbeanstalk)
 	* [TASK 5. Deploy Application with ElasticBeanstalk](lab-guide/LAB02.md#task-5-deploy-application-with-elasticbeanstalk)
-	* [TASK 6. Remove your AWS resources](lab-guide/LAB02.md#task-6-remove-your-aws-resources)
+	* [TASK 6. Perform application test](lab-guide/LAB02.md#task-6-perform-application-test)
+	* [TASK 7. Remove your AWS resources](lab-guide/LAB02.md#task-7-remove-your-aws-resources)
 
 * [LAB 03 - Moving to AWS serverless](lab-guide/LAB03.md)
 	* [TASK 0. Permission grant for Cloud9](lab-guide/LAB03.md#task-0-permission-grant-for-cloud9)
