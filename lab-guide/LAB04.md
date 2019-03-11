@@ -83,7 +83,7 @@ source ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/activate
 echo "unalias python" >> ~/.bash_profile
 echo "source ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/activate" >> ~/.bash_profile
 ```
-<img src="./images/lab03-task1-venv.png" width="600">
+<img src="./images/lab04-task1-venv.png" width="600">
 
 
 ```console
