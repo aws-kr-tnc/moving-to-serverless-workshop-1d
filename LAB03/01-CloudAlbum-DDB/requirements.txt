@@ -22,3 +22,4 @@ WTForms==2.2.1
 boto3
 import_string
 pynamodb
+tzlocal
