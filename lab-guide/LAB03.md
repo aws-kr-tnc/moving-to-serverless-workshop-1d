@@ -444,7 +444,7 @@ conf = {
 
 
 10. Review following code to search result via keyword in the DynamoDB.
-* find **TODO #3** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
+* Find **TODO #3** in the 'LAB03/01-CloudAlbum-DDB/cloudalbum/controlloer/photo/photoView.py' file.
 ```python
     ## TODO #3 : Review following code to search result via keyword in the DynamoDB.
     ## -- begin --
