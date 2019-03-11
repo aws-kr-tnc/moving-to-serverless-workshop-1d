@@ -2,8 +2,7 @@ import os
 
 conf = {
     # Mandatory variable
-    'GMAPS_KEY': os.getenv('GMAPS_KEY', 'AIzaSyDT5w4wSh80C2iywYCLypY2GAIbqBEPGDg'),
-    #'DB_URL': os.getenv('DB_URL', None),
+    'GMAPS_KEY': os.getenv('GMAPS_KEY', None),
     'DB_URL': os.getenv('DB_URL', None),
 
     # Default config values
