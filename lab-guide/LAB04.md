@@ -925,17 +925,17 @@ aws dynamodb delete-table --table-name "Photo"
 ```
 36. Delete Cognito User pool
 * Go to Cognito
-* Click Manage User Pool.
-* Click cloudalbum-pool-<INITIAL>.
-* Select Domain Name menu in the left.
+* Click **Manage User Pool**.
+* Click **cloudalbum-pool-\<INITIAL\>**.
+* Select **Domain Name** menu in the left.
 * Click **Delete domain** button
 * Select **General Setting** menu in the left.
 * Click **Delete pool** button in the upper right corner.
 
 37. Delete Cloud9
 * Go to Cloud9
-* Select workshop-<INITIAL>
-* Click Delete button
+* Select **workshop-\<INITIAL\>**
+* Click **Delete** button
 
 
 
