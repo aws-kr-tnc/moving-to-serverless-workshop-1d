@@ -10,10 +10,10 @@ There are two ways. One is to use [1] **Using Instance Profile** with temporary 
 * Related document : [Create and Use an Instance Profile to Manage Temporary Credentials](https://docs.aws.amazon.com/cloud9/latest/user-guide/credentials.html)
 
 * **Choose following one** :
-  * `[1] Using Instance Profile` or
-  * `[2] Store Permanent Access Credentials`
+  * ***[1] Using Instance Profile*** or
+  * ***[2] Store Permanent Access Credentials***
 
-* `[1] Using Instance Profile` is recommended. However If you want **quick start**, you can choose `[2] Store Permanent Access Credentials` with enough permission.
+* ***[1] Using Instance Profile*** is recommended. However If you want **quick start**, you can choose ***[2] Store Permanent Access Credentials*** with enough permission.
 
 ### [1] Using Instance Profile
 
@@ -37,8 +37,8 @@ secret_key     ****************F240 shared-credentials-file
 <img src=./images/lab03-task0-aws-setup.png width=500>
 
 * (1) Click the setup(gear) icon
-* (2) Select `AWS SETTINGS`.
-* (3) Disable `AWS managed temporary credentials`
+* (2) Select ***AWS SETTINGS***.
+* (3) Disable ***AWS managed temporary credentials***
 
 * Check the AWS credentials in Cloud9 instance.
 ```console
@@ -148,13 +148,13 @@ secret_key     ****************hK+3         iam-role
     region           ap-southeast-1      config-file    ~/.aws/config
 ```
 
-* You can see the `iam-role` type of access_key and secret_key. Well done.
+* You can see the ***iam-role*** type of access_key and secret_key. Well done.
 
 * Is it OK? 
   * **Go to TASK 1**
 
 ### [2] Store Permanent Access Credentials ###
-**NOTE:** This is **an ALTERNATIVE WAY** of `[1] Using Instance Profile`. If you complete `[1] Using Instance Profile`, You can pass below steps and **go to TASK 1.**
+**NOTE:** This is **an ALTERNATIVE WAY** of ***[1] Using Instance Profile***. If you complete ***[1] Using Instance Profile***, You can pass below steps and **go to TASK 1.**
 
 * **NOTE:** Before you proceed, please complet following steps:
   * [1-1] Check the AWS credentials in Cloud9 instance.
@@ -170,8 +170,8 @@ aws configure set region ap-southeast-1
 
 * OK, all things are done. Go to TASK 1.
 
-* **ALTERNATIVE**: You can configure following variables before run application or CLI commands. `AdministratorAccess` privilege is recommended. (refer to above `workshop-cloud9-policy.json`.)
-`export AWS_ACCESS_KEY_ID=<YOUR OWN ACCESS KEY ID>` and `export AWS_SECRET_ACCESS_KEY=<YOUR OWN ACCESS KEY ID>`
+* **ALTERNATIVE**: You can configure following variables before run application or CLI commands. ***AdministratorAccess*** privilege is recommended. (refer to above ***workshop-cloud9-policy.json***.)
+***export AWS_ACCESS_KEY_ID=<YOUR OWN ACCESS KEY ID\>*** and ***export AWS_SECRET_ACCESS_KEY=<YOUR OWN ACCESS KEY ID\>***
 
 
 ## TASK 1. Go to DynamoDB
@@ -200,7 +200,7 @@ sudo pip-3.6 install -r ~/environment/moving-to-serverless-workshop-1d/LAB03/01-
 
 2. Open the **models.py** which located in  '**LAB03/01-CloudAlbum-DDB**/cloudalbum/model/models.py'.
 
-3. Review the data model definition via **SQLAlchemy**. `User` tables and `Photo` tables are inherited from SQLAlchemy's **db.Model** and are represented in **Python classes**.
+3. Review the data model definition via **SQLAlchemy**. ***User*** tables and ***Photo*** tables are inherited from SQLAlchemy's **db.Model** and are represented in **Python classes**.
 ```python
 from sqlalchemy import Float, DateTime, ForeignKey, Integer, String
 from flask_login import UserMixin
@@ -366,7 +366,7 @@ class Photo(Model):
     address = UnicodeAttribute(null=False)
 ```
 
-6. Review the `__init__.py` in the model package. The DynamoDB **User** and **Photo** **tables will be created automatically** for the convenience. **Note** the `create_table` function.
+6. Review the ***__init__.py*** in the model package. The DynamoDB **User** and **Photo** **tables will be created automatically** for the convenience. **Note** the ***create_table*** function.
 
 ```python
 from cloudalbum.config import conf
@@ -384,7 +384,7 @@ if not Photo.exists():
 
 7. Review the 'LAB03/01-CloudAlbum-DDB/cloudalbum/config.py' file. **New attributes** are added for DynamoDB.
 
- * Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to real value which used previous hands-on lab.
+ * Set up ***GMAPS_KEY*** value : Replace ***<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>*** to real value which used previous hands-on lab.
 
 ```python
 import os
@@ -433,7 +433,7 @@ conf = {
     ])
     ## --end --
 ```
-* Above code shows the way of `update` DynamoDB table via PynamoDB query mapper.
+* Above code shows the way of ***update*** DynamoDB table via PynamoDB query mapper.
 
 
 10. Review following code to search result via keyword in the DynamoDB.
@@ -460,7 +460,7 @@ conf = {
     ## -- end --
 ```
 
-12. Open the `run.py` and run CloudAlbum application with DynamoDB. (`LAB03/01-CloudAlbum-DDB/run.py`)
+12. Open the ***run.py*** and run CloudAlbum application with DynamoDB. ***(LAB03/01-CloudAlbum-DDB/run.py)***
 
 * **NOTE:** **GMAPS_KEY** variable is must defined before you run.
 
@@ -492,7 +492,7 @@ conf = {
 
 Is it OK? Let's move to the next TASK.
 
-**NOTE:** Click the `stop icon` to stop your application.
+**NOTE:** Click the ***stop icon*** to stop your application.
   * **Close your terminal** after application stop.
   * **Close all your opened file tab.**
 <img src=./images/stop-app.png width=500>
@@ -522,11 +522,11 @@ CloudAlbum stored user uploaded images into disk based storage. (EBS or NAS). Ho
 aws s3 mb s3://cloudalbum-<INITIAL>
 ```
 
-18. Review the config.py file which located in `LAB03/02-CloudAlbum-S3/cloudalbum/config.py`
+18. Review the config.py file which located in ***LAB03/02-CloudAlbum-S3/cloudalbum/config.py***
 
-* Set up `GMAPS_KEY` value : Replace `<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR>` to **real API key** which used previous hands-on lab.
+* Set up ***GMAPS_KEY*** value : Replace ***\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>*** to **real API key** which used previous hands-on lab.
 
-* Set up the value of 'S3_PHOTO_BUCKET'. Please change the `cloudalbum-<INITIAL>` to your **real bucket name** which made above.
+* Set up the value of 'S3_PHOTO_BUCKET'. Please change the ***cloudalbum-\<INITIAL\>*** to your **real bucket name** which made above.
 
 ```python
 import os
@@ -609,7 +609,7 @@ generate_presigned_url(ClientMethod, Params=None, ExpiresIn=3600, HttpMethod=Non
 ```
 
 
-21. Open the `run.py` and run the application with DynamoDB and S3.
+21. Open the ***run.py*** and run the application with DynamoDB and S3.
 
 * Ensure **Runner: Python 3**
 <img src=./images/lab03-task1-run-console.png width=800>
@@ -635,7 +635,7 @@ generate_presigned_url(ClientMethod, Params=None, ExpiresIn=3600, HttpMethod=Non
 
 Is it OK? Let's move to the next TASK.
 
-**NOTE:** Click the `stop icon` to stop your application.
+**NOTE:** Click the ***stop icon*** to stop your application.
   * **Close your terminal** after application stop.
   * **Close all your opened file tab.**
 <img src=./images/stop-app.png width=500>
@@ -774,7 +774,7 @@ options = {
     'BASE_URL': os.getenv('BASE_URL', '<PREVIEW_URL>')
 }
 ```
-* Check the values under `# COGNITO`.
+* Check the values under ***# COGNITO***.
 * The second parameter of **os.getenv** is the default value to use when the first parameter does not exist.
 
 | COGNITO_POOL_ID | Copy and paste the pool ID you noted earlier. |
@@ -848,7 +848,7 @@ JWKS = requests.get(JWKS_URL).json()["keys"]
 
 Is it OK? Let's move to the next TASK.
 
-**NOTE:** Click the `stop icon` to stop your application.
+**NOTE:** Click the ***stop icon*** to stop your application.
   * **Close your terminal** after application stop.
   * **Close all your opened file tab.**
 <img src=./images/stop-app.png width=500>
@@ -894,7 +894,7 @@ unzip aws-xray-daemon-linux-2.x.zip
 
 * **Now, X-Ray daemon works and ready to use X-Ray to analyze applications.**
 
-70. Review, `### x-ray set up` part in the 'LAB03/04-CloudAlbum-XRAY/run.py' file.
+70. Review, ***### x-ray set up*** part in the 'LAB03/04-CloudAlbum-XRAY/run.py' file.
 
  * Related document
    *  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-configuration.html
@@ -939,7 +939,7 @@ def print_abc():
 * **NOTE:** Patching Libraries to Instrument Downstream Calls
   * https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-patching.html
 
-71. Review 'LAB03/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above `step 58` for `03.CloudAlbum-COGNITO`)
+71. Review 'LAB03/04.CloudAlbum-XRAY/cloudalbum/config.py' (This is same step above ***step 58*** for ***03.CloudAlbum-COGNITO***)
 * Set up **GMAPS_KEY** value : Replace **\<REAL_GMAPS_KEY_PROVIDED_BY_INSTRUCTOR\>** to real value which used previous hands-on lab.
 
 * Set up **S3_PHOTO_BUCKET** value : Replace **cloudalbum-\<INITIAL\>** to real value which used previous hands-on lab.
@@ -996,7 +996,7 @@ options = {
 
 Is it OK? Let's go to next LAB.
 
-**NOTE:** Click the `stop icon` to stop your application.
+**NOTE:** Click the ***stop icon*** to stop your application.
   * **Close your terminal** after application stop.
   * **Close all your opened file tab.**
 <img src=images/stop-app.png width=700>

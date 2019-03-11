@@ -5,22 +5,22 @@ This exercise is divided into two parts. The first part is about the AWS serverl
 There are various serverless frameworks. Here is a brief introduction to each of the serverless frameworks.
 
 ### AWS Chalice
-`Chalice` is a microframework(https://github.com/aws/chalice) for writing serverless apps in python. It makes it simple for you to use AWS Lambda and Amazon API Gateway to build serverless apps. It allows you to quickly create and deploy applications that use AWS Lambda. It provides:
+***Chalice*** is a microframework(https://github.com/aws/chalice) for writing serverless apps in python. It makes it simple for you to use AWS Lambda and Amazon API Gateway to build serverless apps. It allows you to quickly create and deploy applications that use AWS Lambda. It provides:
 
 * A command line tool for creating, deploying, and managing your app
 * A decorator based API for integrating with Amazon API Gateway, Amazon S3, Amazon SNS, Amazon SQS, and other AWS services.
 * Automatic IAM policy generation
 
 ### Serverless 
-The `Serverless` Framework (https://serverless.com) is an MIT open source framework that’s actively developed and maintained by a full-time team. At its essence, it allows users to define a serverless application—including Lambda functions and API Gateway APIs—and then deploy it using a command-line interface (CLI). It helps you organize and structure serverless applications, which is of great benefit as you begin to build larger systems, and it’s fully extensible via its plugin system.
+The ***Serverless*** Framework (https://serverless.com) is an MIT open source framework that’s actively developed and maintained by a full-time team. At its essence, it allows users to define a serverless application—including Lambda functions and API Gateway APIs—and then deploy it using a command-line interface (CLI). It helps you organize and structure serverless applications, which is of great benefit as you begin to build larger systems, and it’s fully extensible via its plugin system.
 
 ### Zappa
-`Zappa` (https://github.com/Miserlou/Zappa) makes it super easy to build and deploy server-less, event-driven Python applications (including, but not limited to, WSGI web apps) on AWS Lambda + API Gateway. Think of it as "serverless" web hosting for your Python apps. That means infinite scaling, zero downtime, zero maintenance - and at a fraction of the cost of your current deployments!
+***Zappa*** (https://github.com/Miserlou/Zappa) makes it super easy to build and deploy server-less, event-driven Python applications (including, but not limited to, WSGI web apps) on AWS Lambda + API Gateway. Think of it as "serverless" web hosting for your Python apps. That means infinite scaling, zero downtime, zero maintenance - and at a fraction of the cost of your current deployments!
 
-**NOTE:** These `serverless frameworks` have many similarities. You can choose one framework from the above. In this hands-on lab, **you will use AWS Chalice**.
+**NOTE:** These ***serverless frameworks*** have many similarities. You can choose one framework from the above. In this hands-on lab, **you will use AWS Chalice**.
 
 ## TASK 1 : Setup virtualenv
-`virtualenv` is a tool to create isolated Python environments. It is easy to use. We will create virtualenv for AWS Chalice microframework environment.
+***virtualenv*** is a tool to create isolated Python environments. It is easy to use. We will create virtualenv for AWS Chalice microframework environment.
 
 1. Open new terminal in the Cloud9 IDE. (for MAC, **Option+T** is short cut)
 
@@ -77,7 +77,7 @@ Also creating executable in /home/ec2-user/environment/moving-to-serverless-work
 Installing setuptools, pip, wheel...done.
 ```
 
-2. Now you can activate your **virtualenv** (`venv`).
+2. Now you can activate your **virtualenv** (***venv***).
 ```Console
 source ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/activate
 echo "unalias python" >> ~/.bash_profile
@@ -102,7 +102,7 @@ which pip
 ~/environment/moving-to-serverless-workshop-1d/LAB04/venv/bin/pip
 ```
 
-3. Install AWS Chalice microframework (Of course, you must run following command after `venv` activation)
+3. Install AWS Chalice microframework (Of course, you must run following command after ***venv*** activation)
 ```Console
 pip install chalice
 ```
@@ -117,7 +117,7 @@ chalice 1.6.1, python 3.6.5, linux 4.14.47-56.37.amzn1.x86_64
 
 4. Install required packages for this lab. 
 
-* **Now, we are using `venv`. So we can run `pip` not `pip-3.6`.**
+* **Now, we are using ***venv***. So we can run ***pip*** not ***pip-3.6***.**
 ```Console
 pip install -r ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/requirements.txt
 ```
@@ -125,7 +125,7 @@ pip install -r ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbu
 ## TASK 2 : Build a simple AWS Chalice serverless app.
 This TASK will provide an introduction on how to use AWS Chalice and provide instructions on how to go about building your very first Chalice application. 
 
-5. We installed AWS Chalice serverless framework previous step, it is time to create your first Chalice application. Run the `chalice new-project` command to create a project called `myapp`:
+5. We installed AWS Chalice serverless framework previous step, it is time to create your first Chalice application. Run the ***chalice new-project*** command to create a project called ***myapp***:
 
 ```console
 mkdir -p ~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/
@@ -181,10 +181,10 @@ def index():
 ```
 chalice local --port 8080
 ```
-You can see the following message: `Serving on 127.0.0.1:8080`
-if you want detailed execution information, you can also run Chalice as debug mode `chalice --debug local --port 8080`
+You can see the following message: ***Serving on 127.0.0.1:8080***
+if you want detailed execution information, you can also run Chalice as debug mode ***chalice --debug local --port 8080***
 
-For the convenience of test, we will use `httpie` in the shell. 
+For the convenience of test, we will use ***httpie*** in the shell. 
 
 * You can open **NEW TERMINAL** with bash shell and then type following command.
 <img src="./images/lab04-task1-new-terminal.png" width="500">
@@ -193,7 +193,7 @@ For the convenience of test, we will use `httpie` in the shell.
 pip install httpie
 ```
 
-* After `httpie` is installed as `http` command, you can run following command for the application test. 
+* After ***httpie*** is installed as ***http*** command, you can run following command for the application test. 
 ```
 http localhost:8080/
 ```
@@ -250,12 +250,12 @@ def user_add():
         headers={'Content-Type': 'application/json; charset=utf-8'})
 ```
 
-* Review above code for new `app.py`. `Response` and `logging` are importted from top of the `app.py` file. Debug option is enabled for the application logging. `user_info` and `user_add` functions are added.
+* Review above code for new ***app.py***. ***Response*** and ***logging*** are importted from top of the ***app.py*** file. Debug option is enabled for the application logging. ***user_info*** and ***user_add*** functions are added.
 
-* Replace `app.py` file with the contents of above source code.
-  * `app.py` file is located in `~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp/app.py`
+* Replace ***app.py*** file with the contents of above source code.
+  * ***app.py*** file is located in ***~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp/app.py***
 
-9. Stop the previous `chalice local --port 8080` command with **CTRL+C** and run the new version of `myapp`.
+9. Stop the previous ***chalice local --port 8080*** command with **CTRL+C** and run the new version of ***myapp***.
 ```console
 chalice local --port 8080
 ```
@@ -263,7 +263,7 @@ chalice local --port 8080
 10. Test new Chalice application. For the convenience, you can open additional terminal in the Cloud9 environment. 
 <img src=./images/lab04-task1-new-terminal.png width=500>
 
-* **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
+* **Test #1**: ***@app.route('/users/{name}', methods=['GET'])***
 ```console
 http localhost:8080/users/David
 ```
@@ -288,7 +288,7 @@ myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'us
 
 ```
 
-* **TEST #2**: `@app.route('/users', methods=['POST'])`
+* **TEST #2**: ***@app.route('/users', methods=['POST'])***
 ```console
 echo '{"name": "David", "age": 22, "job": "student"}' | http localhost:8080/users
 ```
@@ -317,11 +317,11 @@ myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'us
 
 ```
 
-11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is `~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp`)
+11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is ***~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp***)
 ```console
 chalice deploy
 ```
-* output
+* output (Example)
 ```
 Creating deployment package.
 Updating policy for IAM role: myapp-dev
@@ -337,12 +337,12 @@ Resources deployed:
 ```console
 chalice url
 ```
-* output
+* output (Example)
 ```
 https://aavvueq9we.execute-api.ap-southeast-1.amazonaws.com/api/
 ```
 
-* **NOTE:** If you have following errors, you can check the **TASK 0. Permission grant for Cloud9** of **LAB 02 - Move to serverless**. 
+* **NOTE:** If you have following errors, you can check the **TASK 0. Permission grant for Cloud9** of **LAB 03 - Move to serverless**. 
 
 ```console
 Creating deployment package.
@@ -369,7 +369,7 @@ chalice.deploy.deployer.ChaliceDeploymentError: ERROR - While deploying your cha
 
 12. Test your first Chalice application. 
 
-* **Test #1**: `@app.route('/users/{name}', methods=['GET'])`
+* **Test #1**: ***@app.route('/users/{name}', methods=['GET'])***
 ```console
 http https://<YOUR_URL>.execute-api.ap-southeast-1.amazonaws.com/api/users/David
 ```
@@ -391,7 +391,7 @@ x-amzn-RequestId: 1b0ee142-9c8a-11e8-9f60-0d307c709c87
 
 ```
 
-* **TEST #2**: `@app.route('/users', methods=['POST'])`
+* **TEST #2**: ***@app.route('/users', methods=['POST'])***
 ```console
 echo '{"name": "David", "age": 22, "job": "student"}' | http https://<YOUR_URL>.execute-api.ap-southeast-1.amazonaws.com/api/users
 ```
@@ -417,7 +417,7 @@ x-amzn-RequestId: 519a0bcd-9c8a-11e8-8997-5550927d6916
 
 ```
 
-* You can check the files of `deployed` and `deployments` directories. (~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice)
+* You can check the files of ***deployed*** and ***deployments*** directories. (~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice)
 ```
 tree -a .
 ```
@@ -486,7 +486,7 @@ with tempfile.NamedTemporaryFile('w') as f:
 
 
 ## TASK 3 : CloudAlbum with AWS Chalice
-We have removed server based components via LAB02. We are now going serverless by removing Web Server Tier and App Server Tier.
+We have removed server based components via LAB03. We are now going serverless by removing Web Server Tier and App Server Tier.
 
 <img src=./images/lab04-task2-serverless.png width=700>
 
@@ -495,7 +495,7 @@ Finally, all servers are gone!
 <img src=./images/lab04-task2-serverless-full.png width=700>
 
 
-15. Let's take a look around `~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/` directory.
+15. Let's take a look around ***~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/*** directory.
 
 ```console
 cd ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/
@@ -529,32 +529,32 @@ tree -L 2 -a .
 
 ```
 
-* All of route functions are in the `app.py` and `template` and modules are in the `chalicelib` directory.
+* All of route functions are in the ***app.py*** and ***template*** and modules are in the ***chalicelib*** directory.
 
 **3rd Party Packages:** 
 There are two options for handling python package dependencies:
 
-* `requirements.txt` - During the packaging process, Chalice will install any packages it finds or can build compatible wheels for. Specifically all pure python packages as well as all packages that upload wheel files for the `manylinux1_x86_64` platform will be automatically installable.
+* ***requirements.txt*** - During the packaging process, Chalice will install any packages it finds or can build compatible wheels for. Specifically all pure python packages as well as all packages that upload wheel files for the ***manylinux1_x86_64*** platform will be automatically installable.
 
-* `vendor/` - The contents of this directory are automatically added to the top level of the deployment package. Chalice will also check for an optional `vendor/` directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment.
+* ***vendor/*** - The contents of this directory are automatically added to the top level of the deployment package. Chalice will also check for an optional ***vendor/*** directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment.
 
-* Chalice will also check for an optional `vendor/` directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment package (see Examples for specific examples). The `vendor/` directory is helpful in these scenarios:
+* Chalice will also check for an optional ***vendor/*** directory in the project root directory. The contents of this directory are automatically included in the top level of the deployment package (see Examples for specific examples). The ***vendor/*** directory is helpful in these scenarios:
 
 * You need to include custom packages or binary content that is not accessible via pip. These may be internal packages that aren’t public.
 
-* `Wheel files` are not available for a package you need from pip.
+* ***Wheel files*** are not available for a package you need from pip.
 
 * A package is installable with requirements.txt but has optional c extensions. Chalice can build the dependency without the c extensions, but if you want better performance you can vendor a version that is compiled.
 
-* As a general rule of thumb, code that you write goes in either `app.py` or `chalicelib/`, and dependencies are
-either specified in `requirements.txt` or placed in the `vendor/` directory.
+* As a general rule of thumb, code that you write goes in either ***app.py*** or ***chalicelib/***, and dependencies are
+either specified in ***requirements.txt*** or placed in the ***vendor/*** directory.
 
-16. Examine `.py` files. **Flask dependecies are removed**. Only **Jinja2 package is alived** in the `vendor` directory. 
+16. Examine ***.py*** files. **Flask dependecies are removed**. Only **Jinja2 package is alived** in the ***vendorv directory. 
 
 
 17. Set up application parameters. We will user **Parameter Store** (https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html) for the application configuration.
 
-* **NOTE:** Please make sure replace `<...>` values **YOUR OWN VALUE**.
+* **NOTE:** Please make sure replace ***<...>*** values **YOUR OWN VALUE**.
   * https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-cli.html 
 
 ```console
@@ -573,10 +573,10 @@ aws ssm put-parameter --name "/cloudalbum/DDB_RCU" --value "10" --type "SecureSt
 aws ssm put-parameter --name "/cloudalbum/DDB_WCU" --value "10" --type "SecureString"
 aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "DUMMY" --type "SecureString"
 ```
-* Above **DUMMY** value of `/cloudalbum/BASE_URL` will be replaced real thing.(**We can get API Gateway url after deploy**)
+* Above **DUMMY** value of ***/cloudalbum/BASE_URL*** will be replaced real thing.(**We can get API Gateway url after deploy**)
 
 
-* **NOTE:** If you put the wrong value, you can **overwrite** that value with `--overwrite` parameter. If `--overwrite` parameter ommited, you can see the following error message. (`An error occurred (ParameterAlreadyExists) when calling the PutParameter operation: ...`)
+* **NOTE:** If you put the wrong value, you can **overwrite** that value with ***--overwrite*** parameter. If ***--overwrite*** parameter ommited, you can see the following error message. ***(An error occurred (ParameterAlreadyExists) when calling the PutParameter operation: ...)***
 
 
 18. Verify your parameters. 
@@ -644,7 +644,7 @@ aws ssm get-parameters --names "/cloudalbum/DDB_RCU" --with-decryption
 <img src="./images/lab04-task3-ps-console.png" width="600">
 
 
-19. Review `config.py` file located in '**LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/config.py**'.
+19. Review ***config.py*** file located in '**LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/config.py**'.
 
 ```python
 from chalice import CORSConfig
@@ -710,7 +710,7 @@ cors_config = CORSConfig(
 ```
 
 
-20. Review the `get_param` function in the `config.py` file. Through this function, we can get value easily in the **Parameter Store**.
+20. Review the ***get_param*** function in the ***config.py*** file. Through this function, we can get value easily in the **Parameter Store**.
 
 ```python
 def get_param(param_name):
@@ -741,7 +741,7 @@ def get_param(param_name):
 aws s3 sync ~/environment/moving-to-serverless-workshop-1d/resources/static s3://cloudalbum-<INITIAL>/static/ --acl public-read
 ```
 
-22. Enable S3 bucket CORS configuration in your S3 Console. (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
+22. Enable your S3 bucket (cloudalbum-\<INITIAL\>) CORS configuration in your S3 Console. (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
 
 <img src=./images/lab04-task2-s3-cors.png width=700>
 
@@ -759,13 +759,13 @@ aws s3 sync ~/environment/moving-to-serverless-workshop-1d/resources/static s3:/
 
 ```
 
-23. Review template files. Template files which stored `moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates` are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
+23. Review template files. Template files which stored ***moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/chalicelib/templates*** are already changed to **load static resources in your S3 bucket**. You can refer above variable in the config.py file.
 ```python
 S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGION'], conf['S3_PHOTO_BUCKET'])
 ```
 
 
-24. Review the `app.py` in the 'LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py' 
+24. Review the ***app.py*** in the 'LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py' 
 * Flask dependencies are removed
   * Flask, url_for, flash, flask_login and so on.
 
@@ -773,7 +773,7 @@ S3_STATIC_URL = "https://s3-{0}.amazonaws.com/{1}/static".format(conf['AWS_REGIO
 
 * CloudAlbum is not restful, it is still **tightly coupled with Jinja2 template engine**. So, we use Jinja2 template engine in this time.
 
-* Chalice permmited to load python modules **from the `chalicelib` directory**. We will use this directory which contains `templates` directory. You can refer to following code in `LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py`. 
+* Chalice permmited to load python modules **from the ***chalicelib*** directory**. We will use this directory which contains ***templates*** directory. You can refer to following code in ***LAB04/02-CloudAlbum-Chalice/cloudalbum/app.py***. 
 ```python
 env = Environment(
     loader=PackageLoader(__name__, 'chalicelib/templates'),
@@ -793,7 +793,7 @@ body = t.render(current_user=user, gmaps_key=conf['GMAPS_KEY'], s3_static_url=S3
 25. Review provided **Lambda execution policy** before run. 
 * **NOTE:** As you know, this policy is just example for the convinience not for practical environment. 
 
-* This policy is provided for the workshop as `policy-dev.json` in the `LAB04/02-CloudAlbum-Chalice/cloudalbum/.chalice/policy-dev.json`. 
+* This policy is provided for the workshop as ***policy-dev.json*** in the ***LAB04/02-CloudAlbum-Chalice/cloudalbum/.chalice/policy-dev.json***. 
 
 ```JSON
 {
@@ -835,20 +835,20 @@ Resources deployed:
   - Rest API URL: https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api/
 ```
 
-* Keep the `Rest API URL` value and **update Parameter Store** using this value. You **should remove** `https://` and `/` (last character) like following strins.
+* Keep the ***Rest API URL*** value and **update Parameter Store** using this value. You **should remove** ***https://*** and ***/ (last character)*** like following strins.
 
-   * `Rest API URL` : v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api
+   * ***Rest API URL*** : v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api
 
 ```console
 aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>" --type "SecureString" --overwrite
 ```
 
 
-27. Configure `App client cloudalbum` in the **Cognito console.**
+27. Configure ***App client cloudalbum*** in the **Cognito console.**
 <img src=./images/lab04-task2-cog-console.png width=700>
 
-* Update `Callback URL(s)`.
-* Update `Sign out URL(s)`.
+* Update ***Callback URL(s)***.
+* Update ***Sign out URL(s)***.
 
 28. Look into your **Lambda Console.**
 <img src=./images/lab04-task2-lambda-console.png width=700>
@@ -858,8 +858,8 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 <img src=./images/lab04-task2-apigw-console.png width=700>
 
 
-30. Connect to your application through API Gateway. open `https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api` in your browser. 
-* If you missed API Gateway **URL**, you can use `chalice url` command.
+30. Connect to your application through API Gateway. Open your Rest API URL looks like this ***https://v1mehmiqsj.execute-api.ap-southeast-1.amazonaws.com/api*** in your browser. 
+* If you missed API Gateway **URL**, you can use ***chalice url*** command.
 <img src=./images/lab03-task3-cognito-login.png width=500>
 
 
@@ -884,6 +884,57 @@ aws ssm put-parameter --name "/cloudalbum/BASE_URL" --value "<YOUR REST API URL>
 * AWS Chalice is suitable for **RESTful API** server.
 * **Continuous Deployment** (CD)
    * Related document: https://chalice.readthedocs.io/en/latest/topics/cd.html
+
+## TASK 3 : Remove your AWS resources
+**CAUTION**: If you have completed this hands-on lab so far, please delete the AWS resources which used in this lab. You may incur an unwanted fee.
+
+32. Delete deployed application
+```console
+cd ~/environment/moving-to-serverless-workshop-1d/LAB04/02-CloudAlbum-Chalice/cloudalbum/
+```
+```console
+chalice delete
+```
+
+33. Delete Parameter store
+```console
+aws ssm delete-parameter --name "/cloudalbum/GMAPS_KEY"
+aws ssm delete-parameter --name "/cloudalbum/S3_PHOTO_BUCKET"
+aws ssm delete-parameter --name "/cloudalbum/COGNITO_POOL_ID"
+aws ssm delete-parameter --name "/cloudalbum/COGNITO_CLIENT_ID"
+aws ssm delete-parameter --name "/cloudalbum/COGNITO_CLIENT_SECRET"
+aws ssm delete-parameter --name "/cloudalbum/COGNITO_DOMAIN"
+
+aws ssm delete-parameter --name "/cloudalbum/THUMBNAIL_WIDTH"
+aws ssm delete-parameter --name "/cloudalbum/THUMBNAIL_HEIGHT"
+aws ssm delete-parameter --name "/cloudalbum/AWS_REGION"
+aws ssm delete-parameter --name "/cloudalbum/DDB_RCU"
+aws ssm delete-parameter --name "/cloudalbum/DDB_WCU"
+aws ssm delete-parameter --name "/cloudalbum/BASE_URL"
+```
+
+34. Delete S3 
+```console
+aws s3 rb s3://cloudalbum-<INITIAL> --force
+```
+
+35. Delete DynamoDB
+```console
+aws dynamodb delete-table --table-name "User"
+aws dynamodb delete-table --table-name "Photo"
+```
+36. Delete Cognito User pool
+* Go to Cognito
+* Click Manage User Pool.
+* Click cloudalbum-pool-<INITIAL>.
+* Click **Delete pool** button in the upper right corner.
+
+37. Delete Cloud9
+* Go to Cloud9
+* Select workshop-<INITIAL>
+* Click Delete button
+
+
 
 # Congratulation! You completed LAB04.
 
