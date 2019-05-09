@@ -295,9 +295,9 @@ Now, let's deploy our application.
 * `GMAPS_KEY` : `<GMAPS_KEY>`
   * You already get this key from **instructor**.
 * `UPLOAD_FOLDER` : `/mnt/efs`
-* `LOG_FILE_PATH` " `/app/cloudalbum/logs`
+* `LOG_FILE_PATH` : `/opt/python/log`
 
-    <img src=./images/lab02-task5-eb-sw-env-var.png width=500>
+    <img src=./images/lab02-task5-eb-sw-env-var-1.png width=500>
 
 * You can check the `LAB02/CloudAlbum/cloudalbum/config.py` file about above variables.
 
