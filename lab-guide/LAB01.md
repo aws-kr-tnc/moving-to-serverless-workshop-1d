@@ -180,7 +180,7 @@ Check your environment variables!
 
 24. First, In the **Name column**, type **DB_URL**. In the Value column, type the **SQLITE** file DB URL (*for the test purpose only*) like this. **DB table will be created automatically** via [SQLAlchemy](https://www.sqlalchemy.org/).
 
-```python
+```
 sqlite:////home/ec2-user/environment/moving-to-serverless-workshop-1d/LAB01/sqlite.db
 ```
 
