@@ -793,7 +793,7 @@ options = {
 
  * For example,
 
-   <img src="images/lab03-task3-cognito-config.png" width="500">
+   <img src="images/lab03-task3-cognito-config.png" width="800">
 
 
 
