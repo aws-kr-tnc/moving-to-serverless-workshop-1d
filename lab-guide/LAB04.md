@@ -40,7 +40,7 @@ python --version
 ```
 * output:
 ```
-Python 2.7.14
+Python 2.7.16
 ```
 ```console
 which python
@@ -112,7 +112,7 @@ chalice --version
 ```
 * output:
 ```
-chalice 1.6.1, python 3.6.5, linux 4.14.47-56.37.amzn1.x86_64
+chalice 1.8.0, python 3.6.8, linux 4.14.114-82.97.amzn1.x86_64
 ```
 
 4. Install required packages for this lab. 
@@ -317,7 +317,7 @@ myapp - DEBUG - {'query_params': None, 'headers': {'host': 'localhost:8080', 'us
 
 ```
 
-11. Deploy to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is ***~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp***)
+11. Stop the previous *chalice local --port 8080* command with *CTRL+C* and **deploy** it to **API Gateway** and **Lambda**. You can deploy this application using Chalice CLI command. (Make sure, you working directory is ***~/environment/moving-to-serverless-workshop-1d/LAB04/01-Chalice/myapp***)
 ```console
 chalice deploy
 ```
@@ -745,7 +745,7 @@ aws s3 sync ~/environment/moving-to-serverless-workshop-1d/resources/static s3:/
 
 <img src=./images/lab04-task2-s3-cors.png width=700>
 
-* **REVIEW** the CORS configuration
+* **REVIEW** the CORS configuration, and **copy and paste** it!
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
