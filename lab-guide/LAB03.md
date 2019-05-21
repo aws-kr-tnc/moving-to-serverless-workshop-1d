@@ -295,7 +295,7 @@ class Photo(db.Model):
 ```
 
 4. Open the **models_ddb.py** which located in  'LAB03/01-CloudAlbum-DDB/cloudalbum/model/models_ddb.py'.
-<img src=./images/lab03-task1-models_ddb.png width=300>
+<img src=./images/lab03-task1-models_ddb-2.png width=300>
 
 
 
@@ -704,7 +704,7 @@ To begin, follow the steps below.
 47. In the left navigation menu, under **App integration**, click **App client settings**.
 
 48. For **Enabled Identity Providers**, check **Cognito User Pool**.
-* Check the Cloud9 ResourceId. 
+* Check the Cloud9 ResourceId at the **Cloud9 Terminal.** 
 ```console 
 RESOURCE_ID=$(aws ec2 describe-tags --query "Tags[].Value" --filters "Name=resource-id, Values=`ec2-metadata --instance-id | cut -f2 -d ' '`" "Name=key, Values=aws:cloud9:environment" --output text)
 
@@ -790,6 +790,11 @@ options = {
 | COGNITO_CLIENT_SECRET | Copy and paste the App Client Secret you noted earlier. |
 |COGNITO_DOMAIN |Copy and paste the domain name you created earlier. It should look similar to the example below. Do not copy the entire URL starting with https://<YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com (for example(**without** `https://`): <YOUR_DOMAIN_NAME>.auth.ap-southeast-1.amazoncognito.com)|
 | BASE_URL | For **Cloud9 Preview** user set **https://<YOUR_PREVIEW_URL>** Do not include a trailing / for the BASE_URL. |
+
+ * For example,
+
+   <img src="images/lab03-task3-cognito-config.png" width="500">
+
 
 
 59. Review following code to retrieve JSON Web Key (JWK) from cognito.
@@ -885,12 +890,12 @@ cd ~
 
 68. Type wget and paste the AWS X-Ray daemon hyperlink address that you copied. The command should look like the example below.
 ```console
-wget https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-2.x.zip
+wget https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-linux-3.x.zip
 ```
 
 69. Unzip the AWS X-Ray daemon by typing the command below. Make sure that the name of the .zip file matches the one in the command below.
 ```console
-unzip aws-xray-daemon-linux-2.x.zip
+unzip aws-xray-daemon-linux-3.x.zip
 ```
 
 70. Run the AWS X-Ray daemon by typing the command below. The X-Ray daemon buffers segments in a queue and uploads them to X-Ray in batches. 
@@ -901,7 +906,7 @@ unzip aws-xray-daemon-linux-2.x.zip
 
 * **Now, X-Ray daemon works and ready to use X-Ray to analyze applications.**
 
-70. Review, ***### x-ray set up*** part in the 'LAB03/04-CloudAlbum-XRAY/run.py' file.
+70. Review, ***x-ray set up*** part in the 'LAB03/04-CloudAlbum-XRAY/run.py' file.
 
  * Related document
    *  https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-configuration.html
