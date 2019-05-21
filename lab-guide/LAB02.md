@@ -35,12 +35,17 @@ In this section, you will create an VPC with multi-az for the high availability 
 
 2. In the AWS Console, click **Services**, then click **CloudFormation** to open the CloudFormation dashboard.
 
+ * CloudFormation new console is available. However, this guide is wrriten for previous console. 
+ * If the description of the lab-guide differs from the console screen, select '**switch to the previous console**'.
+
+    <img src=./images/lab02-task1-cf-console.png width=700>
+
 3. Click **Create Stack** button at the top-left corner. (or click **Create new stack** at the center of page.)
 
 4. Download the **CloudFormation** template file (network.yaml) to your local laptop.
  * Download Link : <https://raw.githubusercontent.com/aws-kr-tnc/moving-to-serverless-workshop-1d/master/resources/network.yaml>
 
-5. On the **Select Tempalte** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose ***network.yaml*** file which is downloaded previous step.
+5. On the **Select Template** page, click **Upload a template to Amazon S3**. Click **Browse...** button. Then choose ***network.yaml*** file which is downloaded previous step.
 
 6. Click **Next** button.
 
@@ -74,9 +79,10 @@ Amazon Elastic File System (Amazon EFS) provides a simple, scalable, elastic fil
 
 16. On the **Configure file system access** page, choose your VPC . You can check the name of VPC, it should contain ***moving-to-serverless***. Then you have to choose pair of **Private subnets** and please check the each Availibity Zone of subnet. 
 
+    <img src=./images/lab02-task2-efs-1.png width=700>
+
 17. Click **Next Step** button. You can refer to following screen capture image.
 
-    <img src=./images/lab02-task2-efs-1.png width=700>
 
 
 18. On the **Configure optional settings** page, type `shared-storage` for key **Name** under **Add tags** section.
@@ -348,10 +354,11 @@ Now, let's deploy our application.
 
 
 72. Click the **Apply** button. let's wait until the configuration is applied.
+ * We have modified our application to use Elasticache as a session store. So CloudAlbum works well in AutoScaling environment. **To confirm this, log in and press Ctrl + R or F5 to confirm that the service instance changes via page refresh.**
 
+    <img src=./images/lab02-task5-reload.png width=500>
 
-73. Test the deployed application and explore the ElasticBeastalk console.
-
+73. Test the deployed application and explore the ElasticBeastalk console. Let's go to TASK 6.
 
 
 ## TASK 6. Perform application test
